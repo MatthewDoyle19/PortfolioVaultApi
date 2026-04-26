@@ -16,4 +16,11 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
   </ItemGroup>
 
+<ItemGroup>
+  <Content Update="Dockerfile">
+    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+  </Content>
+</ItemGroup>
+
 </Project>

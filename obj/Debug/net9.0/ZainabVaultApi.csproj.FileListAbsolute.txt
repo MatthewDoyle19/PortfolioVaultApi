@@ -154,3 +154,4 @@
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/ZainabVaultApi.pdb
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/ZainabVaultApi.genruntimeconfig.cache
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/ref/ZainabVaultApi.dll
+/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/ZainabVaultApi.sourcelink.json

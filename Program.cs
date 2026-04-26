@@ -4,18 +4,16 @@ using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- BUILDER PHASE (Configure Services) ---
-// 1. Swapped SQLite for PostgreSQL (Neon)
+// --- 1. THE BUILDER PHASE (Locking in the tools) ---
+
+// This looks for the secret on Render. If it's not there (like on your Mac), 
+// it uses your hardcoded string so you can still test locally.
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
+                       ?? "Host=ep-summer-king-alcbyjyd-pooler.c-3.eu-central-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_PKj7ioea6XNE;SSL Mode=Require;Trust Server Certificate=true";
+
 builder.Services.AddDbContext<VaultDb>(options => 
 {
-    // PASTE YOUR FULL NEON CONNECTION STRING HERE:
-    // This tells the app: "Look for a secret called 'DATABASE_URL' in the cloud settings"
-    var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
-
-    builder.Services.AddDbContext<VaultDb>(options => 
-    {
-        options.UseNpgsql(connectionString);
-    });
+    options.UseNpgsql(connectionString);
 });
 
 builder.Services.AddCors(options =>
@@ -26,15 +24,15 @@ builder.Services.AddCors(options =>
                         .AllowAnyHeader());
 });
 
+// THIS IS THE BORDER. Do not put any builder.Services calls below this line.
 var app = builder.Build();
 
-// --- APP PHASE (Configure Middleware & Routes) ---
+// --- 2. THE APP PHASE (Using the tools) ---
 
 app.UseDefaultFiles(); 
 app.UseStaticFiles(); 
 app.UseCors("AllowFrontend");
 
-// 3. API Endpoints
 app.MapPost("/api/auth/login", (LoginRequest request) =>
 {
     const string secureKey = "2503";
@@ -64,7 +62,6 @@ app.MapDelete("/api/links/{id}", async (int id, VaultDb db) => {
 app.MapGet("/api/commits", async (VaultDb db) => 
     await db.Commits.OrderByDescending(c => c.Date).ToListAsync());
 
-// --- UPDATED: Base64 Image Processing for Cloud ---
 app.MapPost("/api/commits", async (HttpRequest request, VaultDb db) => {
     var form = await request.ReadFormAsync();
     var date = form["date"].ToString();
@@ -73,15 +70,12 @@ app.MapPost("/api/commits", async (HttpRequest request, VaultDb db) => {
 
     string? imageUrl = null;
 
-    // Convert the physical file into a Base64 text string
     if (file != null && file.Length > 0)
     {
         using var memoryStream = new MemoryStream();
         await file.CopyToAsync(memoryStream);
         var fileBytes = memoryStream.ToArray();
         var base64String = Convert.ToBase64String(fileBytes);
-        
-        // This creates a "Data URI" that HTML can read directly as an image
         imageUrl = $"data:{file.ContentType};base64,{base64String}";
     }
 
@@ -99,13 +93,11 @@ app.MapPost("/api/commits", async (HttpRequest request, VaultDb db) => {
 app.MapDelete("/api/commits/{id}", async (int id, VaultDb db) => {
     var commit = await db.Commits.FindAsync(id);
     if (commit is null) return Results.NotFound();
-    
     db.Commits.Remove(commit);
     await db.SaveChangesAsync();
     return Results.Ok();
 });
 
-// 4. Database Initialization (Will now build tables in Neon automatically)
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<VaultDb>();
     db.Database.EnsureCreated();
@@ -136,10 +128,8 @@ class VaultDb : DbContext {
 class Link {
     [JsonPropertyName("id")]
     public int Id { get; set; }
-    
     [JsonPropertyName("title")]
     public string Title { get; set; } = string.Empty;
-    
     [JsonPropertyName("url")]
     public string Url { get; set; } = string.Empty;
 }
@@ -147,13 +137,10 @@ class Link {
 class Commit {
     [JsonPropertyName("id")]
     public int Id { get; set; }
-    
     [JsonPropertyName("date")]
     public string Date { get; set; } = string.Empty;
-    
     [JsonPropertyName("message")]
     public string Message { get; set; } = string.Empty;
-
     [JsonPropertyName("imageUrl")]
     public string? ImageUrl { get; set; } 
 }
