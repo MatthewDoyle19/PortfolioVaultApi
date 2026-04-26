@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 2. Uptime Counter Logic ---
     const uptimeDisplay = document.getElementById('uptime-counter');
     const startDate = new Date('2026-03-25T00:00:00');
-
+    
     const updateUptime = () => {
         const now = new Date();
         const diff = now - startDate;
