@@ -184,6 +184,21 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchCommits();
     });
 
+    async function loadCommits() {
+        try {
+            const response = await fetch('https://zainabvault.onrender.com/api/commits');
+            const commits = await response.json();
+
+            // THE MAGIC LINE:
+            // This takes the length of the array from your C# backend and injects it into the HTML
+            document.getElementById('commit-count').innerText = commits.length;
+
+            // ... existing code to render the cards ...
+        } catch (error) {
+            console.error("Failed to load memories:", error);
+        }
+    }
+
     window.deleteCommit = async (id) => {
         await fetch(`${API_BASE_URL}/api/commits/${id}`, { method: 'DELETE' });
         fetchCommits();
