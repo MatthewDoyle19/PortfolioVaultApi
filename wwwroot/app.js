@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 2. Uptime Counter Logic ---
     const uptimeDisplay = document.getElementById('uptime-counter');
-    const startDate = new Date('2026-03-24T00:00:00');
+    const startDate = new Date('2026-03-25T00:00:00');
 
     const updateUptime = () => {
         const now = new Date();
@@ -128,12 +128,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`${API_BASE_URL}/api/commits`);
             const commits = await response.json();
 
-            // ADD THIS LINE HERE:
+            // 1. Update the counter with the actual data from the API
             const countElement = document.getElementById('commit-count');
             if (countElement) {
                 countElement.innerText = commits.length;
             }
 
+            // 2. Render the actual cards on the timeline
             renderCommits(commits);
         } catch (error) {
             console.error("Failed to fetch commits:", error);
@@ -146,21 +147,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const item = document.createElement('div');
             item.className = 'polaroid-card group';
 
+            // THE FIX: If there is no imageUrl, we return an empty string 
+            // instead of a placeholder div.
             const imageHtml = commit.imageUrl
                 ? `<img src="${commit.imageUrl}" alt="Memory" class="polaroid-image">`
-                : `<div class="polaroid-image flex items-center justify-center text-slate-800 bg-slate-900/50"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>`;
+                : '';
 
-            // Flipped the order: Date/Delete -> Caption -> Image
             item.innerHTML = `
-                <div class="flex justify-between items-start mb-2 mt-1">
-                    <span class="text-xs text-accent font-bold tracking-wider">${commit.date}</span>
-                    <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </div>
-                <p class="text-sm text-slate-300 mb-3">${commit.message}</p>
-                ${imageHtml}
-            `;
+            <div class="flex justify-between items-start mb-2 mt-1">
+                <span class="text-xs text-accent font-bold tracking-wider">${commit.date}</span>
+                <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <p class="text-sm text-slate-300 mb-3">${commit.message}</p>
+            ${imageHtml}
+        `;
             commitTimeline.appendChild(item);
         });
     };
@@ -190,21 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         addCommitForm.reset();
         fetchCommits();
     });
-
-    async function loadCommits() {
-        try {
-            const response = await fetch('https://zainabvault.onrender.com/api/commits');
-            const commits = await response.json();
-
-            // THE MAGIC LINE:
-            // This takes the length of the array from your C# backend and injects it into the HTML
-            document.getElementById('commit-count').innerText = commits.length;
-
-            // ... existing code to render the cards ...
-        } catch (error) {
-            console.error("Failed to load memories:", error);
-        }
-    }
+    
 
     window.deleteCommit = async (id) => {
         await fetch(`${API_BASE_URL}/api/commits/${id}`, { method: 'DELETE' });
