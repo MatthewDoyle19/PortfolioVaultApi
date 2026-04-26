@@ -9,8 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<VaultDb>(options => 
 {
     // PASTE YOUR FULL NEON CONNECTION STRING HERE:
-    var connectionString = "Host=ep-summer-king-alcbyjyd-pooler.c-3.eu-central-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_PKj7ioea6XNE;SSL Mode=Require;Trust Server Certificate=true";
-    options.UseNpgsql(connectionString);
+    // This tells the app: "Look for a secret called 'DATABASE_URL' in the cloud settings"
+    var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+    builder.Services.AddDbContext<VaultDb>(options => 
+    {
+        options.UseNpgsql(connectionString);
+    });
 });
 
 builder.Services.AddCors(options =>
