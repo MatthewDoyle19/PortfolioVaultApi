@@ -127,6 +127,13 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/commits`);
             const commits = await response.json();
+
+            // ADD THIS LINE HERE:
+            const countElement = document.getElementById('commit-count');
+            if (countElement) {
+                countElement.innerText = commits.length;
+            }
+
             renderCommits(commits);
         } catch (error) {
             console.error("Failed to fetch commits:", error);
