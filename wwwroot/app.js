@@ -182,8 +182,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         preview = document.createElement('audio');
                         preview.id = 'audio-preview';
                         preview.controls = true;
-                        preview.className = 'w-full mt-4 filter drop-shadow-lg';
-                        document.getElementById('add-commit-form').insertBefore(preview, document.querySelector('button[type="submit"]'));
+                        preview.className = 'w-full mt-4 mb-2 filter drop-shadow-lg';
+
+                        // الإصلاح: تحديد الفورم والزر الخاص به حصراً
+                        const commitForm = document.getElementById('add-commit-form');
+                        const specificSubmitBtn = commitForm.querySelector('button[type="submit"]');
+                        commitForm.insertBefore(preview, specificSubmitBtn);
                     }
                     preview.src = URL.createObjectURL(audioBlob);
                     preview.classList.remove('hidden');
