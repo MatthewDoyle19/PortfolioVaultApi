@@ -7,21 +7,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginBtn = document.getElementById('login-btn');
     const errorMsg = document.getElementById('error-msg');
 
-    // The API URL is empty because the C# backend is now hosting these files
     const API_BASE_URL = '';
 
     const handleLogin = async () => {
         const key = authKey.value;
-
         try {
             const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ key: key })
             });
-
             const result = await response.json();
-
             if (response.ok && result.success) {
                 loginScreen.classList.add('fade-out');
                 setTimeout(() => {
@@ -38,14 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
             authKey.value = '';
             authKey.focus();
             setTimeout(() => errorMsg.style.opacity = '0', 2000);
-            console.error("Auth failed:", error.message);
         }
     };
 
     loginBtn.addEventListener('click', handleLogin);
-    authKey.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleLogin();
-    });
+    authKey.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
     // --- 2. Uptime Counter Logic ---
     const uptimeDisplay = document.getElementById('uptime-counter');
@@ -54,14 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateUptime = () => {
         const now = new Date();
         const diff = now - startDate;
-
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
         const minutes = Math.floor((diff / 1000 / 60) % 60);
-
         uptimeDisplay.textContent = `${days} Days, ${hours} Hrs, ${minutes} Min`;
     };
-
     updateUptime();
     setInterval(updateUptime, 60000);
 
@@ -74,9 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`${API_BASE_URL}/api/links`);
             const links = await response.json();
             renderLinks(links);
-        } catch (error) {
-            console.error("Database connection failed:", error);
-        }
+        } catch (error) { console.error(error); }
     };
 
     const renderLinks = (links) => {
@@ -91,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <span class="text-sm font-medium text-slate-300 group-hover:text-white truncate pr-2">${link.title}</span>
                 </a>
-                <button onclick="deleteLink(${link.id})" class="text-slate-500 hover:text-red-400 p-2 transition-colors" title="Delete Link">
+                <button onclick="deleteLink(${link.id})" class="text-slate-500 hover:text-red-400 p-2 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             `;
@@ -103,13 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const title = document.getElementById('link-title').value;
         const url = document.getElementById('link-url').value;
-
         await fetch(`${API_BASE_URL}/api/links`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title, url })
         });
-
         addLinkForm.reset();
         fetchLinks();
     });
@@ -124,43 +110,26 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/commits`);
             const commits = await response.json();
-
             const countElement = document.getElementById('commit-count');
-            if (countElement) {
-                countElement.innerText = commits.length;
-            }
-
+            if (countElement) countElement.innerText = commits.length;
             renderCommits(commits);
-        } catch (error) {
-            console.error("Failed to fetch commits:", error);
-        }
+        } catch (error) { console.error(error); }
     };
 
     const renderCommits = (commits) => {
         const commitTimeline = document.getElementById('commit-timeline');
         if (!commitTimeline) return;
-
         commitTimeline.innerHTML = '';
 
         commits.forEach((commit) => {
             const item = document.createElement('div');
-            item.className = 'polaroid-card group';
+            item.className = 'polaroid-card group fade-in';
 
             const dateObj = new Date(commit.date);
-            const formattedDate = dateObj.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric'
-            });
+            const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-            const imageHtml = commit.imageUrl
-                ? `<img src="${commit.imageUrl}" alt="Memory" class="polaroid-image">`
-                : '';
-
-            // الإضافة الجديدة لمشغل الصوت
-            const audioHtml = commit.audioUrl
-                ? `<audio controls src="${commit.audioUrl}" class="w-full mt-3 h-8 rounded-full outline-none opacity-80 hover:opacity-100 transition-opacity"></audio>`
-                : '';
+            const imageHtml = commit.imageUrl ? `<img src="${commit.imageUrl}" alt="Memory" class="polaroid-image">` : '';
+            const audioHtml = commit.audioUrl ? `<audio controls src="${commit.audioUrl}"></audio>` : '';
 
             item.innerHTML = `
             <div class="flex justify-between items-start mb-4 mt-1">
@@ -181,6 +150,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- إعدادات Cloudinary ---
     const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/i7dhiwzb/auto/upload';
+    // 🔴 التعديل المهم: استخدام رابط مخصص للصوتيات (Video Endpoint)
+    const CLOUDINARY_AUDIO_URL = 'https://api.cloudinary.com/v1_1/i7dhiwzb/video/upload';
     const CLOUDINARY_UPLOAD_PRESET = 'i7dhiwzb';
 
     // --- Voice Record Logic ---
@@ -199,6 +170,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 mediaRecorder.start();
                 audioChunks = [];
 
+                // إخفاء المعاينة القديمة إذا بدأنا تسجيلاً جديداً
+                let preview = document.getElementById('audio-preview');
+                if (preview) preview.classList.add('hidden');
+
                 mediaRecorder.addEventListener("dataavailable", event => {
                     audioChunks.push(event.data);
                 });
@@ -209,6 +184,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     recordBtn.classList.replace('text-rose-400', 'text-emerald-400');
                     recordBtn.classList.replace('bg-rose-500/20', 'bg-emerald-500/20');
                     recordBtn.classList.replace('border-rose-500/30', 'border-emerald-500/30');
+
+                    // 🔴 التعديل المهم: إضافة مشغل معاينة لسماع الصوت قبل الرفع
+                    if (!preview) {
+                        preview = document.createElement('audio');
+                        preview.id = 'audio-preview';
+                        preview.controls = true;
+                        preview.className = 'w-full mt-4 filter drop-shadow-lg';
+                        document.getElementById('add-commit-form').insertBefore(preview, document.querySelector('button[type="submit"]'));
+                    }
+                    preview.src = URL.createObjectURL(audioBlob);
+                    preview.classList.remove('hidden');
                 });
 
                 recordBtn.innerHTML = '🛑 Stop';
@@ -243,40 +229,30 @@ document.addEventListener('DOMContentLoaded', () => {
             let finalImageUrl = null;
             let finalAudioUrl = null;
 
-            // 1. رفع الصورة إن وجدت
             if (imageFile) {
                 const cloudFormData = new FormData();
                 cloudFormData.append('file', imageFile);
                 cloudFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-
-                const cloudinaryRes = await fetch(CLOUDINARY_URL, {
-                    method: 'POST',
-                    body: cloudFormData
-                });
+                const cloudinaryRes = await fetch(CLOUDINARY_URL, { method: 'POST', body: cloudFormData });
                 const cloudData = await cloudinaryRes.json();
                 finalImageUrl = cloudData.secure_url;
             }
 
-            // 2. رفع الصوت إن وُجد
             if (audioBlob) {
                 const cloudAudioData = new FormData();
-                cloudAudioData.append('file', audioBlob);
+                // 🔴 التعديل المهم: إعطاء الصوت اسماً لكي يفهمه Cloudinary
+                cloudAudioData.append('file', audioBlob, 'voice-note.mp3');
                 cloudAudioData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-
-                const cloudinaryAudioRes = await fetch(CLOUDINARY_URL, {
-                    method: 'POST',
-                    body: cloudAudioData
-                });
+                const cloudinaryAudioRes = await fetch(CLOUDINARY_AUDIO_URL, { method: 'POST', body: cloudAudioData });
                 const cloudAudio = await cloudinaryAudioRes.json();
                 finalAudioUrl = cloudAudio.secure_url;
             }
 
-            // 3. إرسال الكل للـ Backend
             const newCommit = {
                 date: date,
                 message: message,
                 imageUrl: finalImageUrl,
-                audioUrl: finalAudioUrl // الرابط الجديد للصوت
+                audioUrl: finalAudioUrl
             };
 
             const response = await fetch(`${API_BASE_URL}/api/commits`, {
@@ -287,13 +263,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 addCommitForm.reset();
-
-                // إعادة زر التسجيل لشكله الأصلي
                 audioBlob = null;
                 recordBtn.innerHTML = '🎤 Record';
                 recordBtn.classList.replace('text-emerald-400', 'text-rose-400');
                 recordBtn.classList.replace('bg-emerald-500/20', 'bg-rose-500/20');
                 recordBtn.classList.replace('border-emerald-500/30', 'border-rose-500/30');
+
+                let preview = document.getElementById('audio-preview');
+                if(preview) preview.classList.add('hidden');
 
                 fetchCommits();
             } else {
@@ -301,6 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error during upload:', error);
+            alert("Error syncing data. Check your connection or database.");
         } finally {
             submitBtn.innerHTML = originalBtnText;
             submitBtn.disabled = false;
@@ -308,8 +286,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.deleteCommit = async (id) => {
-        await fetch(`${API_BASE_URL}/api/commits/${id}`, { method: 'DELETE' });
-        fetchCommits();
+        if(confirm('Are you sure you want to delete this memory?')) {
+            await fetch(`${API_BASE_URL}/api/commits/${id}`, { method: 'DELETE' });
+            fetchCommits();
+        }
     };
 
     // --- 5. Penalty Modal Logic ---
