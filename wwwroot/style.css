@@ -102,56 +102,30 @@ html { scroll-behavior: smooth; }
     box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.4);
 }
 
-/* --- The Ultimate Transparent Audio Player --- */
+/* --- Elegant Audio Player Overlay (Dark Mode Forced) --- */
 audio {
     width: 100%;
+    height: 44px; /* حجم مريح للضغط على الموبايل */
     margin-top: 1.25rem;
-    height: 44px; /* Taller for easier touch on iOS */
-    outline: none;
     border-radius: 50px;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+    outline: none;
+
+    /* 🔴 السر هنا: إجبار مشغل المتصفح على الوضع الداكن */
+    color-scheme: dark;
+    background-color: transparent;
 }
 
 audio::-webkit-media-controls-enclosure {
-    /* Total transparency so it blends into the polaroid card */
-    background-color: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(20px);
+    /* غلاف زجاجي داكن يندمج مع البطاقة */
+    background: rgba(20, 20, 25, 0.6);
+    backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 50px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 audio::-webkit-media-controls-panel {
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 0 12px;
-}
-
-audio::-webkit-media-controls-play-button,
-audio::-webkit-media-controls-mute-button {
-    /* Soft rose tint for the play button */
-    background-color: rgba(244, 114, 182, 0.15);
-    border-radius: 50%;
-    transition: all 0.3s ease;
-}
-
-audio::-webkit-media-controls-play-button:hover,
-audio::-webkit-media-controls-mute-button:hover {
-    background-color: rgba(244, 114, 182, 0.3);
-}
-
-audio::-webkit-media-controls-current-time-display,
-audio::-webkit-media-controls-time-remaining-display {
-    color: #f8fafc;
-    font-family: 'Outfit', sans-serif;
-    font-weight: 500;
-    font-size: 13px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
-    letter-spacing: 0.5px;
-}
-
-audio::-webkit-media-controls-timeline {
-    background-color: rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-    margin: 0 15px;
+    padding: 0 10px;
 }
