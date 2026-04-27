@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- 1. Security Gate Logic ---
     const loginScreen = document.getElementById('login-screen');
     const dashboard = document.getElementById('dashboard');
     const authKey = document.getElementById('auth-key');
@@ -40,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loginBtn.addEventListener('click', handleLogin);
     authKey.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
-    // --- 2. Uptime Counter Logic ---
     const uptimeDisplay = document.getElementById('uptime-counter');
     const startDate = new Date('2026-03-25T00:00:00');
 
@@ -55,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateUptime();
     setInterval(updateUptime, 60000);
 
-    // --- 3. Link Vault API Integration ---
     const linkGrid = document.getElementById('link-grid');
     const addLinkForm = document.getElementById('add-link-form');
 
@@ -105,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchLinks();
     };
 
-    // --- 4. System Log (Commits) API Integration ---
     const fetchCommits = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/commits`);
@@ -148,13 +144,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // --- إعدادات Cloudinary ---
+    // سنستخدم الرابط الشامل (auto) لكي يقبل Cloudinary الصور والصوتيات من أبل بدون مشاكل
     const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/i7dhiwzb/auto/upload';
-    // 🔴 التعديل المهم: استخدام رابط مخصص للصوتيات (Video Endpoint)
-    const CLOUDINARY_AUDIO_URL = 'https://api.cloudinary.com/v1_1/i7dhiwzb/video/upload';
     const CLOUDINARY_UPLOAD_PRESET = 'i7dhiwzb';
 
-    // --- Voice Record Logic ---
     let audioBlob = null;
     let mediaRecorder = null;
     let audioChunks = [];
@@ -170,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 mediaRecorder.start();
                 audioChunks = [];
 
-                // إخفاء المعاينة القديمة إذا بدأنا تسجيلاً جديداً
                 let preview = document.getElementById('audio-preview');
                 if (preview) preview.classList.add('hidden');
 
@@ -179,13 +171,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 mediaRecorder.addEventListener("stop", () => {
-                    audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                    // تم التعديل إلى صيغة متوافقة مع جميع الأجهزة (mp4)
+                    audioBlob = new Blob(audioChunks, { type: 'audio/mp4' });
                     recordBtn.innerHTML = '✅ Saved';
                     recordBtn.classList.replace('text-rose-400', 'text-emerald-400');
                     recordBtn.classList.replace('bg-rose-500/20', 'bg-emerald-500/20');
                     recordBtn.classList.replace('border-rose-500/30', 'border-emerald-500/30');
 
-                    // 🔴 التعديل المهم: إضافة مشغل معاينة لسماع الصوت قبل الرفع
                     if (!preview) {
                         preview = document.createElement('audio');
                         preview.id = 'audio-preview';
@@ -240,12 +232,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (audioBlob) {
                 const cloudAudioData = new FormData();
-                // 🔴 التعديل المهم: إعطاء الصوت اسماً لكي يفهمه Cloudinary
-                cloudAudioData.append('file', audioBlob, 'voice-note.mp3');
+                // تم إعطاء اسم وهمي بصيغة أبل لكي لا يرفضه السيرفر
+                cloudAudioData.append('file', audioBlob, 'voice.mp4');
                 cloudAudioData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-                const cloudinaryAudioRes = await fetch(CLOUDINARY_AUDIO_URL, { method: 'POST', body: cloudAudioData });
+                const cloudinaryAudioRes = await fetch(CLOUDINARY_URL, { method: 'POST', body: cloudAudioData });
                 const cloudAudio = await cloudinaryAudioRes.json();
                 finalAudioUrl = cloudAudio.secure_url;
+                console.log("Audio Uploaded Successfully! URL:", finalAudioUrl); // للمراقبة
             }
 
             const newCommit = {
@@ -275,10 +268,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchCommits();
             } else {
                 console.error("Backend rejected the memory.");
+                alert("Database Error! Did you update Program.cs?");
             }
         } catch (error) {
             console.error('Error during upload:', error);
-            alert("Error syncing data. Check your connection or database.");
         } finally {
             submitBtn.innerHTML = originalBtnText;
             submitBtn.disabled = false;
@@ -292,7 +285,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- 5. Penalty Modal Logic ---
     const penaltyBtn = document.getElementById('penalty-btn');
     const modal = document.getElementById('penalty-modal');
     const modalContent = document.getElementById('modal-content');
@@ -316,7 +308,6 @@ document.addEventListener('DOMContentLoaded', () => {
     penaltyBtn.addEventListener('click', openModal);
     closeBtn.addEventListener('click', closeModal);
 
-    // --- Boot Sequence ---
     fetchLinks();
     fetchCommits();
 });
