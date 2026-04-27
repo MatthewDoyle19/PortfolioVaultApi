@@ -144,8 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // سنستخدم الرابط الشامل (auto) لكي يقبل Cloudinary الصور والصوتيات من أبل بدون مشاكل
-    const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/i7dhiwzb/auto/upload';
+    // تم وضع اسم السحابة الصحيح في الرابط
+    const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dhr6waydw/auto/upload';
     const CLOUDINARY_UPLOAD_PRESET = 'i7dhiwzb';
 
     let audioBlob = null;
