@@ -102,30 +102,28 @@ html { scroll-behavior: smooth; }
     box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.4);
 }
 
-/* --- Elegant Audio Player Overlay (Dark Mode Forced) --- */
+/* --- The Ultimate Transparent Audio Player (Forced Dark Mode) --- */
 audio {
     width: 100%;
-    height: 44px; /* حجم مريح للضغط على الموبايل */
+    height: 44px;
     margin-top: 1.25rem;
     border-radius: 50px;
     outline: none;
-
-    /* 🔴 السر هنا: إجبار مشغل المتصفح على الوضع الداكن */
-    color-scheme: dark;
-    background-color: transparent;
+    /* القوة الجبرية لإجبار الكروم على الوضع الليلي */
+    color-scheme: dark !important;
+    background-color: transparent !important;
 }
 
 audio::-webkit-media-controls-enclosure {
-    /* غلاف زجاجي داكن يندمج مع البطاقة */
-    background: rgba(20, 20, 25, 0.6);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 50px;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    /* غلاف زجاجي داكن إجباري */
+    background: rgba(25, 25, 30, 0.8) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 50px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 }
 
 audio::-webkit-media-controls-panel {
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
+    background-color: transparent !important;
 }
