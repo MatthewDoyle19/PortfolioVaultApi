@@ -182,30 +182,67 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // --- إعدادات Cloudinary (سنحصل عليها من موقع Cloudinary لاحقاً) ---
+    const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/i7dhiwzb/image/upload';
+    const CLOUDINARY_UPLOAD_PRESET = 'i7dhiwzb';
+
     addCommitForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const date = document.getElementById('commit-date').value;
         const message = document.getElementById('commit-message').value;
-        const imageFile = document.getElementById('commit-image').files[0]; // Grab the actual file
+        const imageFile = document.getElementById('commit-image').files[0];
 
-        // We use FormData instead of JSON to send physical files
-        const formData = new FormData();
-        formData.append('date', date);
-        formData.append('message', message);
-        if (imageFile) {
-            formData.append('image', imageFile);
+        // تغيير شكل الزر لإخبار المستخدم أن الرفع قيد التنفيذ
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.innerHTML = 'Encrypting & Storing... ⏳';
+        submitBtn.disabled = true;
+
+        try {
+            let finalImageUrl = null;
+
+            // الخطوة 1: إذا كان هناك صورة، نرفعها إلى Cloudinary أولاً
+            if (imageFile) {
+                const cloudFormData = new FormData();
+                cloudFormData.append('file', imageFile);
+                cloudFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET); // الرمز السري للرفع
+
+                const cloudinaryRes = await fetch(CLOUDINARY_URL, {
+                    method: 'POST',
+                    body: cloudFormData
+                });
+
+                const cloudData = await cloudinaryRes.json();
+                finalImageUrl = cloudData.secure_url; // أخذنا الرابط القصير والصغير للصورة!
+            }
+
+            // الخطوة 2: نرسل البيانات (التاريخ، الرسالة، ورابط الصورة القصير) إلى الـ Backend الخاص بك
+            const newCommit = {
+                date: date,
+                message: message,
+                imageUrl: finalImageUrl
+            };
+
+            const response = await fetch(`${API_BASE_URL}/api/commits`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newCommit)
+            });
+
+            if (response.ok) {
+                addCommitForm.reset();
+                fetchCommits();
+            } else {
+                console.error("Backend rejected the memory.");
+            }
+        } catch (error) {
+            console.error('Error during upload:', error);
+        } finally {
+            // إعادة الزر لشكله الطبيعي
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
         }
-
-        await fetch(`${API_BASE_URL}/api/commits`, {
-            method: 'POST',
-            // Notice: We DO NOT set 'Content-Type' here. 
-            // The browser sets it automatically when it sees FormData!
-            body: formData
-        });
-
-        addCommitForm.reset();
-        fetchCommits();
     });
     
 

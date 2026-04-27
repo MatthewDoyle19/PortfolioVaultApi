@@ -62,29 +62,10 @@ app.MapDelete("/api/links/{id}", async (int id, VaultDb db) => {
 app.MapGet("/api/commits", async (VaultDb db) => 
     await db.Commits.OrderByDescending(c => c.Date).ToListAsync());
 
-app.MapPost("/api/commits", async (HttpRequest request, VaultDb db) => {
-    var form = await request.ReadFormAsync();
-    var date = form["date"].ToString();
-    var message = form["message"].ToString();
-    var file = form.Files.GetFile("image"); 
-
-    string? imageUrl = null;
-
-    if (file != null && file.Length > 0)
-    {
-        using var memoryStream = new MemoryStream();
-        await file.CopyToAsync(memoryStream);
-        var fileBytes = memoryStream.ToArray();
-        var base64String = Convert.ToBase64String(fileBytes);
-        imageUrl = $"data:{file.ContentType};base64,{base64String}";
-    }
-
-    var commit = new Commit {
-        Date = date,
-        Message = message,
-        ImageUrl = imageUrl
-    };
-
+app.MapPost("/api/commits", async (Commit commit, VaultDb db) => {
+    // بما أن الـ Frontend يرسل الآن JSON يحتوي على (التاريخ، الرسالة، والرابط القصير للصور)،
+    // فإن C# سيقوم بتحويله مباشرة إلى كائن (Object) من نوع Commit!
+    
     db.Commits.Add(commit);
     await db.SaveChangesAsync();
     return Results.Created($"/api/commits/{commit.Id}", commit);
