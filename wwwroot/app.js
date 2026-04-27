@@ -142,25 +142,40 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderCommits = (commits) => {
+        const commitTimeline = document.getElementById('commit-timeline');
+        if (!commitTimeline) return; // حماية من الأخطاء
+
         commitTimeline.innerHTML = '';
+
         commits.forEach((commit) => {
             const item = document.createElement('div');
             item.className = 'polaroid-card group';
 
-            // THE FIX: If there is no imageUrl, we return an empty string 
-            // instead of a placeholder div.
+            // 1. تحويل التاريخ من صيغة النظام إلى صيغة فخمة ومقروءة
+            // مثال: من 2026-04-26 إلى Apr 26, 2026
+            const dateObj = new Date(commit.date);
+            const formattedDate = dateObj.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+
+            // 2. التحقق من وجود صورة
             const imageHtml = commit.imageUrl
                 ? `<img src="${commit.imageUrl}" alt="Memory" class="polaroid-image">`
                 : '';
 
+            // 3. رسم البطاقة مع التصميم الجديد للتاريخ
             item.innerHTML = `
-            <div class="flex justify-between items-start mb-2 mt-1">
-                <span class="text-xs text-accent font-bold tracking-wider">${commit.date}</span>
-                <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="flex justify-between items-start mb-4 mt-1">
+                <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20 shadow-inner shadow-accent/10">
+                    ${formattedDate}
+                </span>
+                <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            <p class="text-sm text-slate-300 mb-3">${commit.message}</p>
+            <p class="text-sm text-slate-200 mb-2 font-medium leading-relaxed tracking-wide">${commit.message}</p>
             ${imageHtml}
         `;
             commitTimeline.appendChild(item);
