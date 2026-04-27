@@ -1,24 +1,24 @@
 /* Custom Animations */
-.fade-in { animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.fade-out { animation: fadeOut 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.fade-in { animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.fade-out { animation: fadeOut 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(25px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 @keyframes fadeOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(-15px) scale(0.95); pointer-events: none; }
 }
 .hidden-start { opacity: 0; display: none; }
 
-/* Aurora Background Blob Animation */
+/* Ultra-Smooth Aurora Background Blob Animation */
 @keyframes blob {
-    0% { transform: translate(0px, 0px) scale(1); }
-    33% { transform: translate(30px, -50px) scale(1.1); }
-    66% { transform: translate(-20px, 20px) scale(0.9); }
-    100% { transform: translate(0px, 0px) scale(1); }
+    0% { transform: translate(0px, 0px) scale(1); opacity: 0.5; }
+    33% { transform: translate(40px, -60px) scale(1.1); opacity: 0.8; }
+    66% { transform: translate(-30px, 30px) scale(0.9); opacity: 0.4; }
+    100% { transform: translate(0px, 0px) scale(1); opacity: 0.5; }
 }
-.animate-blob { animation: blob 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
+.animate-blob { animation: blob 14s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
 .animation-delay-2000 { animation-delay: 2s; }
 .animation-delay-4000 { animation-delay: 4s; }
 
@@ -26,90 +26,132 @@
 .pt-safe { padding-top: env(safe-area-inset-top); }
 .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 
-/* iOS Date Picker Fix */
+/* iOS Date Picker Fix - Softened */
 input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
-    opacity: 0.6;
+    opacity: 0.3;
     cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+input[type="date"]:focus::-webkit-calendar-picker-indicator {
+    opacity: 0.8;
 }
 
-/* Elegant Scrollbar */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+/* Invisible, Elegant Scrollbar for a Native App Feel */
+::-webkit-scrollbar { width: 0px; background: transparent; }
+html { scroll-behavior: smooth; }
 
-/* Ultra-Premium Glass Effect Class */
+/* Ultra-Premium Glass Effect (The Dashboard) */
 .premium-glass {
-    background: linear-gradient(145deg, rgba(39, 39, 42, 0.6) 0%, rgba(24, 24, 27, 0.4) 100%);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.15); /* Inner light reflection */
+    background: linear-gradient(135deg, rgba(30, 30, 35, 0.4) 0%, rgba(15, 15, 18, 0.6) 100%);
+    backdrop-filter: blur(35px);
+    -webkit-backdrop-filter: blur(35px);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow:
+            0 30px 60px -15px rgba(0, 0, 0, 0.9),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
+            inset 0 0 20px rgba(255, 255, 255, 0.02);
 }
 
 /* Premium Card Grid */
 .polaroid-grid {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.75rem;
     padding: 0.5rem 0;
 }
 
-/* Softened Polaroid Cards */
+/* Masterpiece Polaroid Cards */
 .polaroid-card {
-    background: linear-gradient(145deg, rgba(39, 39, 42, 0.5) 0%, rgba(24, 24, 27, 0.3) 100%);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    padding: 1.25rem;
-    border-radius: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: linear-gradient(145deg, rgba(40, 40, 45, 0.4) 0%, rgba(20, 20, 25, 0.2) 100%);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    padding: 1.5rem;
+    border-radius: 2.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow:
+            0 20px 40px -5px rgba(0, 0, 0, 0.7),
+            inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
     position: relative;
     overflow: hidden;
 }
 
-.polaroid-card:active {
-    transform: scale(0.97);
+.polaroid-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(244, 114, 182, 0.2);
+    box-shadow:
+            0 25px 50px -10px rgba(0, 0, 0, 0.8),
+            0 0 20px rgba(244, 114, 182, 0.1),
+            inset 0 1px 1px rgba(255, 255, 255, 0.15);
 }
 
+.polaroid-card:active {
+    transform: scale(0.98);
+}
+
+/* The Image inside the Card */
 .polaroid-image {
     width: 100%;
-    max-height: 300px;
+    max-height: 320px;
     object-fit: cover;
-    border-radius: 1.25rem;
+    border-radius: 1.5rem;
     background: #000;
-    margin-top: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    margin-top: 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.4);
 }
 
-/* --- Premium Audio Player Styling --- */
+/* --- The Ultimate Transparent Audio Player --- */
 audio {
-    /* يُجبر الآيفون على عرض المشغل بالوضع الليلي */
-    color-scheme: dark;
+    width: 100%;
+    margin-top: 1.25rem;
+    height: 44px; /* Taller for easier touch on iOS */
+    outline: none;
     border-radius: 50px;
-    height: 40px;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+}
+
+audio::-webkit-media-controls-enclosure {
+    /* Total transparency so it blends into the polaroid card */
+    background-color: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 50px;
 }
 
 audio::-webkit-media-controls-panel {
-    /* خلفية زجاجية شفافة للمشغل تتناسب مع البطاقات */
-    background: rgba(24, 24, 27, 0.6);
-    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
 }
 
 audio::-webkit-media-controls-play-button,
 audio::-webkit-media-controls-mute-button {
-    /* تحسين أزرار التشغيل */
+    /* Soft rose tint for the play button */
+    background-color: rgba(244, 114, 182, 0.15);
     border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+audio::-webkit-media-controls-play-button:hover,
+audio::-webkit-media-controls-mute-button:hover {
+    background-color: rgba(244, 114, 182, 0.3);
 }
 
 audio::-webkit-media-controls-current-time-display,
 audio::-webkit-media-controls-time-remaining-display {
-    /* توحيد خط الأرقام مع خط الموقع */
+    color: #f8fafc;
     font-family: 'Outfit', sans-serif;
-    color: #e2e8f0;
+    font-weight: 500;
+    font-size: 13px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    letter-spacing: 0.5px;
+}
+
+audio::-webkit-media-controls-timeline {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    margin: 0 15px;
 }
