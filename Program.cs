@@ -124,4 +124,8 @@ class Commit {
     public string Message { get; set; } = string.Empty;
     [JsonPropertyName("imageUrl")]
     public string? ImageUrl { get; set; } 
+    
+    // 👇 السطر الجديد لإضافة الصوت
+    [JsonPropertyName("audioUrl")]
+    public string? AudioUrl { get; set; } 
 }

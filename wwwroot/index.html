@@ -112,9 +112,19 @@
                 <input type="date" id="commit-date" required class="bg-black/40 border border-white/5 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-accent/50 text-slate-300 sm:w-1/3 transition-colors appearance-none shadow-inner shadow-black/50">
                 <input type="text" id="commit-message" placeholder="Caption this memory..." required class="bg-black/40 border border-white/5 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-accent/50 text-white placeholder-slate-500 flex-grow transition-colors shadow-inner shadow-black/50">
             </div>
-            <input type="file" id="commit-image" accept="image/*" class="text-sm text-slate-400 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-white/5 file:text-white hover:file:bg-white/10 transition-all cursor-pointer">
 
-            <button type="submit" class="bg-gradient-to-r from-accent to-purple-500 text-white font-bold py-4 rounded-xl text-sm transition-all active:scale-95 shadow-[0_0_20px_rgba(244,114,182,0.2)] hover:shadow-[0_0_30px_rgba(244,114,182,0.4)]">
+            <div class="flex flex-col sm:flex-row items-center gap-3 w-full bg-black/30 border border-white/5 rounded-xl px-3 py-2 shadow-inner shadow-black/50 relative">
+                <input type="file" id="commit-image" accept="image/*" class="text-sm text-slate-400 file:mr-2 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-white/5 file:text-white hover:file:bg-white/10 transition-all cursor-pointer flex-grow w-full sm:w-auto">
+
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <span id="record-status" class="text-[10px] text-rose-400 hidden animate-pulse font-extrabold tracking-widest bg-rose-500/10 px-2 py-1 rounded-full border border-rose-500/20 whitespace-nowrap">REC 🔴</span>
+                    <button type="button" id="record-btn" class="flex-shrink-0 bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500 hover:text-white font-bold py-2.5 px-5 rounded-xl transition-all active:scale-95 flex items-center gap-2 text-sm shadow-md shadow-black/20 w-full sm:w-auto justify-center">
+                        🎤 Record
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="bg-gradient-to-r from-accent to-purple-500 text-white font-bold py-4 rounded-xl text-sm transition-all active:scale-95 shadow-[0_0_20px_rgba(244,114,182,0.2)] hover:shadow-[0_0_30px_rgba(244,114,182,0.4)] mt-2">
                 Store Memory
             </button>
         </form>
