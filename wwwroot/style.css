@@ -1,74 +1,65 @@
 /* Custom Animations */
-.fade-in { animation: fadeIn 0.8s ease-in forwards; }
-.fade-out { animation: fadeOut 0.5s ease-out forwards; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-10px); pointer-events: none; } }
+.fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.fade-out { animation: fadeOut 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+}
 .hidden-start { opacity: 0; display: none; }
 
-/* Commit Timeline Styles */
-.timeline-container { position: relative; padding-left: 1.5rem; border-left: 2px solid #334155; }
-.timeline-item::before {
-    content: ''; position: absolute; left: -0.4rem; top: 0.25rem;
-    width: 0.75rem; height: 0.75rem; border-radius: 50%;
-    background-color: #d946ef; border: 2px solid #0f172a;
+/* Safe Area padding for iPhone Notch and Home Bar */
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+
+/* Remove default date picker icon on iOS */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.5;
+    cursor: pointer;
 }
 
-/* Sleek Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0f172a; }
-::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #d946ef; }
+/* Elegant Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
-/* Premium Polaroid Grid Enhancements */
+/* Premium Card Grid */
 .polaroid-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1.5rem;
-    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 0.5rem 0;
 }
 
+/* Softened Polaroid Cards */
 .polaroid-card {
-    background: #1e293b;
-    padding: 0.75rem 0.75rem 1.5rem 0.75rem;
-    border-radius: 12px;
+    background: rgba(39, 39, 42, 0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 1.25rem;
+    border-radius: 1.5rem;
     border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, border-color 0.3s ease;
     position: relative;
     overflow: hidden;
 }
 
-.polaroid-card:hover {
-    transform: translateY(-8px) scale(1.02) rotate(1.5deg);
-    border-color: #d946ef;
-    box-shadow: 0 20px 30px -10px rgba(217, 70, 239, 0.2);
-    z-index: 10;
+.polaroid-card:active {
+    transform: scale(0.98);
 }
 
 .polaroid-image {
     width: 100%;
-    height: 180px;
+    max-height: 280px;
     object-fit: cover;
-    border-radius: 6px;
-    background: #0f172a;
-    margin-top: 0.5rem; /* Added space above the image */
-    margin-bottom: 0;   /* Removed space below the image */
-    border: 1px solid #334155;
-}
-
-/* Custom File Upload Button Styling */
-input[type="file"]::file-selector-button {
-    background-color: #334155;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    margin-right: 10px;
-    font-size: 0.875rem;
-}
-
-input[type="file"]::file-selector-button:hover {
-    background-color: #d946ef;
+    border-radius: 12px;
+    background: #000;
+    margin-top: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
