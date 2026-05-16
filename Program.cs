@@ -46,26 +46,41 @@ app.UseStaticFiles();
 app.UseCors("AllowFrontend");
 
 // --- AUTH ---
-app.MapPost("/api/auth/login", (LoginRequest request) =>
+// --- AUTH ---
+app.MapPost("/api/auth/login", async (LoginRequest request) =>
 {
     const string secureKey = "2503";
-    return request.Key == secureKey 
-        ? Results.Ok(new { success = true, message = "Access Granted" }) 
-        : Results.Json(new { success = false, message = "Invalid Key" }, statusCode: 401);
+    if (request.Key == secureKey) {
+        // اختياري: إشعار عند دخول أي شخص للخزنة (يمكنك حذفه إذا كان مزعجاً)
+        await SendTelegramNotification("🔓 شخص ما قام بفتح الخزنة الآن!");
+        return Results.Ok(new { success = true, message = "Access Granted" });
+    }
+    await SendTelegramNotification("⚠️ محاولة دخول فاشلة للخزنة بكلمة مرور خاطئة!");
+    return Results.Json(new { success = false, message = "Invalid Key" }, statusCode: 401);
 });
 
 // --- LINKS ---
 app.MapGet("/api/links", async (VaultDb db) => await db.Links.ToListAsync());
+
 app.MapPost("/api/links", async (Link link, VaultDb db) => {
     db.Links.Add(link);
     await db.SaveChangesAsync();
+    
+    // 🚀 إشعار إضافة رابط
+    await SendTelegramNotification($"🔗 تم حفظ رابط جديد!\nالعنوان: {link.Title}");
+    
     return Results.Created($"/api/links/{link.Id}", link);
 });
+
 app.MapDelete("/api/links/{id}", async (int id, VaultDb db) => {
     var link = await db.Links.FindAsync(id);
     if (link is null) return Results.NotFound();
     db.Links.Remove(link);
     await db.SaveChangesAsync();
+    
+    // 🚀 إشعار حذف رابط
+    await SendTelegramNotification($"🗑️ تم حذف رابط من الخزنة!\nالعنوان: {link.Title}");
+    
     return Results.Ok();
 });
 
@@ -77,8 +92,8 @@ app.MapPost("/api/commits", async (Commit commit, VaultDb db) => {
     db.Commits.Add(commit);
     await db.SaveChangesAsync();
     
-    // 🚀 إرسال إشعار تليجرام عند إضافة ذكرى
-    await SendTelegramNotification($"📸 تم إضافة ذكرى جديدة في الخزنة!\n\nالوصف: {commit.Message}");
+    // 🚀 إشعار إضافة ذكرى
+    await SendTelegramNotification($"📸 تم إضافة ذكرى جديدة!\n\nالوصف: {commit.Message}");
     
     return Results.Created($"/api/commits/{commit.Id}", commit);
 });
@@ -88,6 +103,10 @@ app.MapDelete("/api/commits/{id}", async (int id, VaultDb db) => {
     if (commit is null) return Results.NotFound();
     db.Commits.Remove(commit);
     await db.SaveChangesAsync();
+    
+    // 🚀 إشعار حذف ذكرى
+    await SendTelegramNotification($"🗑️ تم حذف ذكرى للأسف!\nالوصف المفقود: {commit.Message}");
+    
     return Results.Ok();
 });
 
@@ -99,7 +118,7 @@ app.MapPost("/api/penalties", async (Penalty penalty, VaultDb db) => {
     db.Penalties.Add(penalty);
     await db.SaveChangesAsync();
     
-    // 🚀 إرسال إشعار تليجرام عند إصدار حكم
+    // 🚀 إشعار إضافة حكم
     await SendTelegramNotification($"⚖️ محكمة القلوب: تم إصدار حكم جديد!\n\nالقاضي: {penalty.Punisher}\nالمُعاقب: {penalty.Punished}\n\nنص الحكم:\n{penalty.PenaltyText}");
     
     return Results.Created($"/api/penalties/{penalty.Id}", penalty);
@@ -110,6 +129,10 @@ app.MapDelete("/api/penalties/{id}", async (int id, VaultDb db) => {
     if (penalty is null) return Results.NotFound();
     db.Penalties.Remove(penalty);
     await db.SaveChangesAsync();
+    
+    // 🚀 إشعار حذف حكم
+    await SendTelegramNotification($"🗑️ تم إلغاء/حذف حكم من السجل!\nالمُعاقب كان: {penalty.Punished}");
+    
     return Results.Ok();
 });
 
@@ -126,7 +149,7 @@ app.MapPost("/api/moods", async (Mood newMood, VaultDb db) => {
     }
     await db.SaveChangesAsync();
     
-    // 🚀 إرسال إشعار تليجرام عند تغيير المزاج
+    // 🚀 إشعار تغيير المزاج
     string alertEmoji = newMood.Status == "SOS" ? "🚨 طوارئ!" : "📡 تحديث مزاج:";
     await SendTelegramNotification($"{alertEmoji}\nقام/ت {newMood.User} بتحديث الحالة إلى ({newMood.Status})\nفي الساعة {newMood.UpdatedAt}");
     
