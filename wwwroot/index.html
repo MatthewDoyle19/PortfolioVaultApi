@@ -48,6 +48,23 @@
         </div>
     </header>
 
+    <section class="mb-10 fade-in flex gap-4 justify-center" style="animation-delay: 0.3s;">
+        <div class="premium-glass p-3 rounded-2xl flex items-center gap-3 w-1/2 cursor-pointer hover:bg-white/5 transition-colors" onclick="openMoodSelector('Mohammad')">
+            <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-xl border border-blue-500/30" id="mohammad-mood-icon">👨🏻‍💻</div>
+            <div class="flex flex-col">
+                <span class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Mohammad</span>
+                <span class="text-xs text-white font-medium" id="mohammad-mood-text">Loading...</span>
+            </div>
+        </div>
+        <div class="premium-glass p-3 rounded-2xl flex items-center gap-3 w-1/2 cursor-pointer hover:bg-white/5 transition-colors" onclick="openMoodSelector('Zainab')">
+            <div class="w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center text-xl border border-rose-500/30" id="zainab-mood-icon">👸🏻</div>
+            <div class="flex flex-col">
+                <span class="text-[10px] text-rose-400 font-bold uppercase tracking-wider">Zainab</span>
+                <span class="text-xs text-white font-medium" id="zainab-mood-text">Loading...</span>
+            </div>
+        </div>
+    </section>
+
     <!-- Stat Cards -->
     <section class="grid grid-cols-2 gap-4 mb-12 fade-in" style="animation-delay: 0.4s;">
         <div class="col-span-2 premium-glass p-6 rounded-[2rem] flex flex-col justify-center items-center relative overflow-hidden group">
@@ -148,5 +165,6 @@
     </div>
 </div>
 
+<div id="toast-container" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-[100] flex flex-col gap-3 w-full max-w-sm px-4 pointer-events-none"></div>
 </body>
 </html>

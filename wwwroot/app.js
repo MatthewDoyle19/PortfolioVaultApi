@@ -451,4 +451,128 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchLinks();
     fetchCommits();
     fetchPenaltiesFromServer();
+
+    // --- 📡 رادار المزاج والإشعارات اللحظية المطور ---
+    const toastContainer = document.getElementById('toast-container');
+    let lastPenaltyCount = 0;
+    let lastCommitCount = 0; // متغير جديد لمراقبة الذكريات
+    let initialLoad = true;
+
+    // 1. نظام الإشعارات المنبثقة (Toast Notification System)
+    const showToast = (title, message, icon = '🔔') => {
+        const toast = document.createElement('div');
+        toast.className = 'premium-glass p-4 rounded-2xl flex items-center gap-4 shadow-2xl transform transition-all duration-500 translate-y-[-20px] opacity-0 border-l-4 border-accent';
+        toast.innerHTML = `
+            <div class="text-3xl">${icon}</div>
+            <div class="flex flex-col">
+                <span class="text-sm font-bold text-white">${title}</span>
+                <span class="text-xs text-slate-300 mt-1">${message}</span>
+            </div>
+        `;
+        toastContainer.appendChild(toast);
+
+        // Animation in
+        setTimeout(() => {
+            toast.classList.remove('translate-y-[-20px]', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+        }, 10);
+
+        // Animation out & remove
+        setTimeout(() => {
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('translate-y-[-20px]', 'opacity-0');
+            setTimeout(() => toast.remove(), 500);
+        }, 5000);
+    };
+
+    // 2. تحديث وعرض المزاج (قائمة موسعة جداً)
+    const moodsList = {
+        'Happy': { icon: '✨', text: 'مزاج رايق / مبسوط' },
+        'Study': { icon: '📚', text: 'وضع التركيز / دراسة' },
+        'Coding': { icon: '👨🏻‍💻', text: 'بكتب كود / تركيز عالي' },
+        'Gym': { icon: '🏋️‍♂️', text: 'في الجيم / وحش الحديد' },
+        'Coffee': { icon: '☕', text: 'وقت القهوة / استرخاء' },
+        'Tired': { icon: '🔋', text: 'طاقتي خلصت / تعبان' },
+        'MissYou': { icon: '🥺', text: 'مشتاق لك' },
+        'Bored': { icon: '🥱', text: 'ملل / محتاجك' },
+        'Excited': { icon: '🤩', text: 'متحمس / في خبر حلو' },
+        'Overthinking': { icon: '🧠', text: 'تفكير مفرط (Overthinking)' },
+        'Sleeping': { icon: '😴', text: 'نايم / بوضع الطيران' },
+        'SOS': { icon: '🚨', text: 'محبط / احتاجك فوراً' }
+    };
+
+    window.openMoodSelector = async (user) => {
+        const moodKeys = Object.keys(moodsList).join('\n');
+        const selectedMood = prompt(`تحديث مزاج ${user}:\nانسخ واكتب أحد هذه الخيارات بالضبط:\n\n${moodKeys}`);
+
+        if (selectedMood && moodsList[selectedMood]) {
+            const moodData = {
+                user: user,
+                status: selectedMood,
+                updatedAt: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            };
+            await fetch(`${API_BASE_URL}/api/moods`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(moodData)
+            });
+            fetchSystemState(); // تحديث فوري
+            showToast('رادار المزاج', `تم تحديث مزاج ${user} إلى: ${moodsList[selectedMood].text}`, moodsList[selectedMood].icon);
+        } else if (selectedMood) {
+            alert("يرجى كتابة الكلمة الإنجليزية للمزاج تماماً كما هي في القائمة لتجنب الأخطاء!");
+        }
+    };
+
+    // 3. المراقب اللحظي (The Watcher - Polling)
+    const fetchSystemState = async () => {
+        try {
+            // --- أ: مراقبة المزاج ---
+            const moodRes = await fetch(`${API_BASE_URL}/api/moods`);
+            const moods = await moodRes.json();
+
+            moods.forEach(m => {
+                const iconEl = document.getElementById(`${m.user.toLowerCase()}-mood-icon`);
+                const textEl = document.getElementById(`${m.user.toLowerCase()}-mood-text`);
+                if (iconEl && textEl && moodsList[m.status]) {
+                    iconEl.innerText = moodsList[m.status].icon;
+                    textEl.innerText = `${moodsList[m.status].text} (${m.updatedAt})`;
+
+                    // تأثير بصري للحالات الطارئة
+                    if(m.status === 'SOS') iconEl.classList.add('animate-pulse', 'bg-rose-500/50', 'border-rose-500');
+                    else iconEl.classList.remove('animate-pulse', 'bg-rose-500/50', 'border-rose-500');
+                }
+            });
+
+            // --- ب: مراقبة الأحكام (المحكمة) ---
+            const penRes = await fetch(`${API_BASE_URL}/api/penalties`);
+            const penalties = await penRes.json();
+
+            if (!initialLoad && penalties.length > lastPenaltyCount) {
+                const newestPenalty = penalties[0];
+                showToast('⚖️ محكمة القلوب', `تم إصدار حكم جديد على ${newestPenalty.punished}!`, '⚖️');
+                if(typeof fetchPenaltiesFromServer === "function") fetchPenaltiesFromServer(); // تحديث السجل تلقائياً
+            }
+            lastPenaltyCount = penalties.length;
+
+            // --- ج: مراقبة الذكريات (Timeline Commits) ---
+            const commitRes = await fetch(`${API_BASE_URL}/api/commits`);
+            const commits = await commitRes.json();
+
+            if (!initialLoad && commits.length > lastCommitCount) {
+                showToast('📸 ذكرى جديدة', `تمت إضافة لحظة جديدة إلى الخزنة!`, '✨');
+                if(typeof fetchCommits === "function") fetchCommits(); // تحديث الخط الزمني تلقائياً
+            }
+            lastCommitCount = commits.length;
+
+            // إنهاء حالة التحميل الأولي
+            initialLoad = false;
+
+        } catch (error) {
+            console.error("System Watcher error:", error);
+        }
+    };
+
+    // تشغيل المراقب فوراً، ثم كل 10 ثوانٍ ليعطي إحساس التفاعل اللحظي
+    fetchSystemState();
+    setInterval(fetchSystemState, 10000);
 });

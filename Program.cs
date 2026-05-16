@@ -85,6 +85,20 @@ app.MapDelete("/api/penalties/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
+// --- MOOD RADAR ---
+app.MapGet("/api/moods", async (VaultDb db) => await db.Moods.ToListAsync());
+app.MapPost("/api/moods", async (Mood newMood, VaultDb db) => {
+    var existing = await db.Moods.FirstOrDefaultAsync(m => m.User == newMood.User);
+    if (existing != null) {
+        existing.Status = newMood.Status;
+        existing.UpdatedAt = newMood.UpdatedAt;
+    } else {
+        db.Moods.Add(newMood);
+    }
+    await db.SaveChangesAsync();
+    return Results.Ok(newMood);
+});
+
 app.MapPut("/api/penalties/{id}/complete", async (int id, VaultDb db) => {
     var penalty = await db.Penalties.FindAsync(id);
     if (penalty is null) return Results.NotFound();
@@ -111,6 +125,7 @@ class VaultDb : DbContext {
     public DbSet<Link> Links => Set<Link>();
     public DbSet<Commit> Commits => Set<Commit>();
     public DbSet<Penalty> Penalties => Set<Penalty>();
+    public DbSet<Mood> Moods => Set<Mood>();
 }
 
 class Link {
@@ -134,4 +149,11 @@ class Penalty {
     [JsonPropertyName("punished")] public string Punished { get; set; } = string.Empty; // المتهم
     [JsonPropertyName("penaltyText")] public string PenaltyText { get; set; } = string.Empty; // نص الحكم
     [JsonPropertyName("isCompleted")] public bool IsCompleted { get; set; } = false;
+}
+
+class Mood {
+    [JsonPropertyName("id")] public int Id { get; set; }
+    [JsonPropertyName("user")] public string User { get; set; } = string.Empty;
+    [JsonPropertyName("status")] public string Status { get; set; } = string.Empty;
+    [JsonPropertyName("updatedAt")] public string UpdatedAt { get; set; } = string.Empty;
 }
