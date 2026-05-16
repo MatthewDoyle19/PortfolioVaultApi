@@ -490,6 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Happy': { icon: '✨', text: 'مزاج رايق / مبسوط' },
         'Study': { icon: '📚', text: 'وضع التركيز / دراسة' },
         'Coding': { icon: '👨🏻‍💻', text: 'بكتب كود / تركيز عالي' },
+        'Working': {icon: '😓', text: 'في الشغل / مشغول' },
         'Gym': { icon: '🏋️‍♂️', text: 'في الجيم / وحش الحديد' },
         'Coffee': { icon: '☕', text: 'وقت القهوة / استرخاء' },
         'Tired': { icon: '🔋', text: 'طاقتي خلصت / تعبان' },
