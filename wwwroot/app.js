@@ -504,23 +504,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.openMoodSelector = async (user) => {
         const moodKeys = Object.keys(moodsList).join('\n');
-        const selectedMood = prompt(`تحديث مزاج ${user}:\nانسخ واكتب أحد هذه الخيارات بالضبط:\n\n${moodKeys}`);
+        const rawInput = prompt(`تحديث مزاج ${user}:\nاكتب أحد هذه الخيارات:\n\n${moodKeys}`);
 
-        if (selectedMood && moodsList[selectedMood]) {
+        if (!rawInput) return; // إذا ضغطت إلغاء، يخرج بدون أخطاء
+
+        // 🛠️ السر هنا: تنظيف الكلمة من المسافات التي يضيفها الآيفون، وتحويلها لحروف صغيرة
+        const cleanInput = rawInput.trim().toLowerCase();
+
+        // البحث عن الكلمة الصحيحة في القائمة بغض النظر عن طريقة كتابتها
+        const matchedKey = Object.keys(moodsList).find(key => key.toLowerCase() === cleanInput);
+
+        if (matchedKey) {
             const moodData = {
                 user: user,
-                status: selectedMood,
-                updatedAt: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                status: matchedKey,
+                updatedAt: new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'})
             };
-            await fetch(`${API_BASE_URL}/api/moods`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(moodData)
-            });
-            fetchSystemState(); // تحديث فوري
-            showToast('رادار المزاج', `تم تحديث مزاج ${user} إلى: ${moodsList[selectedMood].text}`, moodsList[selectedMood].icon);
-        } else if (selectedMood) {
-            alert("يرجى كتابة الكلمة الإنجليزية للمزاج تماماً كما هي في القائمة لتجنب الأخطاء!");
+            try {
+                await fetch(`${API_BASE_URL}/api/moods`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(moodData)
+                });
+                fetchSystemState(); // تحديث فوري
+                showToast('رادار المزاج', `تم تحديث مزاج ${user} إلى: ${moodsList[matchedKey].text}`, moodsList[matchedKey].icon);
+            } catch (error) {
+                console.error("Failed to update mood", error);
+            }
+        } else {
+            alert("الكلمة غير صحيحة! حاول مرة أخرى وتأكد من كتابة الكلمة الإنجليزية فقط.");
         }
     };
 

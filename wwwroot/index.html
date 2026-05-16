@@ -49,20 +49,20 @@
     </header>
 
     <section class="mb-10 fade-in flex gap-4 justify-center" style="animation-delay: 0.3s;">
-        <div class="premium-glass p-3 rounded-2xl flex items-center gap-3 w-1/2 cursor-pointer hover:bg-white/5 transition-colors" onclick="openMoodSelector('Mohammad')">
-            <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-xl border border-blue-500/30" id="mohammad-mood-icon">👨🏻‍💻</div>
-            <div class="flex flex-col">
+        <button type="button" onclick="openMoodSelector('Mohammad')" class="premium-glass p-3 rounded-2xl flex items-center gap-3 w-1/2 hover:bg-white/5 transition-colors text-left active:scale-95 outline-none">
+            <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-xl border border-blue-500/30 flex-shrink-0" id="mohammad-mood-icon">👨🏻‍💻</div>
+            <div class="flex flex-col overflow-hidden">
                 <span class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Mohammad</span>
-                <span class="text-xs text-white font-medium" id="mohammad-mood-text">Loading...</span>
+                <span class="text-xs text-white font-medium truncate" id="mohammad-mood-text">Loading...</span>
             </div>
-        </div>
-        <div class="premium-glass p-3 rounded-2xl flex items-center gap-3 w-1/2 cursor-pointer hover:bg-white/5 transition-colors" onclick="openMoodSelector('Zainab')">
-            <div class="w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center text-xl border border-rose-500/30" id="zainab-mood-icon">👸🏻</div>
-            <div class="flex flex-col">
+        </button>
+        <button type="button" onclick="openMoodSelector('Zainab')" class="premium-glass p-3 rounded-2xl flex items-center gap-3 w-1/2 hover:bg-white/5 transition-colors text-left active:scale-95 outline-none">
+            <div class="w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center text-xl border border-rose-500/30 flex-shrink-0" id="zainab-mood-icon">👸🏻</div>
+            <div class="flex flex-col overflow-hidden">
                 <span class="text-[10px] text-rose-400 font-bold uppercase tracking-wider">Zainab</span>
-                <span class="text-xs text-white font-medium" id="zainab-mood-text">Loading...</span>
+                <span class="text-xs text-white font-medium truncate" id="zainab-mood-text">Loading...</span>
             </div>
-        </div>
+        </button>
     </section>
 
     <!-- Stat Cards -->
