@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using System.IO;
+using System.Net.Http; // ضروري للاتصال بتليجرام
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +19,28 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// --- 2. THE APP PHASE ---
+// --- 2. إعدادات تليجرام (Telegram Push Notifications) ---
+var httpClient = new HttpClient();
+
+async Task SendTelegramNotification(string message)
+{
+    // التوكن والـ Chat ID الخاصين بك
+    string botToken = "8899922136:AAEU5IWwZLw_LsdoWwkXywTd0FfVrSgPzSw"; 
+    string chatId = "-5233134027"; 
+
+    // تحويل النص ليكون متوافقاً مع الروابط (لتجنب مشاكل اللغة العربية)
+    string url = $"https://api.telegram.org/bot{botToken}/sendMessage?chat_id={chatId}&text={Uri.EscapeDataString(message)}";
+    
+    try { 
+        await httpClient.GetAsync(url); 
+    } 
+    catch { 
+        // نتجاهل الأخطاء هنا لكي لا ينهار السيرفر إذا انقطع الإنترنت
+    }
+}
+
+
+// --- 3. THE APP PHASE ---
 app.UseDefaultFiles(); 
 app.UseStaticFiles(); 
 app.UseCors("AllowFrontend");
@@ -53,6 +76,10 @@ app.MapGet("/api/commits", async (VaultDb db) =>
 app.MapPost("/api/commits", async (Commit commit, VaultDb db) => {
     db.Commits.Add(commit);
     await db.SaveChangesAsync();
+    
+    // 🚀 إرسال إشعار تليجرام عند إضافة ذكرى
+    await SendTelegramNotification($"📸 تم إضافة ذكرى جديدة في الخزنة!\n\nالوصف: {commit.Message}");
+    
     return Results.Created($"/api/commits/{commit.Id}", commit);
 });
 
@@ -64,19 +91,20 @@ app.MapDelete("/api/commits/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
-// --- PENALTIES (THE LEDGER) ---
-// جلب الأحكام مرتبة من الأحدث إلى الأقدم
+// --- PENALTIES (محكمة القلوب) ---
 app.MapGet("/api/penalties", async (VaultDb db) => 
     await db.Penalties.OrderByDescending(p => p.Id).ToListAsync());
 
-// إضافة حكم جديد للسجل
 app.MapPost("/api/penalties", async (Penalty penalty, VaultDb db) => {
     db.Penalties.Add(penalty);
     await db.SaveChangesAsync();
+    
+    // 🚀 إرسال إشعار تليجرام عند إصدار حكم
+    await SendTelegramNotification($"⚖️ محكمة القلوب: تم إصدار حكم جديد!\n\nالقاضي: {penalty.Punisher}\nالمُعاقب: {penalty.Punished}\n\nنص الحكم:\n{penalty.PenaltyText}");
+    
     return Results.Created($"/api/penalties/{penalty.Id}", penalty);
 });
 
-// حذف حكم من السجل
 app.MapDelete("/api/penalties/{id}", async (int id, VaultDb db) => {
     var penalty = await db.Penalties.FindAsync(id);
     if (penalty is null) return Results.NotFound();
@@ -85,8 +113,9 @@ app.MapDelete("/api/penalties/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
-// --- MOOD RADAR ---
+// --- MOOD RADAR (رادار المزاج) ---
 app.MapGet("/api/moods", async (VaultDb db) => await db.Moods.ToListAsync());
+
 app.MapPost("/api/moods", async (Mood newMood, VaultDb db) => {
     var existing = await db.Moods.FirstOrDefaultAsync(m => m.User == newMood.User);
     if (existing != null) {
@@ -96,16 +125,14 @@ app.MapPost("/api/moods", async (Mood newMood, VaultDb db) => {
         db.Moods.Add(newMood);
     }
     await db.SaveChangesAsync();
+    
+    // 🚀 إرسال إشعار تليجرام عند تغيير المزاج
+    string alertEmoji = newMood.Status == "SOS" ? "🚨 طوارئ!" : "📡 تحديث مزاج:";
+    await SendTelegramNotification($"{alertEmoji}\nقام/ت {newMood.User} بتحديث الحالة إلى ({newMood.Status})\nفي الساعة {newMood.UpdatedAt}");
+    
     return Results.Ok(newMood);
 });
 
-app.MapPut("/api/penalties/{id}/complete", async (int id, VaultDb db) => {
-    var penalty = await db.Penalties.FindAsync(id);
-    if (penalty is null) return Results.NotFound();
-    penalty.IsCompleted = true;
-    await db.SaveChangesAsync();
-    return Results.Ok(penalty);
-});
 
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
@@ -125,7 +152,7 @@ class VaultDb : DbContext {
     public DbSet<Link> Links => Set<Link>();
     public DbSet<Commit> Commits => Set<Commit>();
     public DbSet<Penalty> Penalties => Set<Penalty>();
-    public DbSet<Mood> Moods => Set<Mood>();
+    public DbSet<Mood> Moods => Set<Mood>(); // تم إضافة جدول المزاج
 }
 
 class Link {
@@ -144,10 +171,10 @@ class Commit {
 
 class Penalty {
     [JsonPropertyName("id")] public int Id { get; set; }
-    [JsonPropertyName("date")] public string Date { get; set; } = string.Empty; // سيخزن الوقت والتاريخ
-    [JsonPropertyName("punisher")] public string Punisher { get; set; } = string.Empty; // القاضي
-    [JsonPropertyName("punished")] public string Punished { get; set; } = string.Empty; // المتهم
-    [JsonPropertyName("penaltyText")] public string PenaltyText { get; set; } = string.Empty; // نص الحكم
+    [JsonPropertyName("date")] public string Date { get; set; } = string.Empty;
+    [JsonPropertyName("punisher")] public string Punisher { get; set; } = string.Empty;
+    [JsonPropertyName("punished")] public string Punished { get; set; } = string.Empty;
+    [JsonPropertyName("penaltyText")] public string PenaltyText { get; set; } = string.Empty;
     [JsonPropertyName("isCompleted")] public bool IsCompleted { get; set; } = false;
 }
 
