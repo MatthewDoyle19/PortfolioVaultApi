@@ -349,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!punishedSelect.querySelector('option[value="Both"]')) {
         const bothOption = document.createElement('option');
         bothOption.value = 'Both';
-        bothOption.text = 'محمد وزينب معاً (تحدي مشترك 👩‍❤️‍👨)';
+        bothOption.text = 'Both 👩‍❤️‍👨';
         punishedSelect.appendChild(bothOption);
     }
 
@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         penaltyText.innerHTML = `
-            <span class="text-white block text-xs mb-1">قررت محكمة القلوب إسناد المهمة إلى ${displayTarget}:</span>
+            <span class="text-white block text-xs mb-1">قررت المحكمة الالكترونيه إسناد التهمة إلى ${displayTarget}:</span>
             <b class="text-accent">${randomPenalty.title}</b><br>
             <span class="text-sm opacity-90 italic">${randomPenalty.desc}</span>
         `;
