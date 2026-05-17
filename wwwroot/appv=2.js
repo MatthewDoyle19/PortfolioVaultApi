@@ -536,13 +536,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 3. المراقب اللحظي (The Watcher - Polling)
-    // 3. المراقب اللحظي (The Watcher - Polling)
+    // 3. المراقب اللحظي (المضاد لعناد Safari)
     const fetchSystemState = async () => {
         try {
-            // --- أ: مراقبة المزاج (مع منع الكاش في Safari) ---
-            const moodRes = await fetch(`${API_BASE_URL}/api/moods`, { cache: 'no-store' });
+            // --- أ: مراقبة المزاج (مع Headers صريحة ومنع الكاش) ---
+            const moodRes = await fetch(`${API_BASE_URL}/api/moods`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache'
+                },
+                cache: 'no-store'
+            });
             const moods = await moodRes.json();
+
+            // إزالة كلمة Loading في حال نجاح الاتصال حتى لو كانت القائمة فارغة
+            document.getElementById('mohammad-mood-text').innerText = "لم يُحدد بعد";
+            document.getElementById('zainab-mood-text').innerText = "لم يُحدد بعد";
 
             moods.forEach(m => {
                 const iconEl = document.getElementById(`${m.user.toLowerCase()}-mood-icon`);
@@ -551,14 +562,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     iconEl.innerText = moodsList[m.status].icon;
                     textEl.innerText = `${moodsList[m.status].text} (${m.updatedAt})`;
 
-                    // تأثير بصري للحالات الطارئة
                     if(m.status === 'SOS') iconEl.classList.add('animate-pulse', 'bg-rose-500/50', 'border-rose-500');
                     else iconEl.classList.remove('animate-pulse', 'bg-rose-500/50', 'border-rose-500');
                 }
             });
 
-            // --- ب: مراقبة الأحكام (مع منع الكاش) ---
-            const penRes = await fetch(`${API_BASE_URL}/api/penalties`, { cache: 'no-store' });
+            // --- ب: مراقبة الأحكام ---
+            const penRes = await fetch(`${API_BASE_URL}/api/penalties`, {
+                headers: { 'Cache-Control': 'no-cache' },
+                cache: 'no-store'
+            });
             const penalties = await penRes.json();
 
             if (!initialLoad && penalties.length > lastPenaltyCount) {
@@ -568,8 +581,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             lastPenaltyCount = penalties.length;
 
-            // --- ج: مراقبة الذكريات (مع منع الكاش) ---
-            const commitRes = await fetch(`${API_BASE_URL}/api/commits`, { cache: 'no-store' });
+            // --- ج: مراقبة الذكريات ---
+            const commitRes = await fetch(`${API_BASE_URL}/api/commits`, {
+                headers: { 'Cache-Control': 'no-cache' },
+                cache: 'no-store'
+            });
             const commits = await commitRes.json();
 
             if (!initialLoad && commits.length > lastCommitCount) {
@@ -582,6 +598,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error("System Watcher error:", error);
+            // إذا فشل الاتصال، ستظهر هذه الرسالة بدلاً من Loading
+            document.getElementById('mohammad-mood-text').innerText = "جاري الاتصال...";
+            document.getElementById('zainab-mood-text').innerText = "جاري الاتصال...";
         }
     };
 
