@@ -110,7 +110,7 @@ app.MapDelete("/api/commits/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
-// --- PENALTIES (محكمة القلوب) ---
+// --- PENALTIES (المحكمة الالكترونيه) ---
 app.MapGet("/api/penalties", async (VaultDb db) => 
     await db.Penalties.OrderByDescending(p => p.Id).ToListAsync());
 
@@ -119,7 +119,7 @@ app.MapPost("/api/penalties", async (Penalty penalty, VaultDb db) => {
     await db.SaveChangesAsync();
     
     // 🚀 إشعار إضافة حكم
-    await SendTelegramNotification($"⚖️ محكمة القلوب: تم إصدار حكم جديد!\n\nالقاضي: {penalty.Punisher}\nالمُعاقب: {penalty.Punished}\n\nنص الحكم:\n{penalty.PenaltyText}");
+    await SendTelegramNotification($"⚖️ المحكمة الالكترونيه: تم إصدار حكم جديد!\n\nالقاضي: {penalty.Punisher}\nالمُعاقب: {penalty.Punished}\n\nنص الحكم:\n{penalty.PenaltyText}");
     
     return Results.Created($"/api/penalties/{penalty.Id}", penalty);
 });
