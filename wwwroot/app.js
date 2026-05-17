@@ -537,10 +537,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // 3. المراقب اللحظي (The Watcher - Polling)
+    // 3. المراقب اللحظي (The Watcher - Polling)
     const fetchSystemState = async () => {
         try {
-            // --- أ: مراقبة المزاج ---
-            const moodRes = await fetch(`${API_BASE_URL}/api/moods`);
+            // --- أ: مراقبة المزاج (مع منع الكاش في Safari) ---
+            const moodRes = await fetch(`${API_BASE_URL}/api/moods`, { cache: 'no-store' });
             const moods = await moodRes.json();
 
             moods.forEach(m => {
@@ -556,28 +557,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // --- ب: مراقبة الأحكام (المحكمة) ---
-            const penRes = await fetch(`${API_BASE_URL}/api/penalties`);
+            // --- ب: مراقبة الأحكام (مع منع الكاش) ---
+            const penRes = await fetch(`${API_BASE_URL}/api/penalties`, { cache: 'no-store' });
             const penalties = await penRes.json();
 
             if (!initialLoad && penalties.length > lastPenaltyCount) {
                 const newestPenalty = penalties[0];
                 showToast('⚖️ محكمة القلوب', `تم إصدار حكم جديد على ${newestPenalty.punished}!`, '⚖️');
-                if(typeof fetchPenaltiesFromServer === "function") fetchPenaltiesFromServer(); // تحديث السجل تلقائياً
+                if(typeof fetchPenaltiesFromServer === "function") fetchPenaltiesFromServer();
             }
             lastPenaltyCount = penalties.length;
 
-            // --- ج: مراقبة الذكريات (Timeline Commits) ---
-            const commitRes = await fetch(`${API_BASE_URL}/api/commits`);
+            // --- ج: مراقبة الذكريات (مع منع الكاش) ---
+            const commitRes = await fetch(`${API_BASE_URL}/api/commits`, { cache: 'no-store' });
             const commits = await commitRes.json();
 
             if (!initialLoad && commits.length > lastCommitCount) {
                 showToast('📸 ذكرى جديدة', `تمت إضافة لحظة جديدة إلى الخزنة!`, '✨');
-                if(typeof fetchCommits === "function") fetchCommits(); // تحديث الخط الزمني تلقائياً
+                if(typeof fetchCommits === "function") fetchCommits();
             }
             lastCommitCount = commits.length;
 
-            // إنهاء حالة التحميل الأولي
             initialLoad = false;
 
         } catch (error) {
