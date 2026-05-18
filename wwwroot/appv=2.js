@@ -522,7 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Failed to update mood", error);
             }
         } else {
-            alert("الكلمة غير صحيحة! حاول مرة أخرى وتأكد من كتابة الكلمة الإنجليزية فقط.");
+            alert("Write it exactly as shown!");
         }
     };
 
@@ -566,7 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!initialLoad && penalties.length > lastPenaltyCount) {
                 const newestPenalty = penalties[0];
-                showToast('⚖️ محكمة القلوب', `تم إصدار حكم جديد على ${newestPenalty.punished}!`, '⚖️');
+                showToast('⚖️ المحكمة الالكترونيه', `تم إصدار حكم جديد على ${newestPenalty.punished}!`, '⚖️');
                 if(typeof fetchPenaltiesFromServer === "function") fetchPenaltiesFromServer();
             }
             lastPenaltyCount = penalties.length;
