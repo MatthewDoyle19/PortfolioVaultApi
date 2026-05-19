@@ -102,28 +102,28 @@ html { scroll-behavior: smooth; }
     box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.4);
 }
 
-/* --- The Ultimate Transparent Audio Player (Forced Dark Mode) --- */
+/* --- The Ultimate Bulletproof Dark Audio Player --- */
 audio {
     width: 100%;
     height: 44px;
     margin-top: 1.25rem;
     border-radius: 50px;
     outline: none;
-    /* القوة الجبرية لإجبار الكروم على الوضع الليلي */
-    color-scheme: dark !important;
-    background-color: transparent !important;
+
+    /* الخدعة السحرية التي لا يستطيع أي متصفح مقاومتها */
+    /* نقوم بعكس اللون الأبيض ليصبح أسود، ثم نعدل التباين لجعله زجاجياً */
+    filter: invert(0.9) hue-rotate(180deg) grayscale(0.2) contrast(1.2);
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
 }
 
+audio:hover {
+    opacity: 1;
+}
+
+/* إخفاء أي خلفيات بيضاء إضافية قد يضعها كروم */
 audio::-webkit-media-controls-enclosure {
-    /* غلاف زجاجي داكن إجباري */
-    background: rgba(25, 25, 30, 0.8) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 50px !important;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-}
-
-audio::-webkit-media-controls-panel {
-    background-color: transparent !important;
+    background-color: #e5e5e5; /* لون أساسي لكي يعمل الفلتر عليه بشكل مثالي */
+    border-radius: 50px;
 }
