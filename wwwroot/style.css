@@ -110,9 +110,12 @@ audio {
     border-radius: 50px;
     outline: none;
 
-    /* الخدعة السحرية التي لا يستطيع أي متصفح مقاومتها */
-    /* نقوم بعكس اللون الأبيض ليصبح أسود، ثم نعدل التباين لجعله زجاجياً */
-    filter: invert(0.9) hue-rotate(180deg) grayscale(0.2) contrast(1.2);
+    /* 1. نجبر المتصفح على عرض المشغل الأبيض الأساسي */
+    color-scheme: light !important;
+
+    /* 2. السحر: نعكس اللون الأبيض ليصبح رمادياً داكناً وزجاجياً */
+    filter: invert(0.95) hue-rotate(180deg) grayscale(0.5) contrast(1.2) !important;
+
     opacity: 0.8;
     transition: opacity 0.3s ease;
     cursor: pointer;
@@ -122,8 +125,4 @@ audio:hover {
     opacity: 1;
 }
 
-/* إخفاء أي خلفيات بيضاء إضافية قد يضعها كروم */
-audio::-webkit-media-controls-enclosure {
-    background-color: #e5e5e5; /* لون أساسي لكي يعمل الفلتر عليه بشكل مثالي */
-    border-radius: 50px;
-}
+/* أخفينا كل تعقيدات الـ webkit لأننا لم نعد بحاجة لها */
