@@ -102,11 +102,24 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- 4. ذكريات الخط الزمني ---
+    // --- 4. ذكريات الخط الزمني (مع عداد المنسف) ---
     const fetchCommits = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/commits`);
             const commits = await response.json();
-            if (document.getElementById('commit-count')) document.getElementById('commit-count').innerText = commits.length;
+
+            // تحديث عدد الذكريات
+            if (document.getElementById('commit-count')) {
+                document.getElementById('commit-count').innerText = commits.length;
+            }
+
+            // 👇 الكود الجديد: حساب كم مرة أكلت منسف 👇
+            const mansafCount = commits.filter(c => c.message.includes('منسف')).length;
+            const mansafEl = document.getElementById('mansaf-count');
+            if (mansafEl) {
+                mansafEl.innerText = mansafCount;
+            }
+
             renderCommits(commits);
         } catch (error) { console.error(error); }
     };
@@ -838,4 +851,43 @@ document.addEventListener('DOMContentLoaded', () => {
     // تشغيل المراقب فوراً، ثم كل 10 ثوانٍ ليعطي إحساس التفاعل اللحظي
     fetchSystemState();
     setInterval(fetchSystemState, 10000);
+
+    // --- 🥘 زر المنسف السري (طلب زوزو) ---
+    const addMansafBtn = document.getElementById('add-mansaf-btn');
+    if (addMansafBtn) {
+        addMansafBtn.addEventListener('click', async () => {
+            // تعطيل الزر مؤقتاً لمنع الضغط المزدوج
+            addMansafBtn.disabled = true;
+            addMansafBtn.classList.add('opacity-50');
+
+            try {
+                // إرسال "ذكرى" تلقائية إلى السيرفر
+                await fetch(`${API_BASE_URL}/api/commits`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date: new Date().toISOString().split('T')[0], // تاريخ اليوم
+                        message: "سجلت المحكمة أن محمد أكل منسف اليوم! 🥘 (بناءً على طلب زوزو)",
+                        imageUrl: null,
+                        audioUrl: null
+                    })
+                });
+
+                // تأثير بصري للرقم
+                const countEl = document.getElementById('mansaf-count');
+                countEl.classList.add('text-emerald-400', 'scale-125');
+                setTimeout(() => countEl.classList.remove('text-emerald-400', 'scale-125'), 500);
+
+                // جلب الذكريات من جديد لتحديث العداد والخط الزمني
+                fetchCommits();
+
+            } catch (error) {
+                console.error("خطأ في تسجيل المنسف:", error);
+            } finally {
+                // إعادة تفعيل الزر
+                addMansafBtn.disabled = false;
+                addMansafBtn.classList.remove('opacity-50');
+            }
+        });
+    }
 });
