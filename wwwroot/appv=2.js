@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <p class="text-sm text-slate-200 mb-2 font-medium leading-relaxed tracking-wide">${commit.message}</p>
                 ${commit.imageUrl ? `<img src="${commit.imageUrl}" alt="Memory" class="polaroid-image">` : ''}
-                ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}"></audio>` : ''}
+                ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full mt-3 invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)]"></audio>` : ''}
             `;
             commitTimeline.appendChild(item);
         });
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const preview = document.createElement('audio');
                     preview.controls = true;
                     preview.src = URL.createObjectURL(audioBlob);
-                    preview.className = 'w-full mt-4 mb-2 filter drop-shadow-lg';
+                    preview.className = 'w-full mt-4 mb-2 invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 drop-shadow-xl rounded-full';
                     const commitForm = document.getElementById('add-commit-form');
                     commitForm.insertBefore(preview, commitForm.querySelector('button[type="submit"]'));
                 });
