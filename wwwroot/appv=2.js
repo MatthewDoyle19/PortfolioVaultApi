@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok && result.success) {
                 loginScreen.classList.add('fade-out');
                 setTimeout(() => {
-                    loginScreen.style.display = 'none';
-                    dashboard.style.display = 'block';
+                    loginScreen.classList.add('hidden'); // إخفاء كامل لشاشة الدخول
+                    dashboard.classList.remove('hidden'); // إظهار الشاشة الرئيسية
                     dashboard.classList.add('fade-in');
                     window.scrollTo(0, 0);
                 }, 500);
@@ -1024,65 +1024,60 @@ const pingBtn = document.getElementById('ping-btn');
 const heartsContainer = document.getElementById('hearts-container');
 let lastPingId = 0;
 
-// من أنت؟ (تحديد المرسل بناءً على المتصفح أو اختيار بسيط)
-// لتسهيل الأمر، سنعتبر أن المتصفح يرسل النبضة باسم عشوائي مؤقتاً أو يمكنكم الاتفاق عليها.
-const mySenderName = "User_" + Math.floor(Math.random() * 1000);
+// إعطاء المتصفح اسماً عشوائياً مميزاً في كل مرة يفتح فيها الموقع
+const mySenderName = "Device_" + Math.floor(Math.random() * 10000);
 
-// إرسال النبضة
-pingBtn.addEventListener('click', async () => {
-    pingBtn.classList.add('scale-75', 'opacity-50');
-    createFloatingHeart('right'); // تأثير فوري محلي
-    try {
-        await fetch(`${API_BASE_URL}/api/heartbeats`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sender: mySenderName })
-        });
-    } catch (error) { console.error("Ping failed", error); }
-    setTimeout(() => pingBtn.classList.remove('scale-75', 'opacity-50'), 300);
-});
+if (pingBtn && heartsContainer) {
+    pingBtn.addEventListener('click', async () => {
+        pingBtn.classList.add('scale-75', 'opacity-50');
+        createFloatingHeart('right');
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/heartbeats`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sender: mySenderName })
+            });
+            console.log("Ping Sent! Status:", res.status);
+        } catch (error) { console.error("Ping failed:", error); }
+        setTimeout(() => pingBtn.classList.remove('scale-75', 'opacity-50'), 300);
+    });
 
-// رادار التقاط النبضات (يعمل كل 5 ثوانٍ)
-const listenForPings = async () => {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/heartbeats/latest`);
-        if (!response.ok) return;
-        const latestPing = await response.json();
+    const listenForPings = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/heartbeats/latest`);
+            if (!response.ok) return;
+            const latestPing = await response.json();
 
-        if (latestPing && latestPing.id > lastPingId) {
-            // إذا كانت النبضة جديدة، وليست مني أنا!
-            if (lastPingId !== 0 && latestPing.sender !== mySenderName) {
-                triggerHeartstorm(); // تفعيل العاصفة القلبية
-                navigator.vibrate && navigator.vibrate([100, 50, 100]); // اهتزاز الهاتف إن أمكن
+            if (latestPing && latestPing.id > lastPingId) {
+                if (lastPingId !== 0 && latestPing.sender !== mySenderName) {
+                    console.log("New ping received from:", latestPing.sender);
+                    triggerHeartstorm();
+                    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                }
+                lastPingId = latestPing.id;
             }
-            lastPingId = latestPing.id; // تحديث العداد
-        }
-    } catch (error) { /* صمت عند الخطأ حتى لا يزعج الـ console */ }
-};
+        } catch (error) { /* Silent fail */ }
+    };
 
-setInterval(listenForPings, 5000); // يفحص السيرفر كل 5 ثوانٍ
+    setInterval(listenForPings, 5000);
+}
 
-// التأثيرات البصرية (CSS Animations via JS)
+// تأثيرات القلوب
 const createFloatingHeart = (side = 'center') => {
     const heart = document.createElement('div');
     heart.innerHTML = '❤️';
     heart.className = `absolute text-4xl animate-ping transition-all duration-1000 ease-out`;
-
-    // نقطة البداية
-    const startX = side === 'right' ? window.innerWidth - 80 : Math.random() * window.innerWidth;
+    const startX = side === 'right' ? window.innerWidth - 80 : Math.random() * (window.innerWidth - 50);
     heart.style.left = `${startX}px`;
     heart.style.top = `${window.innerHeight - 80}px`;
-
     heartsContainer.appendChild(heart);
 
-    // الحركة للأعلى
     setTimeout(() => {
         heart.style.top = `${window.innerHeight / 2 - Math.random() * 200}px`;
         heart.style.opacity = '0';
-        heart.style.transform = `scale(2) rotate(${Math.random() * 40 - 20}deg)`;
+        heart.style.transform = `scale(2.5) rotate(${Math.random() * 40 - 20}deg)`;
     }, 50);
 
-    // تنظيف الـ DOM
     setTimeout(() => heart.remove(), 1000);
 };
 
