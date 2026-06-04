@@ -92,9 +92,12 @@ html { scroll-behavior: smooth; }
 
 /* The Image inside the Card */
 .polaroid-image {
-    width: 100%;
-    max-height: 320px;
-    object-fit: cover;
+    width: 100% !important;
+    height: auto !important; /* السماح للصورة بأخذ طولها الطبيعي */
+    max-height: 500px !important; /* منع الصور الطويلة جداً من تخريب الشاشة */
+    object-fit: contain !important; /* السحر هنا: يمنع القص نهائياً ويعرض الصورة كاملة */
+
+    /* تصميمك الأصلي الأنيق كما هو */
     border-radius: 1.5rem;
     background: #000;
     margin-top: 1.25rem;
