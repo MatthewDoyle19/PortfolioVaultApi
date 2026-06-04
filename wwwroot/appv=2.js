@@ -130,20 +130,49 @@ document.addEventListener('DOMContentLoaded', () => {
         commitTimeline.innerHTML = '';
         commits.forEach((commit) => {
             const item = document.createElement('div');
-            item.className = 'polaroid-card group fade-in';
+            item.className = 'polaroid-card group fade-in relative overflow-hidden';
+
             const dateObj = new Date(commit.date);
             const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-            item.innerHTML = `
-                <div class="flex justify-between items-start mb-4 mt-1">
-                    <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20 shadow-inner shadow-accent/10">${formattedDate}</span>
-                    <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </div>
-                <p class="text-sm text-slate-200 mb-2 font-medium leading-relaxed tracking-wide">${commit.message}</p>
-                ${commit.imageUrl ? `<img src="${commit.imageUrl}" alt="Memory" class="polaroid-image">` : ''}
-                ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full mt-3 invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)]"></audio>` : ''}
-            `;
+
+            // التحقق من كبسولة الزمن
+            let isLocked = false;
+            let lockedText = "";
+            if (commit.unlockDate) {
+                const unlockDateObj = new Date(commit.unlockDate);
+                const now = new Date();
+                if (unlockDateObj > now) {
+                    isLocked = true;
+                    const daysLeft = Math.ceil((unlockDateObj - now) / (1000 * 60 * 60 * 24));
+                    lockedText = `تُفتح بعد ${daysLeft} يوم 🔒`;
+                }
+            }
+
+            if (isLocked) {
+                // تصميم الكبسولة المغلقة
+                item.innerHTML = `
+                    <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
+                        <span class="text-4xl mb-2 animate-bounce">⏳</span>
+                        <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-1">Time Capsule</p>
+                        <p class="text-white text-sm font-medium">${lockedText}</p>
+                    </div>
+                    <div class="opacity-10 blur-sm">
+                        <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
+                        <div class="h-32 bg-white/5 rounded-lg"></div>
+                    </div>
+                `;
+            } else {
+                // التصميم العادي للذكرى
+                item.innerHTML = `
+                    <div class="flex justify-between items-start mb-4 mt-1">
+                        <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
+                        <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                    </div>
+                    <p class="text-sm text-slate-200 mb-2 font-medium leading-relaxed tracking-wide">${commit.message}</p>
+                    ${commit.imageUrl ? `<img src="${commit.imageUrl}" alt="Memory" class="polaroid-image">` : ''}
+                    ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full mt-3 invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)]"></audio>` : ''}
+                `;
+            }
             commitTimeline.appendChild(item);
         });
     };
@@ -216,7 +245,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     date: document.getElementById('commit-date').value,
                     message: document.getElementById('commit-message').value,
                     imageUrl: finalImageUrl,
-                    audioUrl: finalAudioUrl
+                    audioUrl: finalAudioUrl,
+                    unlockDate: document.getElementById('commit-unlock-date').value || null // السطر الجديد
                 })
             });
             e.target.reset();
@@ -988,3 +1018,79 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// --- 💓 Heartbeat (Ping) System ---
+const pingBtn = document.getElementById('ping-btn');
+const heartsContainer = document.getElementById('hearts-container');
+let lastPingId = 0;
+
+// من أنت؟ (تحديد المرسل بناءً على المتصفح أو اختيار بسيط)
+// لتسهيل الأمر، سنعتبر أن المتصفح يرسل النبضة باسم عشوائي مؤقتاً أو يمكنكم الاتفاق عليها.
+const mySenderName = "User_" + Math.floor(Math.random() * 1000);
+
+// إرسال النبضة
+pingBtn.addEventListener('click', async () => {
+    pingBtn.classList.add('scale-75', 'opacity-50');
+    createFloatingHeart('right'); // تأثير فوري محلي
+    try {
+        await fetch(`${API_BASE_URL}/api/heartbeats`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sender: mySenderName })
+        });
+    } catch (error) { console.error("Ping failed", error); }
+    setTimeout(() => pingBtn.classList.remove('scale-75', 'opacity-50'), 300);
+});
+
+// رادار التقاط النبضات (يعمل كل 5 ثوانٍ)
+const listenForPings = async () => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/heartbeats/latest`);
+        if (!response.ok) return;
+        const latestPing = await response.json();
+
+        if (latestPing && latestPing.id > lastPingId) {
+            // إذا كانت النبضة جديدة، وليست مني أنا!
+            if (lastPingId !== 0 && latestPing.sender !== mySenderName) {
+                triggerHeartstorm(); // تفعيل العاصفة القلبية
+                navigator.vibrate && navigator.vibrate([100, 50, 100]); // اهتزاز الهاتف إن أمكن
+            }
+            lastPingId = latestPing.id; // تحديث العداد
+        }
+    } catch (error) { /* صمت عند الخطأ حتى لا يزعج الـ console */ }
+};
+
+setInterval(listenForPings, 5000); // يفحص السيرفر كل 5 ثوانٍ
+
+// التأثيرات البصرية (CSS Animations via JS)
+const createFloatingHeart = (side = 'center') => {
+    const heart = document.createElement('div');
+    heart.innerHTML = '❤️';
+    heart.className = `absolute text-4xl animate-ping transition-all duration-1000 ease-out`;
+
+    // نقطة البداية
+    const startX = side === 'right' ? window.innerWidth - 80 : Math.random() * window.innerWidth;
+    heart.style.left = `${startX}px`;
+    heart.style.top = `${window.innerHeight - 80}px`;
+
+    heartsContainer.appendChild(heart);
+
+    // الحركة للأعلى
+    setTimeout(() => {
+        heart.style.top = `${window.innerHeight / 2 - Math.random() * 200}px`;
+        heart.style.opacity = '0';
+        heart.style.transform = `scale(2) rotate(${Math.random() * 40 - 20}deg)`;
+    }, 50);
+
+    // تنظيف الـ DOM
+    setTimeout(() => heart.remove(), 1000);
+};
+
+const triggerHeartstorm = () => {
+    let count = 0;
+    const storm = setInterval(() => {
+        createFloatingHeart('center');
+        count++;
+        if (count > 15) clearInterval(storm);
+    }, 100);
+};

@@ -174,6 +174,16 @@ app.MapDelete("/api/events/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
+// --- HEARTBEAT (PING) ---
+app.MapGet("/api/heartbeats/latest", async (VaultDb db) => 
+    await db.Heartbeats.OrderByDescending(h => h.Id).FirstOrDefaultAsync());
+
+app.MapPost("/api/heartbeats", async (Heartbeat hb, VaultDb db) => {
+    db.Heartbeats.Add(hb);
+    await db.SaveChangesAsync();
+    return Results.Ok(hb);
+});
+
 
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
@@ -195,6 +205,7 @@ class VaultDb : DbContext {
     public DbSet<Penalty> Penalties => Set<Penalty>();
     public DbSet<Mood> Moods => Set<Mood>(); // تم إضافة جدول المزاج
     public DbSet<Event> Events => Set<Event>(); // تم إضافة جدول الأحداث
+    public DbSet<Heartbeat> Heartbeats => Set<Heartbeat>();
 }
 
 class Link {
@@ -209,6 +220,7 @@ class Commit {
     [JsonPropertyName("message")] public string Message { get; set; } = string.Empty;
     [JsonPropertyName("imageUrl")] public string? ImageUrl { get; set; } 
     [JsonPropertyName("audioUrl")] public string? AudioUrl { get; set; }
+    [JsonPropertyName("unlockDate")] public string? UnlockDate { get; set; }
 }
 
 class Penalty {
@@ -232,4 +244,9 @@ class Event {
     [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
     [JsonPropertyName("date")] public string Date { get; set; } = string.Empty; 
     [JsonPropertyName("type")] public string Type { get; set; } = "Task"; 
+}
+
+class Heartbeat {
+    [JsonPropertyName("id")] public int Id { get; set; }
+    [JsonPropertyName("sender")] public string Sender { get; set; } = string.Empty;
 }
