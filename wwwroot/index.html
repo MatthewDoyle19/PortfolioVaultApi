@@ -92,6 +92,7 @@
         </div>
     </section>
 
+    <!-- Stat Cards -->
     <section class="grid grid-cols-2 gap-4 mb-12 fade-in" style="animation-delay: 0.4s;">
         <div class="col-span-2 premium-glass p-6 rounded-[2rem] flex flex-col justify-center items-center relative overflow-hidden group">
             <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
@@ -124,6 +125,7 @@
         </div>
     </section>
 
+    <!-- Digital Keepsakes -->
     <section class="mb-12 fade-in" style="animation-delay: 0.6s;">
         <h3 class="text-xl font-bold text-white mb-5 flex items-center gap-3 px-2 tracking-tight">
             <div class="p-2 bg-accent/20 rounded-xl"><svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg></div>
@@ -137,6 +139,7 @@
         </form>
     </section>
 
+    <!-- Timeline -->
     <section class="mb-16 fade-in relative" style="animation-delay: 0.8s;">
         <h3 class="text-xl font-bold text-white flex items-center gap-3 tracking-tight mb-5 px-2">
             <div class="p-2 bg-accent/20 rounded-xl"><svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
@@ -154,10 +157,6 @@
                     <button type="button" id="record-btn" class="bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500 hover:text-white font-bold py-2.5 px-5 rounded-xl transition-all active:scale-95 flex items-center gap-2 text-sm w-full sm:w-auto justify-center">🎤 Record</button>
                 </div>
             </div>
-            <div class="flex flex-col sm:flex-row gap-4">
-                <input type="date" id="commit-date" required class="bg-black/40 border border-white/5 rounded-xl px-4 py-3.5 text-sm text-slate-300 sm:w-1/3">
-                <input type="text" id="commit-message" placeholder="Caption this memory..." required class="bg-black/40 border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white flex-grow">
-            </div>
             <div class="flex items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
                 <span class="text-xl">⏳</span>
                 <div class="flex-grow">
@@ -170,6 +169,7 @@
         <div id="commit-timeline" class="polaroid-grid"></div>
     </section>
 
+    <!-- Penalty Ledger Section -->
     <section class="mb-16 fade-in" style="animation-delay: 0.9s;">
         <h3 class="text-xl font-bold text-white mb-5 flex items-center gap-3 px-2 tracking-tight">
             <div class="p-2 bg-rose-500/20 rounded-xl"><svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
@@ -183,6 +183,7 @@
     </button>
 </main>
 
+<!-- Penalty Modal المطور -->
 <div id="penalty-modal" class="hidden fixed inset-0 flex items-center justify-center bg-dark/95 backdrop-blur-3xl z-50 px-6 opacity-0 transition-opacity duration-400">
     <div class="premium-glass p-8 rounded-[2.5rem] max-w-sm w-full text-center transform scale-95 transition-transform duration-400" id="modal-content">
         <div class="text-5xl mb-4">⚖️</div>
