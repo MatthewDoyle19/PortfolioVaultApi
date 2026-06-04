@@ -233,6 +233,102 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchCommits();
         }
     };
+
+    // --- 🗓️ نظام التقويم المشترك (Shared Calendar) ---
+    const eventsGrid = document.getElementById('events-grid');
+    const addEventForm = document.getElementById('add-event-form');
+
+    const fetchEvents = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/events`);
+            const events = await response.json();
+            renderEvents(events);
+        } catch (error) { console.error("Failed to fetch events", error); }
+    };
+
+    const renderEvents = (events) => {
+        eventsGrid.innerHTML = '';
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        events.forEach((ev) => {
+            const eventDate = new Date(ev.date);
+            const timeDiff = eventDate.getTime() - today.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+            let countdownText = "";
+            let colorClass = "text-purple-400";
+            let bgClass = "bg-purple-500/10 border-purple-500/20";
+
+            if (daysDiff === 0) {
+                countdownText = "اليوم! 🎉";
+                colorClass = "text-emerald-400";
+                bgClass = "bg-emerald-500/10 border-emerald-500/20";
+            } else if (daysDiff > 0) {
+                countdownText = `باقي ${daysDiff} يوم`;
+            } else {
+                countdownText = "انتهى ✔️";
+                colorClass = "text-slate-500";
+                bgClass = "bg-slate-800/50 border-white/5 opacity-60";
+            }
+
+            const card = document.createElement('div');
+            card.className = `flex items-center justify-between p-4 rounded-2xl border backdrop-blur-md transition-all group ${bgClass}`;
+            card.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <div class="${colorClass} bg-black/40 p-3 rounded-xl shadow-inner">
+                        <span class="text-xl">${ev.type === 'Meeting' ? '✈️' : ev.type === 'Task' ? '📌' : '🤍'}</span>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold text-sm tracking-wide">${ev.title}</h4>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="text-[10px] uppercase font-black ${colorClass} tracking-wider bg-black/30 px-2 py-0.5 rounded-md">${countdownText}</span>
+                            <span class="text-xs text-slate-400">${ev.date}</span>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="deleteEvent(${ev.id})" class="text-slate-600 hover:text-rose-400 p-2 transition-colors opacity-0 group-hover:opacity-100 active:scale-90">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            `;
+            eventsGrid.appendChild(card);
+        });
+    };
+
+    addEventForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '...';
+
+        try {
+            await fetch(`${API_BASE_URL}/api/events`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: document.getElementById('event-title').value,
+                    date: document.getElementById('event-date').value,
+                    type: document.getElementById('event-type').value
+                })
+            });
+            addEventForm.reset();
+            fetchEvents();
+        } catch (error) { console.error("Save failed", error); }
+        finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'تثبيت';
+        }
+    });
+
+    window.deleteEvent = async (id) => {
+        if(confirm('هل أنت متأكد من حذف هذا الموعد؟')) {
+            await fetch(`${API_BASE_URL}/api/events/${id}`, { method: 'DELETE' });
+            fetchEvents();
+        }
+    };
+
+    // لا تنس إضافة fetchEvents() في آخر الملف داخل التشغيل الأولي (Initial Load)
+    fetchEvents();
     
     // --- ⚖️ موسوعة المحكمة الالكترونيه vMax (الترسانة الشاملة والأسئلة العميقة) ---
     const penaltyVault = {

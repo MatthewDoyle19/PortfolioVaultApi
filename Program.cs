@@ -156,6 +156,24 @@ app.MapPost("/api/moods", async (Mood newMood, VaultDb db) => {
     return Results.Ok(newMood);
 });
 
+// --- EVENTS (CALENDAR) ---
+app.MapGet("/api/events", async (VaultDb db) => 
+    await db.Events.OrderBy(e => e.Date).ToListAsync());
+
+app.MapPost("/api/events", async (Event ev, VaultDb db) => {
+    db.Events.Add(ev);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/events/{ev.Id}", ev);
+});
+
+app.MapDelete("/api/events/{id}", async (int id, VaultDb db) => {
+    var ev = await db.Events.FindAsync(id);
+    if (ev is null) return Results.NotFound();
+    db.Events.Remove(ev);
+    await db.SaveChangesAsync();
+    return Results.Ok();
+});
+
 
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
@@ -176,6 +194,7 @@ class VaultDb : DbContext {
     public DbSet<Commit> Commits => Set<Commit>();
     public DbSet<Penalty> Penalties => Set<Penalty>();
     public DbSet<Mood> Moods => Set<Mood>(); // تم إضافة جدول المزاج
+    public DbSet<Event> Events => Set<Event>(); // تم إضافة جدول الأحداث
 }
 
 class Link {
@@ -206,4 +225,11 @@ class Mood {
     [JsonPropertyName("user")] public string User { get; set; } = string.Empty;
     [JsonPropertyName("status")] public string Status { get; set; } = string.Empty;
     [JsonPropertyName("updatedAt")] public string UpdatedAt { get; set; } = string.Empty;
+}
+
+class Event {
+    [JsonPropertyName("id")] public int Id { get; set; }
+    [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
+    [JsonPropertyName("date")] public string Date { get; set; } = string.Empty; 
+    [JsonPropertyName("type")] public string Type { get; set; } = "Task"; 
 }
