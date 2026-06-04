@@ -734,16 +734,17 @@ document.addEventListener('DOMContentLoaded', () => {
         'Happy': { icon: '✨', text: 'مزاج رايق / مبسوط' },
         'Study': { icon: '📚', text: 'وضع التركيز / دراسة' },
         'Coding': { icon: '👨🏻‍💻', text: 'بكتب كود / تركيز عالي' },
+        'Relaxing': {icon: '😌', text: 'روائ / استخراء'},
         'Working': {icon: '😓', text: 'في الشغل / مشغول' },
         'Gym': { icon: '🏋️‍♂️', text: 'في الجيم / وحش الحديد' },
-        'Coffee': { icon: '☕', text: 'وقت القهوة / استرخاء' },
+        'Coffee': { icon: '☕', text: 'وقت القهوة' },
         'Tired': { icon: '🔋', text: 'طاقتي خلصت / تعبان' },
         'MissYou': { icon: '🥺', text: 'مشتاق لك' },
         'Bored': { icon: '🥱', text: 'ملل / محتاجك' },
         'Excited': { icon: '🤩', text: 'متحمس / في خبر حلو' },
-        'Overthinking': { icon: '🧠', text: 'تفكير مفرط (Overthinking)' },
+        'Overthinking': { icon: '🧠', text: 'تفكير مفرط' },
         'Sleeping': { icon: '😴', text: 'نايم / بوضع الطيران' },
-        'SOS': { icon: '🚨', text: 'محبط / احتاجك فوراً' }
+        'SOS': { icon: '🚨', text: 'احتاجك فوراً' }
     };
 
     window.openMoodSelector = async (user) => {
