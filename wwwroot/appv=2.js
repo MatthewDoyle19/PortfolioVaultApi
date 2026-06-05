@@ -751,4 +751,30 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // --- 📱 نظام التنقل السفلي المطور (4 شاشات) ---
+    window.switchTab = (tabName) => {
+        // 1. إخفاء جميع الشاشات الأربع
+        document.getElementById('view-home').classList.add('hidden');
+        document.getElementById('view-memories').classList.add('hidden');
+        document.getElementById('view-calendar').classList.add('hidden');
+        document.getElementById('view-court').classList.add('hidden');
+
+        // 2. إعادة الأزرار لشكلها العادي (غير مفعل)
+        const inactiveClass = "flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition-all";
+        document.getElementById('tab-home').className = inactiveClass;
+        document.getElementById('tab-memories').className = inactiveClass;
+        document.getElementById('tab-calendar').className = inactiveClass;
+        document.getElementById('tab-court').className = inactiveClass;
+
+        // 3. إظهار الشاشة المطلوبة
+        document.getElementById(`view-${tabName}`).classList.remove('hidden');
+
+        // 4. تفعيل الزر المطلوب (توهج وتكبير)
+        const activeClass = "flex flex-col items-center gap-1 text-accent transition-all scale-110 drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]";
+        document.getElementById(`tab-${tabName}`).className = activeClass;
+
+        // 5. التمرير للأعلى
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 });;
