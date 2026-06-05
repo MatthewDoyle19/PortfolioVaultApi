@@ -282,22 +282,28 @@ document.addEventListener('DOMContentLoaded', () => {
         today.setHours(0, 0, 0, 0);
 
         events.forEach((ev) => {
-            const eventDate = new Date(ev.date);
+            // الحل الجذري لمشكلة الـ Timezone: تفكيك التاريخ وإجباره على التوقيت المحلي
+            const [year, month, day] = ev.date.split('-');
+            const eventDate = new Date(year, month - 1, day);
+            eventDate.setHours(0, 0, 0, 0);
+
             const timeDiff = eventDate.getTime() - today.getTime();
-            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            // استخدام Math.round بدلاً من Math.ceil لحساب الأيام بدقة متناهية
+            const daysDiff = Math.round(timeDiff / (1000 * 3600 * 24));
 
             let countdownText = "";
             let colorClass = "text-purple-400";
             let bgClass = "bg-purple-500/10 border-purple-500/20";
 
+            // النصوص تم تحويلها للإنجليزية لتطابق الواجهة
             if (daysDiff === 0) {
-                countdownText = "اليوم! 🎉";
+                countdownText = "Today! 🎉";
                 colorClass = "text-emerald-400";
                 bgClass = "bg-emerald-500/10 border-emerald-500/20";
             } else if (daysDiff > 0) {
-                countdownText = `باقي ${daysDiff} يوم`;
+                countdownText = `${daysDiff} Days Left`;
             } else {
-                countdownText = "انتهى ✔️";
+                countdownText = "Passed ✔️";
                 colorClass = "text-slate-500";
                 bgClass = "bg-slate-800/50 border-white/5 opacity-60";
             }
@@ -305,22 +311,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = `flex items-center justify-between p-4 rounded-2xl border backdrop-blur-md transition-all group ${bgClass}`;
             card.innerHTML = `
-                <div class="flex items-center gap-4">
-                    <div class="${colorClass} bg-black/40 p-3 rounded-xl shadow-inner">
-                        <span class="text-xl">${ev.type === 'Meeting' ? '✈️' : ev.type === 'Task' ? '📌' : '🤍'}</span>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-bold text-sm tracking-wide">${ev.title}</h4>
-                        <div class="flex items-center gap-2 mt-1">
-                            <span class="text-[10px] uppercase font-black ${colorClass} tracking-wider bg-black/30 px-2 py-0.5 rounded-md">${countdownText}</span>
-                            <span class="text-xs text-slate-400">${ev.date}</span>
-                        </div>
+            <div class="flex items-center gap-4">
+                <div class="${colorClass} bg-black/40 p-3 rounded-xl shadow-inner">
+                    <span class="text-xl">${ev.type === 'Meeting' ? '✈️' : ev.type === 'Task' ? '📌' : '🤍'}</span>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm tracking-wide">${ev.title}</h4>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-[10px] uppercase font-black ${colorClass} tracking-wider bg-black/30 px-2 py-0.5 rounded-md">${countdownText}</span>
+                        <span class="text-xs text-slate-400">${ev.date}</span>
                     </div>
                 </div>
-                <button onclick="deleteEvent(${ev.id})" class="text-slate-600 hover:text-rose-400 p-2 transition-colors opacity-0 group-hover:opacity-100 active:scale-90">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            `;
+            </div>
+            <button onclick="deleteEvent(${ev.id})" class="text-slate-600 hover:text-rose-400 p-2 transition-colors opacity-0 group-hover:opacity-100 active:scale-90">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        `;
             eventsGrid.appendChild(card);
         });
     };
@@ -1017,75 +1023,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});
-
-// --- 💓 Heartbeat (Ping) System ---
-const pingBtn = document.getElementById('ping-btn');
-const heartsContainer = document.getElementById('hearts-container');
-let lastPingId = 0;
-
-// إعطاء المتصفح اسماً عشوائياً مميزاً في كل مرة يفتح فيها الموقع
-const mySenderName = "Device_" + Math.floor(Math.random() * 10000);
-
-if (pingBtn && heartsContainer) {
-    pingBtn.addEventListener('click', async () => {
-        pingBtn.classList.add('scale-75', 'opacity-50');
-        createFloatingHeart('right');
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/heartbeats`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sender: mySenderName })
-            });
-            console.log("Ping Sent! Status:", res.status);
-        } catch (error) { console.error("Ping failed:", error); }
-        setTimeout(() => pingBtn.classList.remove('scale-75', 'opacity-50'), 300);
-    });
-
-    const listenForPings = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/heartbeats/latest`);
-            if (!response.ok) return;
-            const latestPing = await response.json();
-
-            if (latestPing && latestPing.id > lastPingId) {
-                if (lastPingId !== 0 && latestPing.sender !== mySenderName) {
-                    console.log("New ping received from:", latestPing.sender);
-                    triggerHeartstorm();
-                    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-                }
-                lastPingId = latestPing.id;
-            }
-        } catch (error) { /* Silent fail */ }
-    };
-
-    setInterval(listenForPings, 5000);
-}
-
-// تأثيرات القلوب
-const createFloatingHeart = (side = 'center') => {
-    const heart = document.createElement('div');
-    heart.innerHTML = '❤️';
-    heart.className = `absolute text-4xl animate-ping transition-all duration-1000 ease-out`;
-    const startX = side === 'right' ? window.innerWidth - 80 : Math.random() * (window.innerWidth - 50);
-    heart.style.left = `${startX}px`;
-    heart.style.top = `${window.innerHeight - 80}px`;
-    heartsContainer.appendChild(heart);
-
-    setTimeout(() => {
-        heart.style.top = `${window.innerHeight / 2 - Math.random() * 200}px`;
-        heart.style.opacity = '0';
-        heart.style.transform = `scale(2.5) rotate(${Math.random() * 40 - 20}deg)`;
-    }, 50);
-
-    setTimeout(() => heart.remove(), 1000);
-};
-
-const triggerHeartstorm = () => {
-    let count = 0;
-    const storm = setInterval(() => {
-        createFloatingHeart('center');
-        count++;
-        if (count > 15) clearInterval(storm);
-    }, 100);
-};
+});;
