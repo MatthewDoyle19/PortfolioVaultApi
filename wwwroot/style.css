@@ -93,16 +93,11 @@ html { scroll-behavior: smooth; }
 /* The Image inside the Card */
 .polaroid-image {
     width: 100% !important;
-    height: auto !important; /* السماح للصورة بأخذ طولها الطبيعي */
-    max-height: 500px !important; /* منع الصور الطويلة جداً من تخريب الشاشة */
-    object-fit: contain !important; /* السحر هنا: يمنع القص نهائياً ويعرض الصورة كاملة */
-
-    /* تصميمك الأصلي الأنيق كما هو */
-    border-radius: 1.5rem;
-    background: #000;
-    margin-top: 1.25rem;
-    border: 1px solid rgba(255, 255, 255, 0.03);
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.4);
+    height: auto !important;
+    border-radius: 1rem;
+    margin-top: 1rem;
+    display: block;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 /* --- The Ultimate Bulletproof Dark Audio Player --- */
