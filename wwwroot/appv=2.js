@@ -101,6 +101,18 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchLinks();
     };
 
+    // 🛠️ محرك تحسين الصور القديمة (Cloudinary On-the-fly)
+    const optimizeOldImages = (url) => {
+        // إذا لم يكن الرابط موجوداً أو ليس من Cloudinary، اتركه كما هو
+        if (!url || !url.includes('cloudinary.com')) return url;
+
+        // سحر الـ CDN: حقن أوامر الضغط في الرابط
+        // q_auto: جودة تلقائية ممتازة ومضغوطة
+        // f_auto: تحويل الصيغة لـ WebP السريعة
+        // w_1080: تصغير العرض إلى 1080 بيكسل كحد أقصى
+        return url.replace('/upload/', '/upload/q_auto,f_auto,w_1080,c_limit/');
+    };
+
     // 🛠️ محرك ضغط الصور الذكي
     const compressImage = (file, maxWidth = 1080, quality = 0.8) => {
         return new Promise((resolve, reject) => {
@@ -205,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
                     </div>
                     <p class="text-sm text-slate-200 mb-2 font-medium leading-relaxed tracking-wide">${commit.message}</p>
-                    ${commit.imageUrl ? `<img src="${commit.imageUrl}" alt="Memory" class="polaroid-image">` : ''}
+                    ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" class="polaroid-image">` : ''}
                     ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full mt-3 invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.5)]"></audio>` : ''}
                 `;
             }
