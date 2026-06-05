@@ -6,9 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginBtn = document.getElementById('login-btn');
     const errorMsg = document.getElementById('error-msg');
 
-    const API_BASE_URL = ''; // السيرفر نفسه هو الذي يستضيف الملفات
+    const API_BASE_URL = '';
 
-    // --- 1. نظام الدخول ---
+    // --- 1. Authentication ---
     const handleLogin = async () => {
         const key = authKey.value;
         try {
@@ -21,9 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok && result.success) {
                 loginScreen.classList.add('fade-out');
                 setTimeout(() => {
-                    loginScreen.classList.add('hidden'); // إخفاء كامل لشاشة الدخول
-                    dashboard.classList.remove('hidden'); // إظهار الشاشة الرئيسية
+                    loginScreen.classList.add('hidden');
+                    dashboard.classList.remove('hidden');
                     dashboard.classList.add('fade-in');
+                    document.getElementById('bottom-nav').classList.remove('hidden'); // إظهار شريط التنقل
                     window.scrollTo(0, 0);
                 }, 500);
             } else {
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loginBtn.addEventListener('click', handleLogin);
     authKey.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
-    // --- 2. عداد الوقت ---
+    // --- 2. Uptime Counter ---
     const uptimeDisplay = document.getElementById('uptime-counter');
     const startDate = new Date('2026-03-25T00:00:00');
 
@@ -55,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateUptime();
     setInterval(updateUptime, 60000);
 
-    // --- 3. إدارة الروابط ---
+    // --- 3. Digital Keepsakes (Links) ---
     const fetchLinks = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/links`);
@@ -101,19 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchLinks();
     };
 
-    // 🛠️ محرك تحسين الصور القديمة (Cloudinary On-the-fly)
+    // --- Optimizers ---
     const optimizeOldImages = (url) => {
-        // إذا لم يكن الرابط موجوداً أو ليس من Cloudinary، اتركه كما هو
         if (!url || !url.includes('cloudinary.com')) return url;
-
-        // سحر الـ CDN: حقن أوامر الضغط في الرابط
-        // q_auto: جودة تلقائية ممتازة ومضغوطة
-        // f_auto: تحويل الصيغة لـ WebP السريعة
-        // w_1080: تصغير العرض إلى 1080 بيكسل كحد أقصى
         return url.replace('/upload/', '/upload/q_auto,f_auto,w_1080,c_limit/');
     };
 
-    // 🛠️ محرك ضغط الصور الذكي
     const compressImage = (file, maxWidth = 1080, quality = 0.8) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -126,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     let width = img.width;
                     let height = img.height;
 
-                    // إذا كانت الصورة أكبر من 1080 بيكسل، قم بتصغيرها مع الحفاظ على الأبعاد
                     if (width > maxWidth) {
                         height = Math.round((height * maxWidth) / width);
                         width = maxWidth;
@@ -135,11 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
-
-                    // رسم الصورة على اللوحة المخفية
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // تحويل اللوحة إلى صورة JPEG خفيفة الوزن
                     const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
                     resolve(compressedBase64);
                 };
@@ -148,21 +138,18 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.onerror = (error) => reject(error);
         });
     };
-    
-    // --- 4. ذكريات الخط الزمني ---
-    // --- 4. ذكريات الخط الزمني (مع عداد المنسف) ---
+
+    // --- 4. The Timeline & Mansaf Counter ---
     const fetchCommits = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/commits`);
             const commits = await response.json();
 
-            // تحديث عدد الذكريات
             if (document.getElementById('commit-count')) {
                 document.getElementById('commit-count').innerText = commits.length;
             }
 
-            // 👇 الكود الجديد: حساب كم مرة أكلت منسف 👇
-            const mansafCount = commits.filter(c => c.message.includes('منسف')).length;
+            const mansafCount = commits.filter(c => c.message.includes('Mansaf')).length;
             const mansafEl = document.getElementById('mansaf-count');
             if (mansafEl) {
                 mansafEl.innerText = mansafCount;
@@ -172,18 +159,19 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { console.error(error); }
     };
 
+    // 🛠️ BUG FIXED: Removed duplicate 'item' declaration that caused the crash
     const renderCommits = (commits) => {
         const commitTimeline = document.getElementById('commit-timeline');
         if (!commitTimeline) return;
         commitTimeline.innerHTML = '';
+
         commits.forEach((commit) => {
             const item = document.createElement('div');
-            item.className = 'polaroid-card group fade-in relative overflow-hidden';
+            item.className = 'polaroid-card group fade-in relative overflow-hidden flex flex-col';
 
             const dateObj = new Date(commit.date);
             const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-            // التحقق من كبسولة الزمن
             let isLocked = false;
             let lockedText = "";
             if (commit.unlockDate) {
@@ -192,19 +180,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (unlockDateObj > now) {
                     isLocked = true;
                     const daysLeft = Math.ceil((unlockDateObj - now) / (1000 * 60 * 60 * 24));
-                    lockedText = `تُفتح بعد ${daysLeft} يوم 🔒`;
+                    lockedText = `Unlocks in ${daysLeft} days 🔒`;
                 }
             }
 
-            const item = document.createElement('div');
-            item.className = 'polaroid-card group fade-in relative overflow-hidden flex flex-col';
-
-            const dateObj = new Date(commit.date);
-            const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-            
             if (isLocked) {
-                // تصميم الكبسولة المغلقة
                 item.innerHTML = `
                     <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
                         <span class="text-4xl mb-2 animate-bounce">⏳</span>
@@ -217,7 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             } else {
-                // 🔥 2. السحر هنا: استخدام الهوامش العكسية (Negative Margins) لتمتد الصورة للحواف!
                 item.innerHTML = `
                 <div class="flex justify-between items-start mb-4">
                     <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
@@ -280,8 +259,14 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             let finalImageUrl = null, finalAudioUrl = null;
             if (document.getElementById('commit-image').files[0]) {
+                const originalFile = document.getElementById('commit-image').files[0];
+                const compressedBase64 = await compressImage(originalFile, 1080, 0.8);
+                const resBase64 = await fetch(compressedBase64);
+                const blob = await resBase64.blob();
+                const compressedFile = new File([blob], "compressed_image.jpg", { type: "image/jpeg" });
+
                 const fd = new FormData();
-                fd.append('file', document.getElementById('commit-image').files[0]);
+                fd.append('file', compressedFile);
                 fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
                 const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: fd });
                 const data = await res.json();
@@ -303,12 +288,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     message: document.getElementById('commit-message').value,
                     imageUrl: finalImageUrl,
                     audioUrl: finalAudioUrl,
-                    unlockDate: document.getElementById('commit-unlock-date').value || null // السطر الجديد
+                    unlockDate: document.getElementById('commit-unlock-date').value || null
                 })
             });
             e.target.reset();
             audioBlob = null;
             recordBtn.innerHTML = '🎤 Record';
+            const previewAudio = document.querySelector('#add-commit-form audio');
+            if(previewAudio) previewAudio.remove();
             fetchCommits();
         } catch (error) { console.error(error); }
         finally { submitBtn.innerHTML = 'Store Memory'; submitBtn.disabled = false; }
@@ -321,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- 🗓️ نظام التقويم المشترك (Shared Calendar) ---
+    // --- 🗓️ Shared Calendar ---
     const eventsGrid = document.getElementById('events-grid');
     const addEventForm = document.getElementById('add-event-form');
 
@@ -348,14 +335,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let countdownText = "";
             let colorClass = "text-purple-400";
-
-            // BUG FIX: Removed the muddy background colors and applied your 'premium-glass' class
             let bgClass = "premium-glass border-white/5";
 
             if (daysDiff === 0) {
                 countdownText = "Today! 🎉";
                 colorClass = "text-emerald-400";
-                // Optional: Give today's card a slight emerald tint border to make it pop
                 bgClass = "premium-glass border-emerald-500/30";
             } else if (daysDiff > 0) {
                 countdownText = `${daysDiff} Days Left`;
@@ -366,7 +350,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const card = document.createElement('div');
-            // BUG FIX: Updated class string to use the clean variables
             card.className = `flex items-center justify-between p-4 rounded-[1.5rem] transition-all group ${bgClass}`;
 
             card.innerHTML = `
@@ -422,12 +405,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // لا تنس إضافة fetchEvents() في آخر الملف داخل التشغيل الأولي (Initial Load)
     fetchEvents();
-    
-    // --- المنطق البرمجي للمحكمة (يبقى كما هو، فقط تم تحديث المصفوفة) ---
-    // (تأكد من بقاء كود الـ select الخاص بـ "Both" وكود الحفظ كما هو في رسالتي السابقة)
 
+    // --- ⚖️ The Digital Court ---
     const penaltyModal = document.getElementById('penalty-modal');
     const penaltyModalContent = document.getElementById('modal-content');
     const generateBtn = document.getElementById('generate-penalty-btn');
@@ -438,7 +418,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentPendingPenalty = null;
 
-    // فتح المودال
     document.getElementById('penalty-btn').addEventListener('click', () => {
         penaltyModal.classList.remove('hidden');
         setTimeout(() => {
@@ -447,8 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 10);
     });
 
-    // توليد العقوبة
-    // إضافة خيار "تحدي مشترك" للقائمة المنسدلة برمجياً
     const punishedSelect = document.getElementById('punished');
     if (!punishedSelect.querySelector('option[value="Both"]')) {
         const bothOption = document.createElement('option');
@@ -457,7 +434,6 @@ document.addEventListener('DOMContentLoaded', () => {
         punishedSelect.appendChild(bothOption);
     }
 
-    // توليد العقوبة المطور
     generateBtn.addEventListener('click', () => {
         const punisher = document.getElementById('punisher').value;
         const punished = document.getElementById('punished').value;
@@ -470,8 +446,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let pool = [];
         let displayTarget = "";
 
-        // تحديد القائمة والاسم المعروض بناءً على الاختيار
         if (punished === 'Both') {
+            // Note: Make sure penaltyVault is accessible globally from penalties.js
             pool = penaltyVault.Shared;
             displayTarget = "7modee & Zozo (together)";
         } else {
@@ -485,20 +461,19 @@ document.addEventListener('DOMContentLoaded', () => {
             punisher: punisher,
             punished: displayTarget,
             penaltyText: randomPenalty.title + ": " + randomPenalty.desc,
-            date: new Date().toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short', year: 'numeric' })
+            date: new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short', year: 'numeric' })
         };
 
         penaltyText.innerHTML = `
-            <span class="text-white block text-xs mb-1">قررت المحكمة الالكترونيه إسناد التهمة إلى ${displayTarget}:</span>
+            <span class="text-white block text-xs mb-1">The Digital Court assigns the charge to ${displayTarget}:</span>
             <b class="text-accent">${randomPenalty.title}</b><br>
             <span class="text-sm opacity-90 italic">${randomPenalty.desc}</span>
         `;
         penaltyResult.classList.remove('hidden');
         savePenaltyBtn.classList.remove('hidden');
-        generateBtn.innerText = "تغيير الحكم؟ 🔄";
+        generateBtn.innerText = "Change Verdict? 🔄";
     });
 
-    // حفظ في قاعدة البيانات
     savePenaltyBtn.addEventListener('click', async () => {
         if (!currentPendingPenalty) return;
         try {
@@ -527,7 +502,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div>
                         <div class="flex items-center gap-2 mb-1">
                             <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-accent/20 text-accent uppercase">${p.punisher} ⚖️</span>
-                            <span class="text-slate-500 text-[9px]">حكم على</span>
+                            <span class="text-slate-500 text-[9px]">sentenced</span>
                             <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-white/10 text-white uppercase">${p.punished}</span>
                         </div>
                         <p class="text-xs text-slate-200 font-medium">${p.penaltyText}</p>
@@ -545,24 +520,22 @@ document.addEventListener('DOMContentLoaded', () => {
             penaltyModal.classList.add('hidden');
             penaltyResult.classList.add('hidden');
             savePenaltyBtn.classList.add('hidden');
-            generateBtn.innerText = "إصدار الحكم ⚡️";
+            generateBtn.innerText = "Issue Verdict ⚡️";
         }, 300);
     };
 
     document.getElementById('close-modal-btn').addEventListener('click', closePenaltyModal);
 
-    // Initial Load
     fetchLinks();
     fetchCommits();
     fetchPenaltiesFromServer();
 
-    // --- 📡 رادار المزاج والإشعارات اللحظية المطور ---
+    // --- 📡 Mood Radar & Live Notifications ---
     const toastContainer = document.getElementById('toast-container');
     let lastPenaltyCount = 0;
-    let lastCommitCount = 0; // متغير جديد لمراقبة الذكريات
+    let lastCommitCount = 0;
     let initialLoad = true;
 
-    // 1. نظام الإشعارات المنبثقة (Toast Notification System)
     const showToast = (title, message, icon = '🔔') => {
         const toast = document.createElement('div');
         toast.className = 'premium-glass p-4 rounded-2xl flex items-center gap-4 shadow-2xl transform transition-all duration-500 translate-y-[-20px] opacity-0 border-l-4 border-accent';
@@ -574,14 +547,10 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         toastContainer.appendChild(toast);
-
-        // Animation in
         setTimeout(() => {
             toast.classList.remove('translate-y-[-20px]', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');
         }, 10);
-
-        // Animation out & remove
         setTimeout(() => {
             toast.classList.remove('translate-y-0', 'opacity-100');
             toast.classList.add('translate-y-[-20px]', 'opacity-0');
@@ -589,34 +558,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 5000);
     };
 
-    // 2. تحديث وعرض المزاج (قائمة موسعة جداً)
     const moodsList = {
-        'Happy': { icon: '✨', text: 'مزاج رايق / مبسوط' },
-        'Study': { icon: '📚', text: 'وضع التركيز / دراسة' },
-        'Coding': { icon: '👨🏻‍💻', text: 'بكتب كود / تركيز عالي' },
-        'Relaxing': {icon: '😌', text: 'روائ / استخراء'},
-        'Working': {icon: '😓', text: 'في الشغل / مشغول' },
-        'Gym': { icon: '🏋️‍♂️', text: 'في الجيم / وحش الحديد' },
-        'Coffee': { icon: '☕', text: 'وقت القهوة' },
-        'Tired': { icon: '🔋', text: 'طاقتي خلصت / تعبان' },
-        'MissYou': { icon: '🥺', text: 'مشتاق لك' },
-        'Bored': { icon: '🥱', text: 'ملل / محتاجك' },
-        'Excited': { icon: '🤩', text: 'متحمس / في خبر حلو' },
-        'Overthinking': { icon: '🧠', text: 'تفكير مفرط' },
-        'Sleeping': { icon: '😴', text: 'نايم / بوضع الطيران' },
-        'SOS': { icon: '🚨', text: 'احتاجك فوراً' }
+        'Happy': { icon: '✨', text: 'Chill / Happy' },
+        'Study': { icon: '📚', text: 'Focus Mode / Studying' },
+        'Coding': { icon: '👨🏻‍💻', text: 'Coding / Deep Focus' },
+        'Relaxing': {icon: '😌', text: 'Relaxing / Chilling'},
+        'Working': {icon: '😓', text: 'At Work / Busy' },
+        'Gym': { icon: '🏋️‍♂️', text: 'At the Gym / Beast Mode' },
+        'Coffee': { icon: '☕', text: 'Coffee Time' },
+        'Tired': { icon: '🔋', text: 'Out of Energy / Tired' },
+        'MissYou': { icon: '🥺', text: 'Missing You' },
+        'Bored': { icon: '🥱', text: 'Bored / Need You' },
+        'Excited': { icon: '🤩', text: 'Excited / Good News' },
+        'Overthinking': { icon: '🧠', text: 'Overthinking' },
+        'Sleeping': { icon: '😴', text: 'Sleeping / DND' },
+        'SOS': { icon: '🚨', text: 'Need You ASAP' }
     };
 
     window.openMoodSelector = async (user) => {
         const moodKeys = Object.keys(moodsList).join('\n');
-        const rawInput = prompt(`تحديث مزاج ${user}:\nاكتب أحد هذه الخيارات:\n\n${moodKeys}`);
+        const rawInput = prompt(`Update ${user}'s mood:\nType one of these options:\n\n${moodKeys}`);
 
-        if (!rawInput) return; // إذا ضغطت إلغاء، يخرج بدون أخطاء
+        if (!rawInput) return;
 
-        // 🛠️ السر هنا: تنظيف الكلمة من المسافات التي يضيفها الآيفون، وتحويلها لحروف صغيرة
         const cleanInput = rawInput.trim().toLowerCase();
-
-        // البحث عن الكلمة الصحيحة في القائمة بغض النظر عن طريقة كتابتها
         const matchedKey = Object.keys(moodsList).find(key => key.toLowerCase() === cleanInput);
 
         if (matchedKey) {
@@ -631,8 +596,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(moodData)
                 });
-                fetchSystemState(); // تحديث فوري
-                showToast('رادار المزاج', `تم تحديث مزاج ${user} إلى: ${moodsList[matchedKey].text}`, moodsList[matchedKey].icon);
+                fetchSystemState();
+                showToast('Mood Radar', `${user}'s mood updated to: ${moodsList[matchedKey].text}`, moodsList[matchedKey].icon);
             } catch (error) {
                 console.error("Failed to update mood", error);
             }
@@ -641,10 +606,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 3. المراقب اللحظي (المضاد لعناد Safari)
     const fetchSystemState = async () => {
         try {
-            // --- أ: مراقبة المزاج (مع Headers صريحة ومنع الكاش) ---
             const moodRes = await fetch(`${API_BASE_URL}/api/moods`, {
                 method: 'GET',
                 headers: {
@@ -656,9 +619,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const moods = await moodRes.json();
 
-            // إزالة كلمة Loading في حال نجاح الاتصال حتى لو كانت القائمة فارغة
-            document.getElementById('mohammad-mood-text').innerText = "لم يُحدد بعد";
-            document.getElementById('zainab-mood-text').innerText = "لم يُحدد بعد";
+            document.getElementById('mohammad-mood-text').innerText = "Not set yet";
+            document.getElementById('zainab-mood-text').innerText = "Not set yet";
 
             moods.forEach(m => {
                 const iconEl = document.getElementById(`${m.user.toLowerCase()}-mood-icon`);
@@ -672,7 +634,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // --- ب: مراقبة الأحكام ---
             const penRes = await fetch(`${API_BASE_URL}/api/penalties`, {
                 headers: { 'Cache-Control': 'no-cache' },
                 cache: 'no-store'
@@ -681,12 +642,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!initialLoad && penalties.length > lastPenaltyCount) {
                 const newestPenalty = penalties[0];
-                showToast('⚖️ المحكمة الالكترونيه', `تم إصدار حكم جديد على ${newestPenalty.punished}!`, '⚖️');
+                showToast('⚖️ Digital Court', `New verdict issued for ${newestPenalty.punished}!`, '⚖️');
                 if(typeof fetchPenaltiesFromServer === "function") fetchPenaltiesFromServer();
             }
             lastPenaltyCount = penalties.length;
 
-            // --- ج: مراقبة الذكريات ---
             const commitRes = await fetch(`${API_BASE_URL}/api/commits`, {
                 headers: { 'Cache-Control': 'no-cache' },
                 cache: 'no-store'
@@ -694,7 +654,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const commits = await commitRes.json();
 
             if (!initialLoad && commits.length > lastCommitCount) {
-                showToast('📸 ذكرى جديدة', `تمت إضافة لحظة جديدة إلى الخزنة!`, '✨');
+                showToast('📸 New Memory', `A new moment was added to the Vault!`, '✨');
                 if(typeof fetchCommits === "function") fetchCommits();
             }
             lastCommitCount = commits.length;
@@ -703,78 +663,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error("System Watcher error:", error);
-            // إذا فشل الاتصال، ستظهر هذه الرسالة بدلاً من Loading
-            document.getElementById('mohammad-mood-text').innerText = "جاري الاتصال...";
-            document.getElementById('zainab-mood-text').innerText = "جاري الاتصال...";
+            document.getElementById('mohammad-mood-text').innerText = "Connecting...";
+            document.getElementById('zainab-mood-text').innerText = "Connecting...";
         }
     };
 
-    // تشغيل المراقب فوراً، ثم كل 10 ثوانٍ ليعطي إحساس التفاعل اللحظي
     fetchSystemState();
     setInterval(fetchSystemState, 10000);
 
-    // --- 🥘 زر المنسف السري (طلب زوزو) ---
     const addMansafBtn = document.getElementById('add-mansaf-btn');
     if (addMansafBtn) {
         addMansafBtn.addEventListener('click', async () => {
-            // تعطيل الزر مؤقتاً لمنع الضغط المزدوج
             addMansafBtn.disabled = true;
             addMansafBtn.classList.add('opacity-50');
 
             try {
-                // إرسال "ذكرى" تلقائية إلى السيرفر
                 await fetch(`${API_BASE_URL}/api/commits`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        date: new Date().toISOString().split('T')[0], // تاريخ اليوم
-                        message: "سجلت المحكمة أن محمد أكل منسف اليوم! 🥘 (بناءً على طلب زوزو)",
+                        date: new Date().toISOString().split('T')[0],
+                        message: "The Court recorded that Mohammad ate Mansaf today! 🥘 (By Zozo's request)",
                         imageUrl: null,
                         audioUrl: null
                     })
                 });
 
-                // تأثير بصري للرقم
                 const countEl = document.getElementById('mansaf-count');
                 countEl.classList.add('text-emerald-400', 'scale-125');
                 setTimeout(() => countEl.classList.remove('text-emerald-400', 'scale-125'), 500);
 
-                // جلب الذكريات من جديد لتحديث العداد والخط الزمني
                 fetchCommits();
 
             } catch (error) {
-                console.error("خطأ في تسجيل المنسف:", error);
+                console.error("Error recording Mansaf:", error);
             } finally {
-                // إعادة تفعيل الزر
                 addMansafBtn.disabled = false;
                 addMansafBtn.classList.remove('opacity-50');
             }
         });
     }
 
-    // --- 📱 نظام التنقل السفلي المطور (4 شاشات) ---
+    // --- 📱 Bottom Navigation Logic (4 Tabs) ---
     window.switchTab = (tabName) => {
-        // 1. إخفاء جميع الشاشات الأربع
         document.getElementById('view-home').classList.add('hidden');
         document.getElementById('view-memories').classList.add('hidden');
         document.getElementById('view-calendar').classList.add('hidden');
         document.getElementById('view-court').classList.add('hidden');
 
-        // 2. إعادة الأزرار لشكلها العادي (غير مفعل)
         const inactiveClass = "flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition-all";
         document.getElementById('tab-home').className = inactiveClass;
         document.getElementById('tab-memories').className = inactiveClass;
         document.getElementById('tab-calendar').className = inactiveClass;
         document.getElementById('tab-court').className = inactiveClass;
 
-        // 3. إظهار الشاشة المطلوبة
         document.getElementById(`view-${tabName}`).classList.remove('hidden');
 
-        // 4. تفعيل الزر المطلوب (توهج وتكبير)
         const activeClass = "flex flex-col items-center gap-1 text-accent transition-all scale-110 drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]";
         document.getElementById(`tab-${tabName}`).className = activeClass;
 
-        // 5. التمرير للأعلى
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-});;
+});
