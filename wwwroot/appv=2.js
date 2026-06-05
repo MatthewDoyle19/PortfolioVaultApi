@@ -282,34 +282,36 @@ document.addEventListener('DOMContentLoaded', () => {
         today.setHours(0, 0, 0, 0);
 
         events.forEach((ev) => {
-            // الحل الجذري لمشكلة الـ Timezone: تفكيك التاريخ وإجباره على التوقيت المحلي
             const [year, month, day] = ev.date.split('-');
             const eventDate = new Date(year, month - 1, day);
             eventDate.setHours(0, 0, 0, 0);
 
             const timeDiff = eventDate.getTime() - today.getTime();
-            // استخدام Math.round بدلاً من Math.ceil لحساب الأيام بدقة متناهية
             const daysDiff = Math.round(timeDiff / (1000 * 3600 * 24));
 
             let countdownText = "";
             let colorClass = "text-purple-400";
-            let bgClass = "bg-purple-500/10 border-purple-500/20";
 
-            // النصوص تم تحويلها للإنجليزية لتطابق الواجهة
+            // BUG FIX: Removed the muddy background colors and applied your 'premium-glass' class
+            let bgClass = "premium-glass border-white/5";
+
             if (daysDiff === 0) {
                 countdownText = "Today! 🎉";
                 colorClass = "text-emerald-400";
-                bgClass = "bg-emerald-500/10 border-emerald-500/20";
+                // Optional: Give today's card a slight emerald tint border to make it pop
+                bgClass = "premium-glass border-emerald-500/30";
             } else if (daysDiff > 0) {
                 countdownText = `${daysDiff} Days Left`;
             } else {
                 countdownText = "Passed ✔️";
                 colorClass = "text-slate-500";
-                bgClass = "bg-slate-800/50 border-white/5 opacity-60";
+                bgClass = "premium-glass border-white/5 opacity-60";
             }
 
             const card = document.createElement('div');
-            card.className = `flex items-center justify-between p-4 rounded-2xl border backdrop-blur-md transition-all group ${bgClass}`;
+            // BUG FIX: Updated class string to use the clean variables
+            card.className = `flex items-center justify-between p-4 rounded-[1.5rem] transition-all group ${bgClass}`;
+
             card.innerHTML = `
             <div class="flex items-center gap-4">
                 <div class="${colorClass} bg-black/40 p-3 rounded-xl shadow-inner">
