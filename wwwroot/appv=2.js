@@ -669,7 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     fetchSystemState();
-    setInterval(fetchSystemState, 10000);
+    setInterval(fetchSystemState, 30000);
 
     const addMansafBtn = document.getElementById('add-mansaf-btn');
     if (addMansafBtn) {

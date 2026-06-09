@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ZainabVaultApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e859ecf4963b48be8765cf82598f917b1a4654d6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d5e5330ff013a90d24e75e76aa40770d4ce2bec7")]
 [assembly: System.Reflection.AssemblyProductAttribute("ZainabVaultApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ZainabVaultApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
