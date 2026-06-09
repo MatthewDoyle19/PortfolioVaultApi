@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (punished === 'Both') {
             // Note: Make sure penaltyVault is accessible globally from penalties.js
             pool = penaltyVault.Shared;
-            displayTarget = "7modee & Zozo (together)";
+            displayTarget = "7amodee & Zozo (together)";
         } else {
             pool = penaltyVault[punished];
             displayTarget = punished;
@@ -687,7 +687,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     fetchSystemState();
-    setInterval(fetchSystemState, 30000);
+    setInterval(fetchSystemState, 10000);
 
     const addMansafBtn = document.getElementById('add-mansaf-btn');
     if (addMansafBtn) {

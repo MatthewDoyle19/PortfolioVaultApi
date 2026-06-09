@@ -24,17 +24,27 @@ var httpClient = new HttpClient();
 
 async Task SendTelegramNotification(string message)
 {
-    // Your Bot Token and Chat ID
+    // التوكن والـ Chat ID الخاصين بك
     string botToken = "8899922136:AAEU5IWwZLw_LsdoWwkXywTd0FfVrSgPzSw"; 
     string chatId = "-5233134027"; 
 
-    string url = $"https://api.telegram.org/bot{botToken}/sendMessage?chat_id={chatId}&text={Uri.EscapeDataString(message)}";
+    // لاحظ أننا أزلنا النص من الرابط
+    string url = $"https://api.telegram.org/bot{botToken}/sendMessage";
     
+    // تغليف الرسالة في صندوق JSON محمي
+    var payload = System.Text.Json.JsonSerializer.Serialize(new {
+        chat_id = chatId,
+        text = message
+    });
+    
+    var content = new StringContent(payload, System.Text.Encoding.UTF8, "application/json");
+
     try { 
-        await httpClient.GetAsync(url); 
+        // إرسال الصندوق بطريقة POST الآمنة
+        await httpClient.PostAsync(url, content); 
     } 
-    catch { 
-        // Ignore errors to prevent server crash if offline
+    catch (Exception ex) { 
+        Console.WriteLine($"[TELEGRAM ERROR] {ex.Message}");
     }
 }
 
