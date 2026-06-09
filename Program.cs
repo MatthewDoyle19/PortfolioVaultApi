@@ -171,6 +171,11 @@ app.MapGet("/api/heartbeats/latest", async (VaultDb db) =>
 app.MapPost("/api/heartbeats", async (Heartbeat hb, VaultDb db) => {
     db.Heartbeats.Add(hb);
     await db.SaveChangesAsync();
+    
+    // 🚀 إشعار النبضة
+    string target = hb.Sender == "Mohammad" ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻";
+    await SendTelegramNotification($"✨ {hb.Sender} is thinking of {target} right now and sent a Spark! 🤍");
+    
     return Results.Ok(hb);
 });
 

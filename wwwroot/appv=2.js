@@ -666,6 +666,24 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('mohammad-mood-text').innerText = "Connecting...";
             document.getElementById('zainab-mood-text').innerText = "Connecting...";
         }
+
+        // --- 📡 مراقبة النبضات (Sparks) ---
+        const hbRes = await fetch(`${API_BASE_URL}/api/heartbeats/latest`, {
+            headers: { 'Cache-Control': 'no-cache' },
+            cache: 'no-store'
+        });
+
+        if (hbRes.ok) {
+            const latestHb = await hbRes.json();
+            // إذا كان هناك نبضة جديدة، والصفحة ليست في أول تحميل لها
+            if (latestHb && !initialLoad && latestHb.id > lastHeartbeatId) {
+                showToast('✨ Incoming Spark!', `${latestHb.sender} is thinking of you right now...`, '🤍');
+            }
+            // تحديث رقم آخر نبضة لتجنب التكرار
+            if (latestHb) {
+                lastHeartbeatId = latestHb.id;
+            }
+        }
     };
 
     fetchSystemState();
@@ -786,6 +804,24 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     fetchBucketList();
+
+    // --- ✨ THE SPARK (Heartbeat) LOGIC ---
+    window.sendHeartbeat = async (sender) => {
+        try {
+            await fetch(`${API_BASE_URL}/api/heartbeats`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sender: sender })
+            });
+
+            const targetName = sender === 'Mohammad' ? 'Zozo' : '7modee';
+            showToast('Sent! ✨', `Your spark is flying to ${targetName}!`, '🕊️');
+
+            fetchSystemState(); // تحديث فوري
+        } catch (error) {
+            console.error("Failed to send spark", error);
+        }
+    };
     
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
     window.switchTab = (tabName) => {
