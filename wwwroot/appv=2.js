@@ -677,7 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const latestHb = await hbRes.json();
             // إذا كان هناك نبضة جديدة، والصفحة ليست في أول تحميل لها
             if (latestHb && !initialLoad && latestHb.id > lastHeartbeatId) {
-                showToast('✨ Incoming Spark!', `${latestHb.sender} is thinking of you right now...`, '🤍');
+                showToast('✨ Incoming Spark!', `${latestHb.sender} is thinking of you right now...`, '❤️');
             }
             // تحديث رقم آخر نبضة لتجنب التكرار
             if (latestHb) {
