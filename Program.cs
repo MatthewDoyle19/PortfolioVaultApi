@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using System.IO;
-using System.Net.Http; // ضروري للاتصال بتليجرام
+using System.Net.Http; // Required for Telegram
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,23 +19,22 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// --- 2. إعدادات تليجرام (Telegram Push Notifications) ---
+// --- 2. TELEGRAM SETTINGS (Push Notifications) ---
 var httpClient = new HttpClient();
 
 async Task SendTelegramNotification(string message)
 {
-    // التوكن والـ Chat ID الخاصين بك
+    // Your Bot Token and Chat ID
     string botToken = "8899922136:AAEU5IWwZLw_LsdoWwkXywTd0FfVrSgPzSw"; 
     string chatId = "-5233134027"; 
 
-    // تحويل النص ليكون متوافقاً مع الروابط (لتجنب مشاكل اللغة العربية)
     string url = $"https://api.telegram.org/bot{botToken}/sendMessage?chat_id={chatId}&text={Uri.EscapeDataString(message)}";
     
     try { 
         await httpClient.GetAsync(url); 
     } 
     catch { 
-        // نتجاهل الأخطاء هنا لكي لا ينهار السيرفر إذا انقطع الإنترنت
+        // Ignore errors to prevent server crash if offline
     }
 }
 
@@ -46,16 +45,14 @@ app.UseStaticFiles();
 app.UseCors("AllowFrontend");
 
 // --- AUTH ---
-// --- AUTH ---
 app.MapPost("/api/auth/login", async (LoginRequest request) =>
 {
     const string secureKey = "2503";
     if (request.Key == secureKey) {
-        // اختياري: إشعار عند دخول أي شخص للخزنة (يمكنك حذفه إذا كان مزعجاً)
-        await SendTelegramNotification("🔓 شخص ما قام بفتح الخزنة الآن!");
+        await SendTelegramNotification("🔓 Someone just unlocked the Vault!");
         return Results.Ok(new { success = true, message = "Access Granted" });
     }
-    await SendTelegramNotification("⚠️ محاولة دخول فاشلة للخزنة بكلمة مرور خاطئة!");
+    await SendTelegramNotification("⚠️ Failed attempt to access the Vault with an incorrect password!");
     return Results.Json(new { success = false, message = "Invalid Key" }, statusCode: 401);
 });
 
@@ -66,8 +63,7 @@ app.MapPost("/api/links", async (Link link, VaultDb db) => {
     db.Links.Add(link);
     await db.SaveChangesAsync();
     
-    // 🚀 إشعار إضافة رابط
-    await SendTelegramNotification($"🔗 تم حفظ رابط جديد!\nالعنوان: {link.Title}");
+    await SendTelegramNotification($"🔗 A new link has been saved!\nTitle: {link.Title}");
     
     return Results.Created($"/api/links/{link.Id}", link);
 });
@@ -78,8 +74,7 @@ app.MapDelete("/api/links/{id}", async (int id, VaultDb db) => {
     db.Links.Remove(link);
     await db.SaveChangesAsync();
     
-    // 🚀 إشعار حذف رابط
-    await SendTelegramNotification($"🗑️ تم حذف رابط من الخزنة!\nالعنوان: {link.Title}");
+    await SendTelegramNotification($"🗑️ A link was deleted from the Vault!\nTitle: {link.Title}");
     
     return Results.Ok();
 });
@@ -92,8 +87,7 @@ app.MapPost("/api/commits", async (Commit commit, VaultDb db) => {
     db.Commits.Add(commit);
     await db.SaveChangesAsync();
     
-    // 🚀 إشعار إضافة ذكرى
-    await SendTelegramNotification($"📸 تم إضافة ذكرى جديدة!\n\nالوصف: {commit.Message}");
+    await SendTelegramNotification($"📸 A new memory has been added!\n\nDescription: {commit.Message}");
     
     return Results.Created($"/api/commits/{commit.Id}", commit);
 });
@@ -104,13 +98,12 @@ app.MapDelete("/api/commits/{id}", async (int id, VaultDb db) => {
     db.Commits.Remove(commit);
     await db.SaveChangesAsync();
     
-    // 🚀 إشعار حذف ذكرى
-    await SendTelegramNotification($"🗑️ تم حذف ذكرى للأسف!\nالوصف المفقود: {commit.Message}");
+    await SendTelegramNotification($"🗑️ A memory was unfortunately deleted!\nLost description: {commit.Message}");
     
     return Results.Ok();
 });
 
-// --- PENALTIES (المحكمة الالكترونيه) ---
+// --- PENALTIES (Digital Court) ---
 app.MapGet("/api/penalties", async (VaultDb db) => 
     await db.Penalties.OrderByDescending(p => p.Id).ToListAsync());
 
@@ -118,8 +111,7 @@ app.MapPost("/api/penalties", async (Penalty penalty, VaultDb db) => {
     db.Penalties.Add(penalty);
     await db.SaveChangesAsync();
     
-    // 🚀 إشعار إضافة حكم
-    await SendTelegramNotification($"⚖️ المحكمة الالكترونيه: تم إصدار حكم جديد!\n\nالقاضي: {penalty.Punisher}\nالمُعاقب: {penalty.Punished}\n\nنص الحكم:\n{penalty.PenaltyText}");
+    await SendTelegramNotification($"⚖️ Digital Court: A new verdict has been issued!\n\nJudge: {penalty.Punisher}\nPunished: {penalty.Punished}\n\nVerdict:\n{penalty.PenaltyText}");
     
     return Results.Created($"/api/penalties/{penalty.Id}", penalty);
 });
@@ -130,13 +122,12 @@ app.MapDelete("/api/penalties/{id}", async (int id, VaultDb db) => {
     db.Penalties.Remove(penalty);
     await db.SaveChangesAsync();
     
-    // 🚀 إشعار حذف حكم
-    await SendTelegramNotification($"🗑️ تم إلغاء/حذف حكم من السجل!\nالمُعاقب كان: {penalty.Punished}");
+    await SendTelegramNotification($"🗑️ A verdict was deleted/canceled from the ledger!\nThe punished was: {penalty.Punished}");
     
     return Results.Ok();
 });
 
-// --- MOOD RADAR (رادار المزاج) ---
+// --- MOOD RADAR ---
 app.MapGet("/api/moods", async (VaultDb db) => await db.Moods.ToListAsync());
 
 app.MapPost("/api/moods", async (Mood newMood, VaultDb db) => {
@@ -149,9 +140,8 @@ app.MapPost("/api/moods", async (Mood newMood, VaultDb db) => {
     }
     await db.SaveChangesAsync();
     
-    // 🚀 إشعار تغيير المزاج
-    string alertEmoji = newMood.Status == "SOS" ? "🚨 طوارئ!" : "📡 تحديث مزاج:";
-    await SendTelegramNotification($"{alertEmoji}\nقام/ت {newMood.User} بتحديث الحالة إلى ({newMood.Status})\nفي الساعة {newMood.UpdatedAt}");
+    string alertEmoji = newMood.Status == "SOS" ? "🚨 EMERGENCY!" : "📡 Mood Update:";
+    await SendTelegramNotification($"{alertEmoji}\n{newMood.User} updated their status to ({newMood.Status})\nat {newMood.UpdatedAt}");
     
     return Results.Ok(newMood);
 });
@@ -184,6 +174,39 @@ app.MapPost("/api/heartbeats", async (Heartbeat hb, VaultDb db) => {
     return Results.Ok(hb);
 });
 
+// --- BUCKET LIST (The New Feature) ---
+app.MapGet("/api/bucketlist", async (VaultDb db) => 
+    await db.BucketListItems.OrderBy(b => b.IsCompleted).ThenByDescending(b => b.Id).ToListAsync());
+
+app.MapPost("/api/bucketlist", async (BucketListItem item, VaultDb db) => {
+    db.BucketListItems.Add(item);
+    await db.SaveChangesAsync();
+    
+    await SendTelegramNotification($"🗺️ A new goal/place was added to the Bucket List!\nGoal: {item.Title}");
+    
+    return Results.Created($"/api/bucketlist/{item.Id}", item);
+});
+
+app.MapPut("/api/bucketlist/{id}", async (int id, VaultDb db) => {
+    var item = await db.BucketListItems.FindAsync(id);
+    if (item is null) return Results.NotFound();
+    
+    item.IsCompleted = !item.IsCompleted; 
+    await db.SaveChangesAsync();
+    
+    string status = item.IsCompleted ? "✅ Completed!" : "❌ Reverted";
+    await SendTelegramNotification($"🗺️ Bucket List Update:\nGoal: {item.Title}\nStatus: {status}");
+    
+    return Results.Ok(item);
+});
+
+app.MapDelete("/api/bucketlist/{id}", async (int id, VaultDb db) => {
+    var item = await db.BucketListItems.FindAsync(id);
+    if (item is null) return Results.NotFound();
+    db.BucketListItems.Remove(item);
+    await db.SaveChangesAsync();
+    return Results.Ok();
+});
 
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
@@ -203,9 +226,12 @@ class VaultDb : DbContext {
     public DbSet<Link> Links => Set<Link>();
     public DbSet<Commit> Commits => Set<Commit>();
     public DbSet<Penalty> Penalties => Set<Penalty>();
-    public DbSet<Mood> Moods => Set<Mood>(); // تم إضافة جدول المزاج
-    public DbSet<Event> Events => Set<Event>(); // تم إضافة جدول الأحداث
+    public DbSet<Mood> Moods => Set<Mood>(); 
+    public DbSet<Event> Events => Set<Event>(); 
     public DbSet<Heartbeat> Heartbeats => Set<Heartbeat>();
+    
+    // 🗺️ The New Bucket List Table
+    public DbSet<BucketListItem> BucketListItems => Set<BucketListItem>();
 }
 
 class Link {
@@ -249,4 +275,11 @@ class Event {
 class Heartbeat {
     [JsonPropertyName("id")] public int Id { get; set; }
     [JsonPropertyName("sender")] public string Sender { get; set; } = string.Empty;
+}
+
+// 🗺️ The New Bucket List Data Model
+class BucketListItem {
+    [JsonPropertyName("id")] public int Id { get; set; }
+    [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
+    [JsonPropertyName("isCompleted")] public bool IsCompleted { get; set; } = false;
 }

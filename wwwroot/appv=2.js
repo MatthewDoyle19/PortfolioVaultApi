@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchEvents();
         }
     };
-
+    
     fetchEvents();
 
     // --- ⚖️ The Digital Court ---
@@ -529,6 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchLinks();
     fetchCommits();
     fetchPenaltiesFromServer();
+    fetchBucketList();
 
     // --- 📡 Mood Radar & Live Notifications ---
     const toastContainer = document.getElementById('toast-container');
@@ -703,6 +704,87 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // --- 🗺️ THE BUCKET LIST ---
+    const bucketGrid = document.getElementById('bucket-grid');
+    const addBucketForm = document.getElementById('add-bucket-form');
+
+    const fetchBucketList = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/bucketlist`);
+            const items = await response.json();
+            renderBucketList(items);
+        } catch (error) { console.error("Failed to fetch bucket list", error); }
+    };
+
+    const renderBucketList = (items) => {
+        if (!bucketGrid) return;
+        bucketGrid.innerHTML = '';
+
+        items.forEach((item) => {
+            const isDone = item.isCompleted;
+            // إذا تحقق الحلم، نجعل الكارت شفافاً مع خط أخضر يمر فوق النص
+            const bgClass = isDone ? "bg-white/5 border-emerald-500/30 opacity-60" : "premium-glass border-white/5 hover:border-pink-500/30";
+            const textClass = isDone ? "text-slate-400 line-through decoration-emerald-500/50" : "text-white";
+            const checkIcon = isDone ? "✅" : "⬜";
+
+            const card = document.createElement('div');
+            card.className = `flex items-center justify-between p-4 rounded-2xl transition-all group ${bgClass}`;
+
+            card.innerHTML = `
+                <div class="flex items-center gap-4 flex-grow cursor-pointer" onclick="toggleBucketItem(${item.id})">
+                    <div class="text-xl transition-transform active:scale-75 select-none">${checkIcon}</div>
+                    <h4 class="${textClass} font-bold text-sm tracking-wide flex-grow transition-all select-none">${item.title}</h4>
+                </div>
+                <button onclick="deleteBucketItem(${item.id})" class="text-slate-600 hover:text-rose-400 p-2 transition-colors opacity-0 group-hover:opacity-100 active:scale-90 ml-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            `;
+            bucketGrid.appendChild(card);
+        });
+    };
+
+    if (addBucketForm) {
+        addBucketForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '...';
+
+            try {
+                await fetch(`${API_BASE_URL}/api/bucketlist`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: document.getElementById('bucket-title').value,
+                        isCompleted: false
+                    })
+                });
+                addBucketForm.reset();
+                fetchBucketList();
+            } catch (error) { console.error("Save failed", error); }
+            finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Add Dream';
+            }
+        });
+    }
+
+    // دالة تغيير حالة الهدف (تم / لم يتم)
+    window.toggleBucketItem = async (id) => {
+        try {
+            await fetch(`${API_BASE_URL}/api/bucketlist/${id}`, { method: 'PUT' });
+            fetchBucketList();
+        } catch (error) { console.error("Update failed", error); }
+    };
+
+    // دالة الحذف
+    window.deleteBucketItem = async (id) => {
+        if(confirm('Delete this dream from the list?')) {
+            await fetch(`${API_BASE_URL}/api/bucketlist/${id}`, { method: 'DELETE' });
+            fetchBucketList();
+        }
+    };
 
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
     window.switchTab = (tabName) => {
