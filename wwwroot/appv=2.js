@@ -808,18 +808,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ✨ THE SPARK (Heartbeat) LOGIC ---
     window.sendHeartbeat = async (sender) => {
         try {
-            await fetch(`${API_BASE_URL}/api/heartbeats`, {
+            const res = await fetch(`${API_BASE_URL}/api/heartbeats`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ sender: sender })
             });
 
-            const targetName = sender === 'Mohammad' ? 'Zozo' : '7modee';
+            if (!res.ok) throw new Error("Server rejected the heartbeat");
+
+            // 🛠️ الإصلاح الجراحي: نأخذ رقم النبضة التي أرسلناها للتو من السيرفر
+            const savedHb = await res.json();
+            // 🛠️ نحدث العداد المحلي بصمت حتى لا نستقبل إشعاراً لنبضتنا الخاصة!
+            lastHeartbeatId = savedHb.id;
+
+            const targetName = sender === 'Mohammad' ? 'Zozo 👸🏻' : '7modee 👨🏻‍💻';
             showToast('Sent! ✨', `Your spark is flying to ${targetName}!`, '🕊️');
 
-            fetchSystemState(); // تحديث فوري
+            fetchSystemState(); // تحديث فوري لباقي البيانات
         } catch (error) {
             console.error("Failed to send spark", error);
+            showToast('Error', 'Could not send spark. Check your connection.', '❌');
         }
     };
     
