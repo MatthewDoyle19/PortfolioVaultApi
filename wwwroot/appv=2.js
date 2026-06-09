@@ -529,7 +529,6 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchLinks();
     fetchCommits();
     fetchPenaltiesFromServer();
-    fetchBucketList();
 
     // --- 📡 Mood Radar & Live Notifications ---
     const toastContainer = document.getElementById('toast-container');
@@ -786,6 +785,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    fetchBucketList();
+    
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
     window.switchTab = (tabName) => {
         document.getElementById('view-home').classList.add('hidden');
