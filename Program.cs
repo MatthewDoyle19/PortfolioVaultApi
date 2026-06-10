@@ -223,30 +223,25 @@ app.MapDelete("/api/bucketlist/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
-// --- ✈️ VISIT ITINERARY ---
+// --- ✈️ VISIT ITINERARY (RELATIONAL) ---
 app.MapGet("/api/visit/dates", async (VaultDb db) => 
-    await db.VisitDates.FirstOrDefaultAsync());
+    await db.VisitDates.OrderByDescending(d => d.Id).FirstOrDefaultAsync()); // Get the latest active trip
 
 app.MapPost("/api/visit/dates", async (VisitDates dates, VaultDb db) => {
-    var existing = await db.VisitDates.FirstOrDefaultAsync();
-    if (existing != null) {
-        existing.StartDate = dates.StartDate;
-        existing.EndDate = dates.EndDate;
-    } else {
-        db.VisitDates.Add(dates);
-    }
+    db.VisitDates.Add(dates); // Always create a new trip instance
     await db.SaveChangesAsync();
-    await SendTelegramNotification($"✈️ Visit Dates Set: From {dates.StartDate} to {dates.EndDate}!");
-    return Results.Ok(existing ?? dates);
+    await SendTelegramNotification($"✈️ New Trip Planned: From {dates.StartDate} to {dates.EndDate}! 🤍");
+    return Results.Ok(dates); // Returns the newly created ID to the frontend
 });
 
-app.MapGet("/api/visit/tasks", async (VaultDb db) => 
-    await db.VisitTasks.OrderBy(t => t.IsCompleted).ThenBy(t => t.Id).ToListAsync());
+// Fetch tasks ONLY for the active trip range
+app.MapGet("/api/visit/tasks/{visitDatesId}", async (int visitDatesId, VaultDb db) => 
+    await db.VisitTasks.Where(t => t.VisitDatesId == visitDatesId).OrderBy(t => t.IsCompleted).ThenBy(t => t.Id).ToListAsync());
 
 app.MapPost("/api/visit/tasks", async (VisitTask task, VaultDb db) => {
     db.VisitTasks.Add(task);
     await db.SaveChangesAsync();
-    await SendTelegramNotification($"📌 New Visit Plan added: {task.Title}");
+    await SendTelegramNotification($"📌 New task added for this trip: {task.Title}");
     return Results.Created($"/api/visit/tasks/{task.Id}", task);
 });
 
@@ -255,19 +250,9 @@ app.MapPut("/api/visit/tasks/{id}", async (int id, VaultDb db) => {
     if (task is null) return Results.NotFound();
     
     task.IsCompleted = !task.IsCompleted;
-    
-    // تسجيل وقت وتاريخ الإنجاز تلقائياً من السيرفر!
-    if (task.IsCompleted) {
-        task.CompletedAt = DateTime.Now.ToString("dd MMM yyyy, hh:mm tt");
-    } else {
-        task.CompletedAt = null; // مسح الوقت في حال التراجع
-    }
+    task.CompletedAt = task.IsCompleted ? DateTime.Now.ToString("dd MMM, hh:mm tt") : null;
     
     await db.SaveChangesAsync();
-    
-    string status = task.IsCompleted ? $"✅ Done at {task.CompletedAt}" : "❌ Reverted";
-    await SendTelegramNotification($"📌 Visit Update:\nPlan: {task.Title}\nStatus: {status}");
-    
     return Results.Ok(task);
 });
 
@@ -366,4 +351,7 @@ class VisitTask {
     [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
     [JsonPropertyName("isCompleted")] public bool IsCompleted { get; set; } = false;
     [JsonPropertyName("completedAt")] public string? CompletedAt { get; set; }
+    
+    // 🔗 Foreign Key linking to the specific date range instance
+    [JsonPropertyName("visitDatesId")] public int VisitDatesId { get; set; }
 }

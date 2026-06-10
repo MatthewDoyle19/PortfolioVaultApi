@@ -831,35 +831,45 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- ✈️ THE VISIT PLANNER LOGIC ---
+    // --- ✈️ THE VISIT PLANNER LOGIC (RELATIONAL) ---
     const visitTasksGrid = document.getElementById('visit-tasks-grid');
     const addVisitTaskForm = document.getElementById('add-visit-task-form');
     const visitStartInput = document.getElementById('visit-start');
     const visitEndInput = document.getElementById('visit-end');
 
+    let activeVisitDatesId = null; // Tracks the current active trip container ID
+
     const fetchVisitData = async () => {
         try {
-            // جلب نطاق التواريخ
+            // 1. Get the latest active date range
             const datesRes = await fetch(`${API_BASE_URL}/api/visit/dates`);
             if (datesRes.ok) {
                 const dates = await datesRes.json();
                 if (dates) {
                     visitStartInput.value = dates.startDate;
                     visitEndInput.value = dates.endDate;
+                    activeVisitDatesId = dates.id; // Store the ID globally
+
+                    // 2. Fetch tasks strictly linked to THIS trip ID
+                    const tasksRes = await fetch(`${API_BASE_URL}/api/visit/tasks/${activeVisitDatesId}`);
+                    if (tasksRes.ok) {
+                        const tasks = await tasksRes.json();
+                        renderVisitTasks(tasks);
+                    }
+                } else {
+                    if(visitTasksGrid) visitTasksGrid.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Set a date range to unlock the itinerary.</p>';
                 }
-            }
-            // جلب المهام
-            const tasksRes = await fetch(`${API_BASE_URL}/api/visit/tasks`);
-            if (tasksRes.ok) {
-                const tasks = await tasksRes.json();
-                renderVisitTasks(tasks);
             }
         } catch (error) { console.error("Failed to fetch visit data", error); }
     };
 
     window.saveVisitDates = async () => {
+        if (!visitStartInput.value || !visitEndInput.value) {
+            alert("Please pick both start and end dates!");
+            return;
+        }
         try {
-            await fetch(`${API_BASE_URL}/api/visit/dates`, {
+            const res = await fetch(`${API_BASE_URL}/api/visit/dates`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -867,13 +877,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     endDate: visitEndInput.value
                 })
             });
-            showToast('Dates Saved', 'Visit dates successfully synced!', '✈️');
+            const savedDates = await res.json();
+            activeVisitDatesId = savedDates.id; // Lock in the new trip container ID
+
+            showToast('Trip Activated! ✈️', 'A fresh itinerary list has been opened!', '🗺️');
+            fetchVisitData(); // Refresh the grid
         } catch (error) { console.error("Failed to save dates", error); }
     };
 
     const renderVisitTasks = (tasks) => {
         if (!visitTasksGrid) return;
         visitTasksGrid.innerHTML = '';
+
+        if (tasks.length === 0) {
+            visitTasksGrid.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">No plans added for this trip yet.</p>';
+            return;
+        }
 
         tasks.forEach((task) => {
             const isDone = task.isCompleted;
@@ -884,7 +903,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = `flex flex-col p-4 rounded-2xl transition-all group ${bgClass}`;
 
-            // إذا كانت المهمة منجزة، سيظهر التاريخ تحتها بشكل أنيق
             card.innerHTML = `
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4 flex-grow cursor-pointer" onclick="toggleVisitTask(${task.id})">
@@ -895,7 +913,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
-                ${isDone && task.completedAt ? `<div class="mt-2 ml-9 text-[10px] text-indigo-400 font-bold tracking-wide bg-indigo-500/10 self-start px-2 py-1 rounded-md">Done: ${task.completedAt} 🕒</div>` : ''}
+                ${isDone && task.completedAt ? `<div class="mt-2 ml-9 text-[10px] text-indigo-400 font-bold tracking-wide bg-indigo-500/10 self-start px-2 py-1 rounded-md">Logged: ${task.completedAt} 🕒</div>` : ''}
             `;
             visitTasksGrid.appendChild(card);
         });
@@ -904,9 +922,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (addVisitTaskForm) {
         addVisitTaskForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            if (!activeVisitDatesId) {
+                alert("Please set and save a Date Range first before adding tasks!");
+                return;
+            }
+
             const submitBtn = e.target.querySelector('button[type="submit"]');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '...';
 
             try {
                 await fetch(`${API_BASE_URL}/api/visit/tasks`, {
@@ -914,16 +937,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         title: document.getElementById('visit-task-title').value,
-                        isCompleted: false
+                        isCompleted: false,
+                        visitDatesId: activeVisitDatesId // Injecting the active Foreign Key!
                     })
                 });
                 document.getElementById('visit-task-title').value = '';
                 fetchVisitData();
             } catch (error) { console.error("Save failed", error); }
-            finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Add';
-            }
+            finally { submitBtn.disabled = false; }
         });
     }
 
@@ -935,7 +956,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.deleteVisitTask = async (id) => {
-        if(confirm('Delete this visit plan?')) {
+        if(confirm('Delete this trip plan?')) {
             await fetch(`${API_BASE_URL}/api/visit/tasks/${id}`, { method: 'DELETE' });
             fetchVisitData();
         }
