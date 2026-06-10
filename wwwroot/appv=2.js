@@ -894,29 +894,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         trips.forEach(trip => {
-            // إنشاء صندوق المجموعة (Trip Container)
             const groupDiv = document.createElement('div');
             groupDiv.className = 'mb-8 bg-black/20 p-4 rounded-3xl border border-white/5';
 
-            // عنوان المجموعة (يحتوي على التاريخ)
+            // 🛠️ التعديل الجراحي: إضافة زر الحذف (Trash Icon) داخل عنوان الرحلة
             let html = `
-                <div class="mb-4 inline-block bg-indigo-500/20 px-3 py-1.5 rounded-lg border border-indigo-500/30">
+                <div class="flex justify-between items-center mb-4 bg-indigo-500/20 px-3 py-1.5 rounded-lg border border-indigo-500/30">
                     <span class="text-xs text-indigo-300 font-bold uppercase tracking-widest">
                         ✈️ Trip: ${formatShortDate(trip.startDate)} to ${formatShortDate(trip.endDate)}
                     </span>
+                    <button onclick="deleteWholeTrip(${trip.id})" class="text-indigo-400 hover:text-rose-400 p-1 transition-colors active:scale-90">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
                 </div>
                 <div class="flex flex-col gap-3">
             `;
 
             if (trip.tasks.length === 0) {
-                html += `<p class="text-xs text-slate-500 pl-2">No plans added for this trip yet.</p>`;
+                html += `<p class="text-xs text-slate-500 pl-2 py-2">No plans added for this trip yet.</p>`;
             } else {
-                // رسم مهام هذه الرحلة فقط
                 trip.tasks.forEach(task => {
                     const isDone = task.isCompleted;
                     const bgClass = isDone ? "bg-white/5 border-indigo-500/30 opacity-70" : "premium-glass border-white/5 hover:border-indigo-500/30";
                     const textClass = isDone ? "text-slate-400 line-through decoration-indigo-500/50" : "text-white";
-                    const checkIcon = isDone ? "☑️" : "⬜";
+                    const checkIcon = isDone ? "✅" : "⬜";
 
                     html += `
                         <div class="flex flex-col p-4 rounded-2xl transition-all group ${bgClass}">
@@ -935,7 +936,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            html += `</div>`; // إغلاق صندوق المهام
+            html += `</div>`;
             groupDiv.innerHTML = html;
             visitTasksGrid.appendChild(groupDiv);
         });
@@ -988,6 +989,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if(confirm('Delete this trip plan?')) {
             await fetch(`${API_BASE_URL}/api/visit/tasks/${id}`, { method: 'DELETE' });
             fetchVisitData();
+        }
+    };
+
+    // دالة حذف الرحلة بالكامل مع جميع مهامها المربوطة
+    window.deleteWholeTrip = async (id) => {
+        if (confirm("⚠️ WARNING: Are you sure you want to delete this ENTIRE trip and all of its logged tasks? This cannot be undone!")) {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/visit/dates/${id}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error("Server rejected deletion");
+
+                showToast('Trip Wiped 🗑️', 'The entire itinerary has been deleted.', 'ℹ️');
+                fetchVisitData(); // إعادة جلب البيانات لتحديث الشاشة فوراً
+            } catch (error) {
+                console.error("Failed to delete entire trip", error);
+                showToast('Error', 'Could not delete trip.', '❌');
+            }
         }
     };
 

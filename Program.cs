@@ -280,6 +280,19 @@ app.MapDelete("/api/visit/tasks/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
+app.MapDelete("/api/visit/dates/{id}", async (int id, VaultDb db) => {
+    var trip = await db.VisitDates.FindAsync(id);
+    if (trip is null) return Results.NotFound();
+    
+    db.VisitDates.Remove(trip);
+    await db.SaveChangesAsync();
+    
+    // إشعار تليجرام لتوثيق عملية المسح
+    await SendTelegramNotification($"🗑️ An entire trip container ({trip.StartDate} to {trip.EndDate}) was deleted from the Vault!");
+    
+    return Results.Ok();
+});
+
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<VaultDb>();
