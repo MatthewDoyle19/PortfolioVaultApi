@@ -831,33 +831,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- ✈️ THE VISIT PLANNER LOGIC (RELATIONAL) ---
+    // --- ✈️ THE VISIT PLANNER LOGIC (GROUPED & LOCAL TIME) ---
     const visitTasksGrid = document.getElementById('visit-tasks-grid');
     const addVisitTaskForm = document.getElementById('add-visit-task-form');
     const visitStartInput = document.getElementById('visit-start');
     const visitEndInput = document.getElementById('visit-end');
 
-    let activeVisitDatesId = null; // Tracks the current active trip container ID
+    let activeVisitDatesId = null;
+
+    // تنسيق التاريخ ليصبح أجمل (مثال: 10 Jan)
+    const formatShortDate = (dateStr) => {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    };
 
     const fetchVisitData = async () => {
         try {
-            // 1. Get the latest active date range
-            const datesRes = await fetch(`${API_BASE_URL}/api/visit/dates`);
-            if (datesRes.ok) {
-                const dates = await datesRes.json();
-                if (dates) {
-                    visitStartInput.value = dates.startDate;
-                    visitEndInput.value = dates.endDate;
-                    activeVisitDatesId = dates.id; // Store the ID globally
+            // جلب البيانات المجمعة من السيرفر
+            const res = await fetch(`${API_BASE_URL}/api/visit/all`);
+            if (res.ok) {
+                const trips = await res.json();
+                renderGroupedTrips(trips);
 
-                    // 2. Fetch tasks strictly linked to THIS trip ID
-                    const tasksRes = await fetch(`${API_BASE_URL}/api/visit/tasks/${activeVisitDatesId}`);
-                    if (tasksRes.ok) {
-                        const tasks = await tasksRes.json();
-                        renderVisitTasks(tasks);
-                    }
-                } else {
-                    if(visitTasksGrid) visitTasksGrid.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Set a date range to unlock the itinerary.</p>';
+                // تحديد أحدث رحلة لتكون هي المستقبلة للمهام الجديدة
+                if (trips.length > 0) {
+                    activeVisitDatesId = trips[0].id;
+                    visitStartInput.value = trips[0].startDate;
+                    visitEndInput.value = trips[0].endDate;
                 }
             }
         } catch (error) { console.error("Failed to fetch visit data", error); }
@@ -869,7 +870,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         try {
-            const res = await fetch(`${API_BASE_URL}/api/visit/dates`, {
+            await fetch(`${API_BASE_URL}/api/visit/dates`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -877,57 +878,76 @@ document.addEventListener('DOMContentLoaded', () => {
                     endDate: visitEndInput.value
                 })
             });
-            const savedDates = await res.json();
-            activeVisitDatesId = savedDates.id; // Lock in the new trip container ID
-
             showToast('Trip Activated! ✈️', 'A fresh itinerary list has been opened!', '🗺️');
-            fetchVisitData(); // Refresh the grid
+            fetchVisitData();
         } catch (error) { console.error("Failed to save dates", error); }
     };
 
-    const renderVisitTasks = (tasks) => {
+    // دالة الرسم الجديدة (ترسم كل رحلة كمجموعة مع عنوانها)
+    const renderGroupedTrips = (trips) => {
         if (!visitTasksGrid) return;
         visitTasksGrid.innerHTML = '';
 
-        if (tasks.length === 0) {
-            visitTasksGrid.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">No plans added for this trip yet.</p>';
+        if (trips.length === 0) {
+            visitTasksGrid.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">No trips planned yet.</p>';
             return;
         }
 
-        tasks.forEach((task) => {
-            const isDone = task.isCompleted;
-            const bgClass = isDone ? "bg-white/5 border-indigo-500/30 opacity-70" : "premium-glass border-white/5 hover:border-indigo-500/30";
-            const textClass = isDone ? "text-slate-400 line-through decoration-indigo-500/50" : "text-white";
-            const checkIcon = isDone ? "☑️" : "⬜";
+        trips.forEach(trip => {
+            // إنشاء صندوق المجموعة (Trip Container)
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'mb-8 bg-black/20 p-4 rounded-3xl border border-white/5';
 
-            const card = document.createElement('div');
-            card.className = `flex flex-col p-4 rounded-2xl transition-all group ${bgClass}`;
-
-            card.innerHTML = `
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4 flex-grow cursor-pointer" onclick="toggleVisitTask(${task.id})">
-                        <div class="text-xl transition-transform active:scale-75 select-none">${checkIcon}</div>
-                        <h4 class="${textClass} font-bold text-sm tracking-wide flex-grow select-none">${task.title}</h4>
-                    </div>
-                    <button onclick="deleteVisitTask(${task.id})" class="text-slate-600 hover:text-rose-400 p-2 transition-colors opacity-0 group-hover:opacity-100 active:scale-90 ml-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
+            // عنوان المجموعة (يحتوي على التاريخ)
+            let html = `
+                <div class="mb-4 inline-block bg-indigo-500/20 px-3 py-1.5 rounded-lg border border-indigo-500/30">
+                    <span class="text-xs text-indigo-300 font-bold uppercase tracking-widest">
+                        ✈️ Trip: ${formatShortDate(trip.startDate)} to ${formatShortDate(trip.endDate)}
+                    </span>
                 </div>
-                ${isDone && task.completedAt ? `<div class="mt-2 ml-9 text-[10px] text-indigo-400 font-bold tracking-wide bg-indigo-500/10 self-start px-2 py-1 rounded-md">Logged: ${task.completedAt} 🕒</div>` : ''}
+                <div class="flex flex-col gap-3">
             `;
-            visitTasksGrid.appendChild(card);
+
+            if (trip.tasks.length === 0) {
+                html += `<p class="text-xs text-slate-500 pl-2">No plans added for this trip yet.</p>`;
+            } else {
+                // رسم مهام هذه الرحلة فقط
+                trip.tasks.forEach(task => {
+                    const isDone = task.isCompleted;
+                    const bgClass = isDone ? "bg-white/5 border-indigo-500/30 opacity-70" : "premium-glass border-white/5 hover:border-indigo-500/30";
+                    const textClass = isDone ? "text-slate-400 line-through decoration-indigo-500/50" : "text-white";
+                    const checkIcon = isDone ? "☑️" : "⬜";
+
+                    html += `
+                        <div class="flex flex-col p-4 rounded-2xl transition-all group ${bgClass}">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-4 flex-grow cursor-pointer" onclick="toggleVisitTask(${task.id})">
+                                    <div class="text-xl transition-transform active:scale-75 select-none">${checkIcon}</div>
+                                    <h4 class="${textClass} font-bold text-sm tracking-wide flex-grow select-none">${task.title}</h4>
+                                </div>
+                                <button onclick="deleteVisitTask(${task.id})" class="text-slate-600 hover:text-rose-400 p-2 transition-colors opacity-0 group-hover:opacity-100 active:scale-90 ml-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                            ${isDone && task.completedAt ? `<div class="mt-2 ml-9 text-[10px] text-indigo-400 font-bold tracking-wide bg-indigo-500/10 self-start px-2 py-1 rounded-md">Logged: ${task.completedAt}</div>` : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            html += `</div>`; // إغلاق صندوق المهام
+            groupDiv.innerHTML = html;
+            visitTasksGrid.appendChild(groupDiv);
         });
     };
 
     if (addVisitTaskForm) {
         addVisitTaskForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-
             if (!activeVisitDatesId) {
                 alert("Please set and save a Date Range first before adding tasks!");
                 return;
             }
-
             const submitBtn = e.target.querySelector('button[type="submit"]');
             submitBtn.disabled = true;
 
@@ -938,7 +958,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({
                         title: document.getElementById('visit-task-title').value,
                         isCompleted: false,
-                        visitDatesId: activeVisitDatesId // Injecting the active Foreign Key!
+                        visitDatesId: activeVisitDatesId
                     })
                 });
                 document.getElementById('visit-task-title').value = '';
@@ -948,9 +968,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 🕒 حل مشكلة الوقت: نأخذ وقت الهاتف بالضبط ونرسله للسيرفر
     window.toggleVisitTask = async (id) => {
         try {
-            await fetch(`${API_BASE_URL}/api/visit/tasks/${id}`, { method: 'PUT' });
+            const now = new Date();
+            // توليد الوقت بصيغة (10 Jan, 06:30 PM) بتوقيت الأردن المحلي من هاتفك
+            const localTimeString = now.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true });
+
+            await fetch(`${API_BASE_URL}/api/visit/tasks/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ localTime: localTimeString })
+            });
             fetchVisitData();
         } catch (error) { console.error("Update failed", error); }
     };

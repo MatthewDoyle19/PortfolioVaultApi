@@ -223,20 +223,30 @@ app.MapDelete("/api/bucketlist/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
-// --- ✈️ VISIT ITINERARY (RELATIONAL) ---
-app.MapGet("/api/visit/dates", async (VaultDb db) => 
-    await db.VisitDates.OrderByDescending(d => d.Id).FirstOrDefaultAsync()); // Get the latest active trip
+// --- ✈️ VISIT ITINERARY (RELATIONAL & GROUPED) ---
 
-app.MapPost("/api/visit/dates", async (VisitDates dates, VaultDb db) => {
-    db.VisitDates.Add(dates); // Always create a new trip instance
-    await db.SaveChangesAsync();
-    await SendTelegramNotification($"✈️ New Trip Planned: From {dates.StartDate} to {dates.EndDate}! 🤍");
-    return Results.Ok(dates); // Returns the newly created ID to the frontend
+// 1. مسار يجلب كل الرحلات مجمعة مع مهامها
+app.MapGet("/api/visit/all", async (VaultDb db) => {
+    var dates = await db.VisitDates.OrderByDescending(d => d.Id).ToListAsync();
+    var tasks = await db.VisitTasks.ToListAsync();
+    
+    // عملية تجميع (Grouping) هندسية لربط كل مهمة برحلتها
+    var result = dates.Select(d => new {
+        Id = d.Id,
+        StartDate = d.StartDate,
+        EndDate = d.EndDate,
+        Tasks = tasks.Where(t => t.VisitDatesId == d.Id).OrderBy(t => t.IsCompleted).ThenBy(t => t.Id).ToList()
+    });
+    
+    return Results.Ok(result);
 });
 
-// Fetch tasks ONLY for the active trip range
-app.MapGet("/api/visit/tasks/{visitDatesId}", async (int visitDatesId, VaultDb db) => 
-    await db.VisitTasks.Where(t => t.VisitDatesId == visitDatesId).OrderBy(t => t.IsCompleted).ThenBy(t => t.Id).ToListAsync());
+app.MapPost("/api/visit/dates", async (VisitDates dates, VaultDb db) => {
+    db.VisitDates.Add(dates); 
+    await db.SaveChangesAsync();
+    await SendTelegramNotification($"✈️ New Trip Planned: From {dates.StartDate} to {dates.EndDate}! 🤍");
+    return Results.Ok(dates); 
+});
 
 app.MapPost("/api/visit/tasks", async (VisitTask task, VaultDb db) => {
     db.VisitTasks.Add(task);
@@ -245,14 +255,20 @@ app.MapPost("/api/visit/tasks", async (VisitTask task, VaultDb db) => {
     return Results.Created($"/api/visit/tasks/{task.Id}", task);
 });
 
-app.MapPut("/api/visit/tasks/{id}", async (int id, VaultDb db) => {
+// 2. تحديث مسار التعديل ليعتمد على وقت الهاتف القادم في الـ Request Body
+app.MapPut("/api/visit/tasks/{id}", async (int id, TaskToggleRequest req, VaultDb db) => {
     var task = await db.VisitTasks.FindAsync(id);
     if (task is null) return Results.NotFound();
     
     task.IsCompleted = !task.IsCompleted;
-    task.CompletedAt = task.IsCompleted ? DateTime.Now.ToString("dd MMM, hh:mm tt") : null;
+    task.CompletedAt = task.IsCompleted ? req.LocalTime : null; 
     
     await db.SaveChangesAsync();
+    
+    // 🚀 إشعار تليجرام فوري بالتوقيت المحلي الفعلي لهاتفك
+    string status = task.IsCompleted ? $"✅ Done at {task.CompletedAt}" : "❌ Reverted";
+    await SendTelegramNotification($"📌 Visit Update:\nPlan: {task.Title}\nStatus: {status}");
+    
     return Results.Ok(task);
 });
 
@@ -354,4 +370,10 @@ class VisitTask {
     
     // 🔗 Foreign Key linking to the specific date range instance
     [JsonPropertyName("visitDatesId")] public int VisitDatesId { get; set; }
+}
+
+public class TaskToggleRequest 
+{
+    [JsonPropertyName("localTime")]
+    public string? LocalTime { get; set; }
 }
