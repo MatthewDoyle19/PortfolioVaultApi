@@ -830,6 +830,118 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('Error', 'Could not send spark. Check your connection.', '❌');
         }
     };
+
+    // --- ✈️ THE VISIT PLANNER LOGIC ---
+    const visitTasksGrid = document.getElementById('visit-tasks-grid');
+    const addVisitTaskForm = document.getElementById('add-visit-task-form');
+    const visitStartInput = document.getElementById('visit-start');
+    const visitEndInput = document.getElementById('visit-end');
+
+    const fetchVisitData = async () => {
+        try {
+            // جلب نطاق التواريخ
+            const datesRes = await fetch(`${API_BASE_URL}/api/visit/dates`);
+            if (datesRes.ok) {
+                const dates = await datesRes.json();
+                if (dates) {
+                    visitStartInput.value = dates.startDate;
+                    visitEndInput.value = dates.endDate;
+                }
+            }
+            // جلب المهام
+            const tasksRes = await fetch(`${API_BASE_URL}/api/visit/tasks`);
+            if (tasksRes.ok) {
+                const tasks = await tasksRes.json();
+                renderVisitTasks(tasks);
+            }
+        } catch (error) { console.error("Failed to fetch visit data", error); }
+    };
+
+    window.saveVisitDates = async () => {
+        try {
+            await fetch(`${API_BASE_URL}/api/visit/dates`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    startDate: visitStartInput.value,
+                    endDate: visitEndInput.value
+                })
+            });
+            showToast('Dates Saved', 'Visit dates successfully synced!', '✈️');
+        } catch (error) { console.error("Failed to save dates", error); }
+    };
+
+    const renderVisitTasks = (tasks) => {
+        if (!visitTasksGrid) return;
+        visitTasksGrid.innerHTML = '';
+
+        tasks.forEach((task) => {
+            const isDone = task.isCompleted;
+            const bgClass = isDone ? "bg-white/5 border-indigo-500/30 opacity-70" : "premium-glass border-white/5 hover:border-indigo-500/30";
+            const textClass = isDone ? "text-slate-400 line-through decoration-indigo-500/50" : "text-white";
+            const checkIcon = isDone ? "☑️" : "⬜";
+
+            const card = document.createElement('div');
+            card.className = `flex flex-col p-4 rounded-2xl transition-all group ${bgClass}`;
+
+            // إذا كانت المهمة منجزة، سيظهر التاريخ تحتها بشكل أنيق
+            card.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4 flex-grow cursor-pointer" onclick="toggleVisitTask(${task.id})">
+                        <div class="text-xl transition-transform active:scale-75 select-none">${checkIcon}</div>
+                        <h4 class="${textClass} font-bold text-sm tracking-wide flex-grow select-none">${task.title}</h4>
+                    </div>
+                    <button onclick="deleteVisitTask(${task.id})" class="text-slate-600 hover:text-rose-400 p-2 transition-colors opacity-0 group-hover:opacity-100 active:scale-90 ml-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                ${isDone && task.completedAt ? `<div class="mt-2 ml-9 text-[10px] text-indigo-400 font-bold tracking-wide bg-indigo-500/10 self-start px-2 py-1 rounded-md">Done: ${task.completedAt} 🕒</div>` : ''}
+            `;
+            visitTasksGrid.appendChild(card);
+        });
+    };
+
+    if (addVisitTaskForm) {
+        addVisitTaskForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '...';
+
+            try {
+                await fetch(`${API_BASE_URL}/api/visit/tasks`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: document.getElementById('visit-task-title').value,
+                        isCompleted: false
+                    })
+                });
+                document.getElementById('visit-task-title').value = '';
+                fetchVisitData();
+            } catch (error) { console.error("Save failed", error); }
+            finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Add';
+            }
+        });
+    }
+
+    window.toggleVisitTask = async (id) => {
+        try {
+            await fetch(`${API_BASE_URL}/api/visit/tasks/${id}`, { method: 'PUT' });
+            fetchVisitData();
+        } catch (error) { console.error("Update failed", error); }
+    };
+
+    window.deleteVisitTask = async (id) => {
+        if(confirm('Delete this visit plan?')) {
+            await fetch(`${API_BASE_URL}/api/visit/tasks/${id}`, { method: 'DELETE' });
+            fetchVisitData();
+        }
+    };
+
+    fetchVisitData();
     
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
     window.switchTab = (tabName) => {

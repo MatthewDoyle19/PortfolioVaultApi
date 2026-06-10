@@ -223,6 +223,62 @@ app.MapDelete("/api/bucketlist/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
+// --- ✈️ VISIT ITINERARY ---
+app.MapGet("/api/visit/dates", async (VaultDb db) => 
+    await db.VisitDates.FirstOrDefaultAsync());
+
+app.MapPost("/api/visit/dates", async (VisitDates dates, VaultDb db) => {
+    var existing = await db.VisitDates.FirstOrDefaultAsync();
+    if (existing != null) {
+        existing.StartDate = dates.StartDate;
+        existing.EndDate = dates.EndDate;
+    } else {
+        db.VisitDates.Add(dates);
+    }
+    await db.SaveChangesAsync();
+    await SendTelegramNotification($"✈️ Visit Dates Set: From {dates.StartDate} to {dates.EndDate}!");
+    return Results.Ok(existing ?? dates);
+});
+
+app.MapGet("/api/visit/tasks", async (VaultDb db) => 
+    await db.VisitTasks.OrderBy(t => t.IsCompleted).ThenBy(t => t.Id).ToListAsync());
+
+app.MapPost("/api/visit/tasks", async (VisitTask task, VaultDb db) => {
+    db.VisitTasks.Add(task);
+    await db.SaveChangesAsync();
+    await SendTelegramNotification($"📌 New Visit Plan added: {task.Title}");
+    return Results.Created($"/api/visit/tasks/{task.Id}", task);
+});
+
+app.MapPut("/api/visit/tasks/{id}", async (int id, VaultDb db) => {
+    var task = await db.VisitTasks.FindAsync(id);
+    if (task is null) return Results.NotFound();
+    
+    task.IsCompleted = !task.IsCompleted;
+    
+    // تسجيل وقت وتاريخ الإنجاز تلقائياً من السيرفر!
+    if (task.IsCompleted) {
+        task.CompletedAt = DateTime.Now.ToString("dd MMM yyyy, hh:mm tt");
+    } else {
+        task.CompletedAt = null; // مسح الوقت في حال التراجع
+    }
+    
+    await db.SaveChangesAsync();
+    
+    string status = task.IsCompleted ? $"✅ Done at {task.CompletedAt}" : "❌ Reverted";
+    await SendTelegramNotification($"📌 Visit Update:\nPlan: {task.Title}\nStatus: {status}");
+    
+    return Results.Ok(task);
+});
+
+app.MapDelete("/api/visit/tasks/{id}", async (int id, VaultDb db) => {
+    var task = await db.VisitTasks.FindAsync(id);
+    if (task is null) return Results.NotFound();
+    db.VisitTasks.Remove(task);
+    await db.SaveChangesAsync();
+    return Results.Ok();
+});
+
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<VaultDb>();
@@ -244,9 +300,9 @@ class VaultDb : DbContext {
     public DbSet<Mood> Moods => Set<Mood>(); 
     public DbSet<Event> Events => Set<Event>(); 
     public DbSet<Heartbeat> Heartbeats => Set<Heartbeat>();
-    
-    // 🗺️ The New Bucket List Table
     public DbSet<BucketListItem> BucketListItems => Set<BucketListItem>();
+    public DbSet<VisitDates> VisitDates => Set<VisitDates>();
+    public DbSet<VisitTask> VisitTasks => Set<VisitTask>();
 }
 
 class Link {
@@ -297,4 +353,17 @@ class BucketListItem {
     [JsonPropertyName("id")] public int Id { get; set; }
     [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
     [JsonPropertyName("isCompleted")] public bool IsCompleted { get; set; } = false;
+}
+
+class VisitDates {
+    [JsonPropertyName("id")] public int Id { get; set; }
+    [JsonPropertyName("startDate")] public string StartDate { get; set; } = string.Empty;
+    [JsonPropertyName("endDate")] public string EndDate { get; set; } = string.Empty;
+}
+
+class VisitTask {
+    [JsonPropertyName("id")] public int Id { get; set; }
+    [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
+    [JsonPropertyName("isCompleted")] public bool IsCompleted { get; set; } = false;
+    [JsonPropertyName("completedAt")] public string? CompletedAt { get; set; }
 }

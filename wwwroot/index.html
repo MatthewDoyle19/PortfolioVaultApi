@@ -161,6 +161,34 @@
 
             <div id="bucket-grid" class="flex flex-col gap-3"></div>
         </section>
+
+        <section class="mb-16 fade-in" style="animation-delay: 0.9s;">
+            <h3 class="text-xl font-bold text-white mb-5 flex items-center gap-3 px-2 tracking-tight">
+                <div class="p-2 bg-indigo-500/20 rounded-xl">
+                    <span class="text-xl">✈️</span>
+                </div>
+                Visit Itinerary
+            </h3>
+
+            <div class="premium-glass p-4 rounded-[1.5rem] mb-6 border border-indigo-500/30">
+                <div class="flex flex-col gap-2 mb-4">
+                    <label class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest pl-1">Visit Dates Range</label>
+                    <div class="flex items-center gap-2">
+                        <input type="date" id="visit-start" class="flex-grow bg-black/40 border border-white/5 rounded-lg px-2 py-2 text-xs text-slate-300 focus:outline-none focus:border-indigo-400">
+                        <span class="text-slate-500 font-bold text-xs">TO</span>
+                        <input type="date" id="visit-end" class="flex-grow bg-black/40 border border-white/5 rounded-lg px-2 py-2 text-xs text-slate-300 focus:outline-none focus:border-indigo-400">
+                        <button onclick="saveVisitDates()" class="bg-indigo-500 text-white font-bold py-2 px-3 rounded-lg active:scale-95 text-xs shadow-lg">Save</button>
+                    </div>
+                </div>
+
+                <form id="add-visit-task-form" class="flex gap-2">
+                    <input type="text" id="visit-task-title" placeholder="Add a plan for this specific trip..." required class="flex-grow bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-400">
+                    <button type="submit" class="bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-bold py-2 px-4 rounded-lg transition-all hover:bg-indigo-500 hover:text-white active:scale-95 text-sm">Add</button>
+                </form>
+            </div>
+
+            <div id="visit-tasks-grid" class="flex flex-col gap-3"></div>
+        </section>
     </div>
 
     <div id="view-memories" class="hidden fade-in">
