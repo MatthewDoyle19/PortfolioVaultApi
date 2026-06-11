@@ -68,23 +68,79 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderLinks = (links) => {
         const linkGrid = document.getElementById('link-grid');
         linkGrid.innerHTML = '';
+
         links.forEach((link) => {
             const card = document.createElement('div');
-            card.className = 'flex items-center justify-between bg-dark p-3 rounded-xl border border-slate-700 hover:border-accent hover:bg-slate-800 transition-all group';
-            card.innerHTML = `
-                <a href="${link.url}" target="_blank" class="flex items-center gap-3 flex-grow overflow-hidden">
-                    <div class="bg-card p-2 rounded-lg text-accent group-hover:text-white transition-colors shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+            card.className = 'flex items-center justify-between bg-dark p-3 rounded-xl border border-slate-700 hover:border-accent hover:bg-slate-800 transition-all group relative overflow-hidden';
+
+            // ⏳ منطق الكبسولة الزمنية
+            let isLocked = false;
+            let lockedText = "";
+            if (link.unlockDate) {
+                const unlockDateObj = new Date(link.unlockDate);
+                const now = new Date();
+                if (unlockDateObj > now) {
+                    isLocked = true;
+                    const daysLeft = Math.ceil((unlockDateObj - now) / (1000 * 60 * 60 * 24));
+                    lockedText = `Unlocks in ${daysLeft} days 🔒`;
+                }
+            }
+
+            if (isLocked) {
+                // شكل الرابط المقفل (لا يوجد href، لون باهت، رسالة قفل)
+                card.innerHTML = `
+                    <div class="flex items-center gap-3 flex-grow overflow-hidden opacity-60 cursor-not-allowed select-none" title="This is a time capsule!">
+                        <div class="bg-card p-2 rounded-lg text-slate-500 shadow-sm text-lg">
+                            🔒
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-medium text-slate-400 truncate pr-2">Hidden Surprise</span>
+                            <span class="text-[10px] text-accent font-bold tracking-widest uppercase">${lockedText}</span>
+                        </div>
                     </div>
-                    <span class="text-sm font-medium text-slate-300 group-hover:text-white truncate pr-2">${link.title}</span>
-                </a>
-                <button onclick="deleteLink(${link.id})" class="text-slate-500 hover:text-red-400 p-2 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            `;
+                    <button onclick="deleteLink(${link.id})" class="text-slate-500 hover:text-red-400 p-2 transition-colors z-10 relative">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                `;
+            } else {
+                // شكل الرابط المفتوح أو العادي
+                card.innerHTML = `
+                    <a href="${link.url}" target="_blank" class="flex items-center gap-3 flex-grow overflow-hidden">
+                        <div class="bg-card p-2 rounded-lg text-accent group-hover:text-white transition-colors shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-medium text-slate-300 group-hover:text-white truncate pr-2">${link.title}</span>
+                            ${link.unlockDate ? `<span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wide">Unlocked ✨</span>` : ''}
+                        </div>
+                    </a>
+                    <button onclick="deleteLink(${link.id})" class="text-slate-500 hover:text-red-400 p-2 transition-colors z-10 relative">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                `;
+            }
             linkGrid.appendChild(card);
         });
     };
+
+    document.getElementById('add-link-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const unlockDateInput = document.getElementById('link-unlock-date').value;
+
+        await fetch(`${API_BASE_URL}/api/links`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: document.getElementById('link-title').value,
+                url: document.getElementById('link-url').value,
+                unlockDate: unlockDateInput ? unlockDateInput : null // إرسال التاريخ إذا وجد
+            })
+        });
+
+        e.target.reset();
+        fetchLinks();
+    });
 
     document.getElementById('add-link-form').addEventListener('submit', async (e) => {
         e.preventDefault();
