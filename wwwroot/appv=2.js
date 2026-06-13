@@ -123,39 +123,50 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    document.getElementById('add-link-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // --- 3. Digital Keepsakes (Links) Submit Logic ---
+    const addLinkForm = document.getElementById('add-link-form');
 
-        const unlockDateInput = document.getElementById('link-unlock-date').value;
+    if (addLinkForm) {
+        addLinkForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        await fetch(`${API_BASE_URL}/api/links`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                title: document.getElementById('link-title').value,
-                url: document.getElementById('link-url').value,
-                unlockDate: unlockDateInput ? unlockDateInput : null // إرسال التاريخ إذا وجد
-            })
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            // 🛡️ حماية الزر لمنع الضغط المزدوج (Double-tap protection)
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Storing... ⏳';
+
+            try {
+                const unlockDateInput = document.getElementById('link-unlock-date').value;
+
+                await fetch(`${API_BASE_URL}/api/links`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: document.getElementById('link-title').value,
+                        url: document.getElementById('link-url').value,
+                        unlockDate: unlockDateInput ? unlockDateInput : null
+                    })
+                });
+
+                e.target.reset();
+                fetchLinks();
+            } catch (error) {
+                console.error("Failed to add link", error);
+            } finally {
+                // إعادة الزر لحالته الطبيعية
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
         });
-
-        e.target.reset();
-        fetchLinks();
-    });
-
-    document.getElementById('add-link-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await fetch(`${API_BASE_URL}/api/links`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: document.getElementById('link-title').value, url: document.getElementById('link-url').value })
-        });
-        e.target.reset();
-        fetchLinks();
-    });
+    }
 
     window.deleteLink = async (id) => {
-        await fetch(`${API_BASE_URL}/api/links/${id}`, { method: 'DELETE' });
-        fetchLinks();
+        if(confirm('Delete this link?')) {
+            await fetch(`${API_BASE_URL}/api/links/${id}`, { method: 'DELETE' });
+            fetchLinks();
+        }
     };
 
     // --- Optimizers ---
