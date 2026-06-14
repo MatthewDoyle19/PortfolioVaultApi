@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     dashboard.classList.add('fade-in');
                     document.getElementById('bottom-nav').classList.remove('hidden');
 
-                    // 🚨 إظهار زر الطوارئ فقط بعد الدخول الناجح
                     const sosBtn = document.getElementById('sos-btn');
                     if (sosBtn) sosBtn.classList.remove('hidden');
 
@@ -78,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'flex items-center justify-between bg-dark p-3 rounded-xl border border-slate-700 hover:border-accent hover:bg-slate-800 transition-all group relative overflow-hidden';
 
-            // ⏳ منطق الكبسولة الزمنية
             let isLocked = false;
             let lockedText = "";
             if (link.unlockDate) {
@@ -92,12 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (isLocked) {
-                // شكل الرابط المقفل (لا يوجد href، لون باهت، رسالة قفل)
                 card.innerHTML = `
                     <div class="flex items-center gap-3 flex-grow overflow-hidden opacity-60 cursor-not-allowed select-none" title="This is a time capsule!">
-                        <div class="bg-card p-2 rounded-lg text-slate-500 shadow-sm text-lg">
-                            🔒
-                        </div>
+                        <div class="bg-card p-2 rounded-lg text-slate-500 shadow-sm text-lg">🔒</div>
                         <div class="flex flex-col">
                             <span class="text-sm font-medium text-slate-400 truncate pr-2">Hidden Surprise</span>
                             <span class="text-[10px] text-accent font-bold tracking-widest uppercase">${lockedText}</span>
@@ -108,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </button>
                 `;
             } else {
-                // شكل الرابط المفتوح أو العادي
                 card.innerHTML = `
                     <a href="${link.url}" target="_blank" class="flex items-center gap-3 flex-grow overflow-hidden">
                         <div class="bg-card p-2 rounded-lg text-accent group-hover:text-white transition-colors shadow-sm">
@@ -128,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // --- 3. Digital Keepsakes (Links) Submit Logic ---
     const addLinkForm = document.getElementById('add-link-form');
 
     if (addLinkForm) {
@@ -138,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const submitBtn = e.target.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
 
-            // 🛡️ حماية الزر لمنع الضغط المزدوج (Double-tap protection)
             submitBtn.disabled = true;
             submitBtn.innerHTML = 'Storing... ⏳';
 
@@ -160,7 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error("Failed to add link", error);
             } finally {
-                // إعادة الزر لحالته الطبيعية
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
             }
@@ -231,7 +222,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { console.error(error); }
     };
 
-    // 🛠️ BUG FIXED: Removed duplicate 'item' declaration that caused the crash
     const renderCommits = (commits) => {
         const commitTimeline = document.getElementById('commit-timeline');
         if (!commitTimeline) return;
@@ -476,7 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchEvents();
         }
     };
-    
+
     fetchEvents();
 
     // --- ⚖️ The Digital Court ---
@@ -519,19 +509,18 @@ document.addEventListener('DOMContentLoaded', () => {
         let displayTarget = "";
 
         if (punished === 'Both') {
-            // Note: Make sure penaltyVault is accessible globally from penalties.js
             pool = penaltyVault.Shared;
-            displayTarget = "7amodee & Zozo (together)";
+            displayTarget = "7amodee & ZoZo (together)";
         } else {
             pool = penaltyVault[punished];
-            displayTarget = punished;
+            displayTarget = punished === 'Mohammad' ? '7amodee' : (punished === 'Zainab' ? 'ZoZo' : punished);
         }
 
         const randomPenalty = pool[Math.floor(Math.random() * pool.length)];
 
         currentPendingPenalty = {
             punisher: punisher,
-            punished: displayTarget,
+            punished: punished, // Backend value preserved
             penaltyText: randomPenalty.title + ": " + randomPenalty.desc,
             date: new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short', year: 'numeric' })
         };
@@ -569,19 +558,24 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/penalties`);
             const penalties = await response.json();
-            ledgerTimeline.innerHTML = penalties.map(p => `
+            ledgerTimeline.innerHTML = penalties.map(p => {
+                // UI Transform to protect DB integrity
+                const displayPunisher = p.punisher === 'Mohammad' ? '7amodee' : (p.punisher === 'Zainab' ? 'ZoZo' : p.punisher);
+                const displayPunished = p.punished === 'Mohammad' ? '7amodee' : (p.punished === 'Zainab' ? 'ZoZo' : p.punished);
+
+                return `
                 <div class="bg-white/5 border border-white/5 p-4 rounded-2xl flex justify-between items-center fade-in">
                     <div>
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-accent/20 text-accent uppercase">${p.punisher} ⚖️</span>
+                            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-accent/20 text-accent uppercase">${displayPunisher} ⚖️</span>
                             <span class="text-slate-500 text-[9px]">sentenced</span>
-                            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-white/10 text-white uppercase">${p.punished}</span>
+                            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-white/10 text-white uppercase">${displayPunished}</span>
                         </div>
                         <p class="text-xs text-slate-200 font-medium">${p.penaltyText}</p>
                     </div>
                     <span class="text-[8px] text-slate-600">${p.date}</span>
                 </div>
-            `).join('');
+            `}).join('');
         } catch (error) { console.error(error); }
     };
 
@@ -649,7 +643,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.openMoodSelector = async (user) => {
         const moodKeys = Object.keys(moodsList).join('\n');
-        const rawInput = prompt(`Update ${user}'s mood:\nType one of these options:\n\n${moodKeys}`);
+        const displayName = user === 'Mohammad' ? '7amodee' : (user === 'Zainab' ? 'ZoZo' : user);
+        const rawInput = prompt(`Update ${displayName}'s mood:\nType one of these options:\n\n${moodKeys}`);
 
         if (!rawInput) return;
 
@@ -658,7 +653,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (matchedKey) {
             const moodData = {
-                user: user,
+                user: user, // DB Value safe
                 status: matchedKey,
                 updatedAt: new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'})
             };
@@ -669,7 +664,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(moodData)
                 });
                 fetchSystemState();
-                showToast('Mood Radar', `${user}'s mood updated to: ${moodsList[matchedKey].text}`, moodsList[matchedKey].icon);
+                showToast('Mood Radar', `${displayName}'s mood updated to: ${moodsList[matchedKey].text}`, moodsList[matchedKey].icon);
             } catch (error) {
                 console.error("Failed to update mood", error);
             }
@@ -694,7 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('mohammad-mood-text').innerText = "Not set yet";
             document.getElementById('zainab-mood-text').innerText = "Not set yet";
 
-            let isEmergency = false; // تتبع حالة الطوارئ العامة
+            let isEmergency = false;
 
             moods.forEach(m => {
                 const iconEl = document.getElementById(`${m.user.toLowerCase()}-mood-icon`);
@@ -705,14 +700,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if(m.status === 'SOS') {
                         iconEl.classList.add('animate-pulse', 'bg-rose-500/50', 'border-rose-500');
-                        isEmergency = true; // وجدنا حالة طوارئ
+                        isEmergency = true;
                     } else {
                         iconEl.classList.remove('animate-pulse', 'bg-rose-500/50', 'border-rose-500');
                     }
                 }
             });
 
-            // 🚨 تفعيل النبض الأحمر على مستوى الشاشة بالكامل
             if (isEmergency) {
                 document.body.classList.add('emergency-mode');
             } else {
@@ -727,7 +721,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!initialLoad && penalties.length > lastPenaltyCount) {
                 const newestPenalty = penalties[0];
-                showToast('⚖️ Digital Court', `New verdict issued for ${newestPenalty.punished}!`, '⚖️');
+                const displayPunished = newestPenalty.punished === 'Mohammad' ? '7amodee' : (newestPenalty.punished === 'Zainab' ? 'ZoZo' : newestPenalty.punished);
+                showToast('⚖️ Digital Court', `New verdict issued for ${displayPunished}!`, '⚖️');
                 if(typeof fetchPenaltiesFromServer === "function") fetchPenaltiesFromServer();
             }
             lastPenaltyCount = penalties.length;
@@ -760,11 +755,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (hbRes.ok) {
             const latestHb = await hbRes.json();
-            // إذا كان هناك نبضة جديدة، والصفحة ليست في أول تحميل لها
             if (latestHb && !initialLoad && latestHb.id > lastHeartbeatId) {
-                showToast('✨ Incoming Spark!', `${latestHb.sender} is thinking of you right now...`, '❤️');
+                const displaySender = latestHb.sender === 'Mohammad' ? '7amodee' : (latestHb.sender === 'Zainab' ? 'ZoZo' : latestHb.sender);
+                showToast('✨ Incoming Spark!', `${displaySender} is thinking of you right now...`, '❤️');
             }
-            // تحديث رقم آخر نبضة لتجنب التكرار
             if (latestHb) {
                 lastHeartbeatId = latestHb.id;
             }
@@ -786,7 +780,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         date: new Date().toISOString().split('T')[0],
-                        message: "The Court recorded that Mohammad ate Mansaf today! 🥘 (By Zozo's request)",
+                        message: "The Court recorded that 7amodee ate Mansaf today! 🥘 (By ZoZo's request)",
                         imageUrl: null,
                         audioUrl: null
                     })
@@ -825,7 +819,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         items.forEach((item) => {
             const isDone = item.isCompleted;
-            // إذا تحقق الحلم، نجعل الكارت شفافاً مع خط أخضر يمر فوق النص
             const bgClass = isDone ? "bg-white/5 border-emerald-500/30 opacity-60" : "premium-glass border-white/5 hover:border-pink-500/30";
             const textClass = isDone ? "text-slate-400 line-through decoration-emerald-500/50" : "text-white";
             const checkIcon = isDone ? "✅" : "⬜";
@@ -872,7 +865,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // دالة تغيير حالة الهدف (تم / لم يتم)
     window.toggleBucketItem = async (id) => {
         try {
             await fetch(`${API_BASE_URL}/api/bucketlist/${id}`, { method: 'PUT' });
@@ -880,7 +872,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { console.error("Update failed", error); }
     };
 
-    // دالة الحذف
     window.deleteBucketItem = async (id) => {
         if(confirm('Delete this dream from the list?')) {
             await fetch(`${API_BASE_URL}/api/bucketlist/${id}`, { method: 'DELETE' });
@@ -901,15 +892,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!res.ok) throw new Error("Server rejected the heartbeat");
 
-            // 🛠️ الإصلاح الجراحي: نأخذ رقم النبضة التي أرسلناها للتو من السيرفر
             const savedHb = await res.json();
-            // 🛠️ نحدث العداد المحلي بصمت حتى لا نستقبل إشعاراً لنبضتنا الخاصة!
             lastHeartbeatId = savedHb.id;
 
-            const targetName = sender === 'Mohammad' ? 'Zozo 👸🏻' : '7modee 👨🏻‍💻';
+            const targetName = sender === 'Mohammad' ? 'ZoZo 👸🏻' : '7amodee 👨🏻‍💻';
             showToast('Sent! ✨', `Your spark is flying to ${targetName}!`, '🕊️');
 
-            fetchSystemState(); // تحديث فوري لباقي البيانات
+            fetchSystemState();
         } catch (error) {
             console.error("Failed to send spark", error);
             showToast('Error', 'Could not send spark. Check your connection.', '❌');
@@ -924,7 +913,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let activeVisitDatesId = null;
 
-    // تنسيق التاريخ ليصبح أجمل (مثال: 10 Jan)
     const formatShortDate = (dateStr) => {
         if (!dateStr) return '';
         const d = new Date(dateStr);
@@ -933,13 +921,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchVisitData = async () => {
         try {
-            // جلب البيانات المجمعة من السيرفر
             const res = await fetch(`${API_BASE_URL}/api/visit/all`);
             if (res.ok) {
                 const trips = await res.json();
                 renderGroupedTrips(trips);
 
-                // تحديد أحدث رحلة لتكون هي المستقبلة للمهام الجديدة
                 if (trips.length > 0) {
                     activeVisitDatesId = trips[0].id;
                     visitStartInput.value = trips[0].startDate;
@@ -968,7 +954,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { console.error("Failed to save dates", error); }
     };
 
-    // دالة الرسم الجديدة (ترسم كل رحلة كمجموعة مع عنوانها)
     const renderGroupedTrips = (trips) => {
         if (!visitTasksGrid) return;
         visitTasksGrid.innerHTML = '';
@@ -982,7 +967,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const groupDiv = document.createElement('div');
             groupDiv.className = 'mb-8 bg-black/20 p-4 rounded-3xl border border-white/5';
 
-            // 🛠️ التعديل الجراحي: إضافة زر الحذف (Trash Icon) داخل عنوان الرحلة
             let html = `
                 <div class="flex justify-between items-center mb-4 bg-indigo-500/20 px-3 py-1.5 rounded-lg border border-indigo-500/30">
                     <span class="text-xs text-indigo-300 font-bold uppercase tracking-widest">
@@ -1054,11 +1038,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 🕒 حل مشكلة الوقت: نأخذ وقت الهاتف بالضبط ونرسله للسيرفر
     window.toggleVisitTask = async (id) => {
         try {
             const now = new Date();
-            // توليد الوقت بصيغة (10 Jan, 06:30 PM) بتوقيت الأردن المحلي من هاتفك
             const localTimeString = now.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true });
 
             await fetch(`${API_BASE_URL}/api/visit/tasks/${id}`, {
@@ -1077,7 +1059,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // دالة حذف الرحلة بالكامل مع جميع مهامها المربوطة
     window.deleteWholeTrip = async (id) => {
         if (confirm("⚠️ WARNING: Are you sure you want to delete this ENTIRE trip and all of its logged tasks? This cannot be undone!")) {
             try {
@@ -1085,7 +1066,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!res.ok) throw new Error("Server rejected deletion");
 
                 showToast('Trip Wiped 🗑️', 'The entire itinerary has been deleted.', 'ℹ️');
-                fetchVisitData(); // إعادة جلب البيانات لتحديث الشاشة فوراً
+                fetchVisitData();
             } catch (error) {
                 console.error("Failed to delete entire trip", error);
                 showToast('Error', 'Could not delete trip.', '❌');
@@ -1097,31 +1078,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 🚨 SOS & GEOLOCATION LOGIC ---
     window.triggerSOS = async () => {
-        // نطلب الاسم المستعار اللطيف
-        const rawWho = prompt("🚨 EMERGENCY PROTOCOL 🚨\nWho is sending this SOS? (Type: 7amodee or Zozo)");
+        const rawWho = prompt("🚨 EMERGENCY PROTOCOL 🚨\nWho is sending this SOS? (Type: 7amodee or ZoZo)");
         if (!rawWho) return;
 
         const cleanWho = rawWho.trim().toLowerCase();
         let standardUser = "";
 
-        // المترجم الذكي: يحول الدلع إلى الاسم الرسمي للنظام
         if (cleanWho === '7amodee' || cleanWho === 'mohammad') {
-            standardUser = 'Mohammad';
+            standardUser = 'Mohammad'; // DB Safe
         } else if (cleanWho === 'zozo' || cleanWho === 'zainab') {
-            standardUser = 'Zainab';
+            standardUser = 'Zainab'; // DB Safe
         } else {
             alert("Invalid name. SOS Aborted.");
             return;
         }
 
-        const targetName = standardUser === 'Mohammad' ? 'Zozo 👸🏻' : '7modee 👨🏻‍💻';
+        const targetName = standardUser === 'Mohammad' ? 'ZoZo 👸🏻' : '7amodee 👨🏻‍💻';
         if (!confirm(`⚠️ Send high-priority SOS alert to ${targetName} with your LIVE GPS location?`)) return;
 
         showToast('Processing...', 'Acquiring GPS coordinates 🛰️', '⏳');
 
         const sendSosReq = async (lat, lng) => {
             try {
-                // نرسل الاسم الرسمي (standardUser) للسيرفر
                 await fetch(`${API_BASE_URL}/api/sos`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1188,6 +1166,14 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchBlindPrompt();
     };
 
+    window.cancelPrompt = async () => {
+        if(confirm("Are you sure you want to cancel this prompt session?")) {
+            promptContainer.innerHTML = `<p class="text-center text-slate-400 animate-pulse">Cancelling... 🚫</p>`;
+            await fetch(`${API_BASE_URL}/api/prompts/current`, { method: 'DELETE' });
+            fetchBlindPrompt();
+        }
+    };
+
     const renderPrompt = (prompt) => {
         if (!promptContainer) return;
 
@@ -1203,42 +1189,39 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         if (isUnlocked) {
-            // 🔓 حالة الفتح: كلاهما أجاب، نعرض الإجابات بشفافية وجمال
             html += `
                 <div class="flex flex-col gap-4 mb-6 relative z-10">
                     <div class="bg-black/30 p-4 rounded-2xl border border-emerald-500/30 border-l-4 border-l-emerald-500 text-left fade-in">
-                        <span class="text-[10px] text-emerald-400 font-bold uppercase block mb-1">Mohammad 👨🏻‍💻</span>
+                        <span class="text-[10px] text-emerald-400 font-bold uppercase block mb-1">7amodee 👨🏻‍💻</span>
                         <p class="text-slate-200 text-sm font-medium">"${moAns}"</p>
                     </div>
                     <div class="bg-black/30 p-4 rounded-2xl border border-pink-500/30 border-l-4 border-l-pink-500 text-left fade-in" style="animation-delay: 0.2s">
-                        <span class="text-[10px] text-pink-400 font-bold uppercase block mb-1">Zainab 👸🏻</span>
+                        <span class="text-[10px] text-pink-400 font-bold uppercase block mb-1">ZoZo 👸🏻</span>
                         <p class="text-slate-200 text-sm font-medium">"${zaAns}"</p>
                     </div>
                 </div>
                 <button onclick="generatePrompt()" class="mt-2 text-xs text-slate-500 hover:text-white transition-colors underline underline-offset-4">Generate Next Prompt 🔄</button>
             `;
         } else {
-            // 🔒 حالة القفل: أحدهما أو كلاهما لم يجب
             html += `<div class="flex justify-center gap-6 mb-6">`;
 
             html += moAns
-                ? `<div class="flex flex-col items-center"><div class="bg-emerald-500/20 text-emerald-400 p-3 rounded-xl border border-emerald-500/30 mb-2">✅</div><span class="text-[10px] text-slate-400 uppercase">Mohammad Locked</span></div>`
-                : `<div class="flex flex-col items-center"><div class="bg-black/40 text-slate-500 p-3 rounded-xl border border-white/5 mb-2 animate-pulse">⏳</div><span class="text-[10px] text-slate-400 uppercase">Waiting Mohammad</span></div>`;
+                ? `<div class="flex flex-col items-center"><div class="bg-emerald-500/20 text-emerald-400 p-3 rounded-xl border border-emerald-500/30 mb-2">✅</div><span class="text-[10px] text-slate-400 uppercase">7amodee Locked</span></div>`
+                : `<div class="flex flex-col items-center"><div class="bg-black/40 text-slate-500 p-3 rounded-xl border border-white/5 mb-2 animate-pulse">⏳</div><span class="text-[10px] text-slate-400 uppercase">Waiting 7amodee</span></div>`;
 
             html += zaAns
-                ? `<div class="flex flex-col items-center"><div class="bg-emerald-500/20 text-emerald-400 p-3 rounded-xl border border-emerald-500/30 mb-2">✅</div><span class="text-[10px] text-slate-400 uppercase">Zainab Locked</span></div>`
-                : `<div class="flex flex-col items-center"><div class="bg-black/40 text-slate-500 p-3 rounded-xl border border-white/5 mb-2 animate-pulse">⏳</div><span class="text-[10px] text-slate-400 uppercase">Waiting Zainab</span></div>`;
+                ? `<div class="flex flex-col items-center"><div class="bg-pink-500/20 text-pink-400 p-3 rounded-xl border border-pink-500/30 mb-2">✅</div><span class="text-[10px] text-slate-400 uppercase">ZoZo Locked</span></div>`
+                : `<div class="flex flex-col items-center"><div class="bg-black/40 text-slate-500 p-3 rounded-xl border border-white/5 mb-2 animate-pulse">⏳</div><span class="text-[10px] text-slate-400 uppercase">Waiting ZoZo</span></div>`;
 
             html += `</div>`;
 
-            // نموذج الإجابة
             html += `
                 <form id="submit-prompt-form" class="flex flex-col gap-3 bg-black/20 p-4 rounded-2xl border border-white/5">
                     <div class="flex items-center gap-2">
                         <label class="text-xs text-slate-400 font-medium">Answering as:</label>
                         <select id="prompt-user" class="bg-black/60 text-white text-xs px-2 py-1 rounded-lg border border-white/10 focus:outline-none focus:border-pink-500">
-                            <option value="Mohammad">Mohammad 👨🏻‍💻</option>
-                            <option value="Zainab">Zainab 👸🏻</option>
+                            <option value="Mohammad">7amodee 👨🏻‍💻</option>
+                            <option value="Zainab">ZoZo 👸🏻</option>
                         </select>
                     </div>
                     <textarea id="prompt-answer" rows="2" placeholder="Write your honest answer..." required class="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 shadow-inner resize-none"></textarea>
@@ -1246,6 +1229,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         Lock My Answer 🔒
                     </button>
                 </form>
+
+                <div class="flex justify-between items-center mt-4 px-2">
+                    <button onclick="cancelPrompt()" class="text-[10px] text-rose-400 hover:text-rose-300 uppercase font-bold tracking-wider transition-colors flex items-center gap-1 active:scale-95">
+                        ❌ Cancel Session
+                    </button>
+                    <button onclick="generatePrompt()" class="text-[10px] text-indigo-400 hover:text-indigo-300 uppercase font-bold tracking-wider transition-colors flex items-center gap-1 active:scale-95">
+                        🔄 Change Question
+                    </button>
+                </div>
             `;
         }
 
@@ -1274,9 +1266,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // لا تنسَ استدعاء الدالة عند تحميل الصفحة مع بقية الدوال
     fetchBlindPrompt();
-    
+
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
     window.switchTab = (tabName) => {
         document.getElementById('view-home').classList.add('hidden');

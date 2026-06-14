@@ -388,6 +388,16 @@ app.MapPut("/api/prompts/{id}/answer", async (int id, AnswerRequest req, VaultDb
     return Results.Ok(prompt);
 });
 
+app.MapDelete("/api/prompts/current", async (VaultDb db) => {
+    var currentPrompt = await db.BlindPrompts.OrderByDescending(p => p.Id).FirstOrDefaultAsync();
+    if (currentPrompt != null) {
+        db.BlindPrompts.Remove(currentPrompt);
+        await db.SaveChangesAsync();
+        await SendTelegramNotification("🚫 The current Blind Prompt session was cancelled.");
+    }
+    return Results.Ok();
+});
+
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<VaultDb>();
