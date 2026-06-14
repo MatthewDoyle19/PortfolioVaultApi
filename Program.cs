@@ -24,14 +24,11 @@ var httpClient = new HttpClient();
 
 async Task SendTelegramNotification(string message)
 {
-    // التوكن والـ Chat ID الخاصين بك
     string botToken = "8899922136:AAEU5IWwZLw_LsdoWwkXywTd0FfVrSgPzSw"; 
     string chatId = "-5233134027"; 
 
-    // لاحظ أننا أزلنا النص من الرابط
     string url = $"https://api.telegram.org/bot{botToken}/sendMessage";
     
-    // تغليف الرسالة في صندوق JSON محمي
     var payload = System.Text.Json.JsonSerializer.Serialize(new {
         chat_id = chatId,
         text = message
@@ -40,7 +37,6 @@ async Task SendTelegramNotification(string message)
     var content = new StringContent(payload, System.Text.Encoding.UTF8, "application/json");
 
     try { 
-        // إرسال الصندوق بطريقة POST الآمنة
         await httpClient.PostAsync(url, content); 
     } 
     catch (Exception ex) { 
@@ -121,7 +117,11 @@ app.MapPost("/api/penalties", async (Penalty penalty, VaultDb db) => {
     db.Penalties.Add(penalty);
     await db.SaveChangesAsync();
     
-    await SendTelegramNotification($"⚖️ Digital Court: A new verdict has been issued!\n\nJudge: {penalty.Punisher}\nPunished: {penalty.Punished}\n\nVerdict:\n{penalty.PenaltyText}");
+    // UI Transform for Telegram
+    string displayPunisher = penalty.Punisher == "Mohammad" ? "7amodee" : (penalty.Punisher == "Zainab" ? "ZoZo" : penalty.Punisher);
+    string displayPunished = penalty.Punished == "Mohammad" ? "7amodee" : (penalty.Punished == "Zainab" ? "ZoZo" : penalty.Punished);
+
+    await SendTelegramNotification($"⚖️ Digital Court: A new verdict has been issued!\n\nJudge: {displayPunisher}\nPunished: {displayPunished}\n\nVerdict:\n{penalty.PenaltyText}");
     
     return Results.Created($"/api/penalties/{penalty.Id}", penalty);
 });
@@ -132,7 +132,8 @@ app.MapDelete("/api/penalties/{id}", async (int id, VaultDb db) => {
     db.Penalties.Remove(penalty);
     await db.SaveChangesAsync();
     
-    await SendTelegramNotification($"🗑️ A verdict was deleted/canceled from the ledger!\nThe punished was: {penalty.Punished}");
+    string displayPunished = penalty.Punished == "Mohammad" ? "7amodee" : (penalty.Punished == "Zainab" ? "ZoZo" : penalty.Punished);
+    await SendTelegramNotification($"🗑️ A verdict was deleted/canceled from the ledger!\nThe punished was: {displayPunished}");
     
     return Results.Ok();
 });
@@ -151,7 +152,9 @@ app.MapPost("/api/moods", async (Mood newMood, VaultDb db) => {
     await db.SaveChangesAsync();
     
     string alertEmoji = newMood.Status == "SOS" ? "🚨 EMERGENCY!" : "📡 Mood Update:";
-    await SendTelegramNotification($"{alertEmoji}\n{newMood.User} updated their status to ({newMood.Status})\nat {newMood.UpdatedAt}");
+    string displayUser = newMood.User == "Mohammad" ? "7amodee" : (newMood.User == "Zainab" ? "ZoZo" : newMood.User);
+
+    await SendTelegramNotification($"{alertEmoji}\n{displayUser} updated their status to ({newMood.Status})\nat {newMood.UpdatedAt}");
     
     return Results.Ok(newMood);
 });
@@ -182,9 +185,9 @@ app.MapPost("/api/heartbeats", async (Heartbeat hb, VaultDb db) => {
     db.Heartbeats.Add(hb);
     await db.SaveChangesAsync();
     
-    // 🚀 إشعار النبضة
+    string displaySender = hb.Sender == "Mohammad" ? "7amodee" : (hb.Sender == "Zainab" ? "ZoZo" : hb.Sender);
     string target = hb.Sender == "Mohammad" ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻";
-    await SendTelegramNotification($"✨ {hb.Sender} is thinking of {target} right now and sent a Spark! 🤍");
+    await SendTelegramNotification($"✨ {displaySender} is thinking of {target} right now and sent a Spark! 🤍");
     
     return Results.Ok(hb);
 });
@@ -224,13 +227,10 @@ app.MapDelete("/api/bucketlist/{id}", async (int id, VaultDb db) => {
 });
 
 // --- ✈️ VISIT ITINERARY (RELATIONAL & GROUPED) ---
-
-// 1. مسار يجلب كل الرحلات مجمعة مع مهامها
 app.MapGet("/api/visit/all", async (VaultDb db) => {
     var dates = await db.VisitDates.OrderByDescending(d => d.Id).ToListAsync();
     var tasks = await db.VisitTasks.ToListAsync();
     
-    // عملية تجميع (Grouping) هندسية لربط كل مهمة برحلتها
     var result = dates.Select(d => new {
         Id = d.Id,
         StartDate = d.StartDate,
@@ -255,7 +255,6 @@ app.MapPost("/api/visit/tasks", async (VisitTask task, VaultDb db) => {
     return Results.Created($"/api/visit/tasks/{task.Id}", task);
 });
 
-// 2. تحديث مسار التعديل ليعتمد على وقت الهاتف القادم في الـ Request Body
 app.MapPut("/api/visit/tasks/{id}", async (int id, TaskToggleRequest req, VaultDb db) => {
     var task = await db.VisitTasks.FindAsync(id);
     if (task is null) return Results.NotFound();
@@ -265,7 +264,6 @@ app.MapPut("/api/visit/tasks/{id}", async (int id, TaskToggleRequest req, VaultD
     
     await db.SaveChangesAsync();
     
-    // 🚀 إشعار تليجرام فوري بالتوقيت المحلي الفعلي لهاتفك
     string status = task.IsCompleted ? $"✅ Done at {task.CompletedAt}" : "❌ Reverted";
     await SendTelegramNotification($"📌 Visit Update:\nPlan: {task.Title}\nStatus: {status}");
     
@@ -287,7 +285,6 @@ app.MapDelete("/api/visit/dates/{id}", async (int id, VaultDb db) => {
     db.VisitDates.Remove(trip);
     await db.SaveChangesAsync();
     
-    // إشعار تليجرام لتوثيق عملية المسح
     await SendTelegramNotification($"🗑️ An entire trip container ({trip.StartDate} to {trip.EndDate}) was deleted from the Vault!");
     
     return Results.Ok();
@@ -295,25 +292,23 @@ app.MapDelete("/api/visit/dates/{id}", async (int id, VaultDb db) => {
 
 // --- 🚨 LIVE SOS PROTOCOL ---
 app.MapPost("/api/sos", async (SosRequest req, VaultDb db) => {
-    // 1. تحويل المزاج فوراً إلى حالة الطوارئ باستخدام اسم الجدول الصحيح (Moods)
     var existingMood = await db.Moods.FirstOrDefaultAsync(m => m.User == req.User);
     if (existingMood != null) {
         existingMood.Status = "SOS";
         existingMood.UpdatedAt = DateTime.Now.ToString("hh:mm tt");
     } else {
-        // استخدمنا هنا اسم الكلاس الصحيح (Mood)
         db.Moods.Add(new Mood { User = req.User, Status = "SOS", UpdatedAt = DateTime.Now.ToString("hh:mm tt") });
     }
     await db.SaveChangesAsync();
 
-    // 2. تجهيز رابط خرائط جوجل إذا توفرت الإحداثيات
     string mapLink = (req.Lat.HasValue && req.Lng.HasValue)
         ? $"\n📍 Live Location: https://www.google.com/maps?q={req.Lat},{req.Lng}"
         : "\n📍 Location: (Location services were denied/disabled by device)";
 
-    // 3. إرسال إنذار مرعب ومباشر على تليجرام
+    string displayUser = req.User == "Mohammad" ? "7amodee" : (req.User == "Zainab" ? "ZoZo" : req.User);
     string target = req.User == "Mohammad" ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻";
-    await SendTelegramNotification($"🚨 EMERGENCY SOS TRIGGERED 🚨\n\n{req.User} has pressed the panic button and needs {target} ASAP!{mapLink}");
+
+    await SendTelegramNotification($"🚨 EMERGENCY SOS TRIGGERED 🚨\n\n{displayUser} has pressed the panic button and needs {target} ASAP!{mapLink}");
 
     return Results.Ok();
 });
@@ -323,36 +318,26 @@ app.MapGet("/api/prompts/current", async (VaultDb db) => {
     return await db.BlindPrompts.OrderByDescending(p => p.Id).FirstOrDefaultAsync();
 });
 
-// قائمة الأسئلة العميقة (The Blind Prompts Arsenal)
 var deepQuestions = new List<string> {
-    // 🕰️ Nostalgia & Memories
     "What is a memory of us you secretly replay in your mind? ✨",
     "What was the exact moment you realized we were going to be close? 🦋",
     "Which of our inside jokes is your absolute favorite? 😂",
     "If you could relive one single day we spent together, which one would it be? ⏪",
-    
-    // 🥰 Appreciation & Validation
     "What is something small I did this week that made you smile? 🤍",
     "When did you feel the most loved by me recently? 🥰",
     "What is a personality trait of mine that you admire the most? 🌟",
     "What is the most comforting thing I do when you are stressed or tired? 🔋",
     "When was the last time I made you feel truly proud? 🦅",
     "What is a weird habit of mine that you actually like? 🫣",
-
-    // 💭 Vulnerability & Deep Connection
     "What is a fear or insecurity you have that you think I can help you overcome? 🛡️",
     "How do you think you have changed for the better since we started talking? 🌱",
     "What is something you’ve always wanted to tell me but haven't found the right moment? 🗝️",
     "If you could read my mind for one minute, what do you think you would hear? 🧠",
     "What does 'feeling safe' mean to you in our relationship? 🏰",
-
-    // 🚀 Future & Growth
     "Where do you see us in exactly one year from today? 🎯",
     "What is a new hobby or skill you want us to learn together? 🎨",
     "How can I be a better support system for you in this current season of your life? 🤝",
     "If we had an unlimited budget for one weekend, what is the first trip we would take? ✈️",
-
-    // 🎭 Fun & Quirky
     "If I came with a warning label, what exactly would it say? ⚠️",
     "What movie or TV show dynamic reminds you the most of us? 🍿",
     "If we had to survive a zombie apocalypse together, what would be our roles? 🧟‍♂️"
@@ -377,12 +362,12 @@ app.MapPut("/api/prompts/{id}/answer", async (int id, AnswerRequest req, VaultDb
     
     await db.SaveChangesAsync();
     
-    // فحص القفل المزدوج (هل أجاب كلاهما؟)
     if (!string.IsNullOrEmpty(prompt.MohammadAnswer) && !string.IsNullOrEmpty(prompt.ZainabAnswer)) {
         await SendTelegramNotification($"🔓 THE DUAL-LOCK IS BROKEN!\nBoth of you have answered the Blind Prompt. Go check the Vault to read the answers! ✨");
     } else {
+        string displayUser = req.User == "Mohammad" ? "7amodee" : (req.User == "Zainab" ? "ZoZo" : req.User);
         string target = req.User == "Mohammad" ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻";
-        await SendTelegramNotification($"🔒 {req.User} has locked their answer in the Blind Prompt! Waiting for {target} to answer...");
+        await SendTelegramNotification($"🔒 {displayUser} has locked their answer in the Blind Prompt! Waiting for {target} to answer...");
     }
     
     return Results.Ok(prompt);
@@ -469,7 +454,6 @@ class Heartbeat {
     [JsonPropertyName("sender")] public string Sender { get; set; } = string.Empty;
 }
 
-// 🗺️ The New Bucket List Data Model
 class BucketListItem {
     [JsonPropertyName("id")] public int Id { get; set; }
     [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
@@ -487,8 +471,6 @@ class VisitTask {
     [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
     [JsonPropertyName("isCompleted")] public bool IsCompleted { get; set; } = false;
     [JsonPropertyName("completedAt")] public string? CompletedAt { get; set; }
-    
-    // 🔗 Foreign Key linking to the specific date range instance
     [JsonPropertyName("visitDatesId")] public int VisitDatesId { get; set; }
 }
 
@@ -501,9 +483,7 @@ public class TaskToggleRequest
 public class SosRequest 
 {
     [JsonPropertyName("user")] public string User { get; set; } = string.Empty;
-    
     [JsonPropertyName("lat")] public double? Lat { get; set; }
-    
     [JsonPropertyName("lng")] public double? Lng { get; set; }
 }
 
