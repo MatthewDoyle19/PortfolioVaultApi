@@ -318,6 +318,52 @@ app.MapPost("/api/sos", async (SosRequest req, VaultDb db) => {
     return Results.Ok();
 });
 
+// --- 💭 THE DUAL-LOCK BLIND PROMPT ---
+app.MapGet("/api/prompts/current", async (VaultDb db) => {
+    return await db.BlindPrompts.OrderByDescending(p => p.Id).FirstOrDefaultAsync();
+});
+
+// قائمة الأسئلة العميقة (يمكنك إضافة المزيد لها لاحقاً)
+var deepQuestions = new List<string> {
+    "What is something small I did this week that made you smile? 🤍",
+    "What is a memory of us you secretly replay in your mind? ✨",
+    "When did you feel the most loved by me recently? 🥰",
+    "What is a weird habit of mine that you actually like? 🫣",
+    "If we had a free day together with no responsibilities, what would we do? 🗺️",
+    "What is something you want to achieve together this year? 🎯",
+    "What made you realize you liked me for the first time? 🦋"
+};
+
+app.MapPost("/api/prompts/generate", async (VaultDb db) => {
+    var q = deepQuestions[new Random().Next(deepQuestions.Count)];
+    var prompt = new BlindPrompt { Question = q, DateAdded = DateTime.Now.ToString("dd MMM yyyy") };
+    db.BlindPrompts.Add(prompt);
+    await db.SaveChangesAsync();
+    
+    await SendTelegramNotification($"💭 A new Blind Prompt has dropped in The Vault!\nGo answer it before the other does! 🔒");
+    return Results.Ok(prompt);
+});
+
+app.MapPut("/api/prompts/{id}/answer", async (int id, AnswerRequest req, VaultDb db) => {
+    var prompt = await db.BlindPrompts.FindAsync(id);
+    if (prompt == null) return Results.NotFound();
+    
+    if (req.User == "Mohammad") prompt.MohammadAnswer = req.Answer;
+    else if (req.User == "Zainab") prompt.ZainabAnswer = req.Answer;
+    
+    await db.SaveChangesAsync();
+    
+    // فحص القفل المزدوج (هل أجاب كلاهما؟)
+    if (!string.IsNullOrEmpty(prompt.MohammadAnswer) && !string.IsNullOrEmpty(prompt.ZainabAnswer)) {
+        await SendTelegramNotification($"🔓 THE DUAL-LOCK IS BROKEN!\nBoth of you have answered the Blind Prompt. Go check the Vault to read the answers! ✨");
+    } else {
+        string target = req.User == "Mohammad" ? "Zozo 👸🏻" : "7modee 👨🏻‍💻";
+        await SendTelegramNotification($"🔒 {req.User} has locked their answer in the Blind Prompt! Waiting for {target} to answer...");
+    }
+    
+    return Results.Ok(prompt);
+});
+
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<VaultDb>();
@@ -342,6 +388,7 @@ class VaultDb : DbContext {
     public DbSet<BucketListItem> BucketListItems => Set<BucketListItem>();
     public DbSet<VisitDates> VisitDates => Set<VisitDates>();
     public DbSet<VisitTask> VisitTasks => Set<VisitTask>();
+    public DbSet<BlindPrompt> BlindPrompts => Set<BlindPrompt>();
 }
 
 class Link {
@@ -424,4 +471,17 @@ public class SosRequest
     [JsonPropertyName("lat")] public double? Lat { get; set; }
     
     [JsonPropertyName("lng")] public double? Lng { get; set; }
+}
+
+class BlindPrompt {
+    [JsonPropertyName("id")] public int Id { get; set; }
+    [JsonPropertyName("question")] public string Question { get; set; } = string.Empty;
+    [JsonPropertyName("mohammadAnswer")] public string? MohammadAnswer { get; set; }
+    [JsonPropertyName("zainabAnswer")] public string? ZainabAnswer { get; set; }
+    [JsonPropertyName("dateAdded")] public string? DateAdded { get; set; }
+}
+
+public class AnswerRequest {
+    [JsonPropertyName("user")] public string User { get; set; } = string.Empty;
+    [JsonPropertyName("answer")] public string Answer { get; set; } = string.Empty;
 }

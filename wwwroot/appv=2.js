@@ -24,7 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     loginScreen.classList.add('hidden');
                     dashboard.classList.remove('hidden');
                     dashboard.classList.add('fade-in');
-                    document.getElementById('bottom-nav').classList.remove('hidden'); // إظهار شريط التنقل
+                    document.getElementById('bottom-nav').classList.remove('hidden');
+
+                    // 🚨 إظهار زر الطوارئ فقط بعد الدخول الناجح
+                    const sosBtn = document.getElementById('sos-btn');
+                    if (sosBtn) sosBtn.classList.remove('hidden');
+
                     window.scrollTo(0, 0);
                 }, 500);
             } else {
@@ -1134,6 +1139,131 @@ document.addEventListener('DOMContentLoaded', () => {
             sendSosReq(null, null);
         }
     };
+
+    // --- 💭 DUAL-LOCK BLIND PROMPT LOGIC ---
+    const promptContainer = document.getElementById('blind-prompt-container');
+
+    const fetchBlindPrompt = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/prompts/current`);
+            if (res.status === 204 || !res.ok) {
+                renderEmptyPrompt();
+                return;
+            }
+            const prompt = await res.json();
+            if (!prompt) renderEmptyPrompt();
+            else renderPrompt(prompt);
+        } catch (error) { console.error(error); }
+    };
+
+    const renderEmptyPrompt = () => {
+        if (!promptContainer) return;
+        promptContainer.innerHTML = `
+            <div class="text-center">
+                <span class="text-4xl mb-3 block">💭</span>
+                <h3 class="text-white font-bold text-lg mb-2">No Active Prompt</h3>
+                <p class="text-xs text-slate-400 mb-4">Generate a deep question for both of you to answer blindly.</p>
+                <button onclick="generatePrompt()" class="bg-pink-500/20 text-pink-400 border border-pink-500/30 font-bold py-2 px-6 rounded-xl hover:bg-pink-500 hover:text-white transition-all active:scale-95 shadow-lg">
+                    Generate Blind Prompt ✨
+                </button>
+            </div>
+        `;
+    };
+
+    window.generatePrompt = async () => {
+        promptContainer.innerHTML = `<p class="text-center text-slate-400 animate-pulse">Consulting the Vault... 🔮</p>`;
+        await fetch(`${API_BASE_URL}/api/prompts/generate`, { method: 'POST' });
+        fetchBlindPrompt();
+    };
+
+    const renderPrompt = (prompt) => {
+        if (!promptContainer) return;
+
+        const moAns = prompt.mohammadAnswer;
+        const zaAns = prompt.zainabAnswer;
+        const isUnlocked = moAns && zaAns;
+
+        let html = `
+            <div class="text-center mb-6">
+                <span class="text-[10px] text-pink-400 font-bold uppercase tracking-widest border border-pink-500/30 bg-pink-500/10 px-3 py-1 rounded-full">Dual-Lock Prompt 🔒</span>
+                <h3 class="text-white font-bold text-xl mt-4 leading-relaxed tracking-wide">"${prompt.question}"</h3>
+            </div>
+        `;
+
+        if (isUnlocked) {
+            // 🔓 حالة الفتح: كلاهما أجاب، نعرض الإجابات بشفافية وجمال
+            html += `
+                <div class="flex flex-col gap-4 mb-6 relative z-10">
+                    <div class="bg-black/30 p-4 rounded-2xl border border-emerald-500/30 border-l-4 border-l-emerald-500 text-left fade-in">
+                        <span class="text-[10px] text-emerald-400 font-bold uppercase block mb-1">Mohammad 👨🏻‍💻</span>
+                        <p class="text-slate-200 text-sm font-medium">"${moAns}"</p>
+                    </div>
+                    <div class="bg-black/30 p-4 rounded-2xl border border-pink-500/30 border-l-4 border-l-pink-500 text-left fade-in" style="animation-delay: 0.2s">
+                        <span class="text-[10px] text-pink-400 font-bold uppercase block mb-1">Zainab 👸🏻</span>
+                        <p class="text-slate-200 text-sm font-medium">"${zaAns}"</p>
+                    </div>
+                </div>
+                <button onclick="generatePrompt()" class="mt-2 text-xs text-slate-500 hover:text-white transition-colors underline underline-offset-4">Generate Next Prompt 🔄</button>
+            `;
+        } else {
+            // 🔒 حالة القفل: أحدهما أو كلاهما لم يجب
+            html += `<div class="flex justify-center gap-6 mb-6">`;
+
+            html += moAns
+                ? `<div class="flex flex-col items-center"><div class="bg-emerald-500/20 text-emerald-400 p-3 rounded-xl border border-emerald-500/30 mb-2">✅</div><span class="text-[10px] text-slate-400 uppercase">Mohammad Locked</span></div>`
+                : `<div class="flex flex-col items-center"><div class="bg-black/40 text-slate-500 p-3 rounded-xl border border-white/5 mb-2 animate-pulse">⏳</div><span class="text-[10px] text-slate-400 uppercase">Waiting Mohammad</span></div>`;
+
+            html += zaAns
+                ? `<div class="flex flex-col items-center"><div class="bg-emerald-500/20 text-emerald-400 p-3 rounded-xl border border-emerald-500/30 mb-2">✅</div><span class="text-[10px] text-slate-400 uppercase">Zainab Locked</span></div>`
+                : `<div class="flex flex-col items-center"><div class="bg-black/40 text-slate-500 p-3 rounded-xl border border-white/5 mb-2 animate-pulse">⏳</div><span class="text-[10px] text-slate-400 uppercase">Waiting Zainab</span></div>`;
+
+            html += `</div>`;
+
+            // نموذج الإجابة
+            html += `
+                <form id="submit-prompt-form" class="flex flex-col gap-3 bg-black/20 p-4 rounded-2xl border border-white/5">
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-slate-400 font-medium">Answering as:</label>
+                        <select id="prompt-user" class="bg-black/60 text-white text-xs px-2 py-1 rounded-lg border border-white/10 focus:outline-none focus:border-pink-500">
+                            <option value="Mohammad">Mohammad 👨🏻‍💻</option>
+                            <option value="Zainab">Zainab 👸🏻</option>
+                        </select>
+                    </div>
+                    <textarea id="prompt-answer" rows="2" placeholder="Write your honest answer..." required class="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 shadow-inner resize-none"></textarea>
+                    <button type="submit" class="w-full bg-indigo-600/90 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-xl transition-all active:scale-95 shadow-[0_0_15px_rgba(79,70,229,0.4)]">
+                        Lock My Answer 🔒
+                    </button>
+                </form>
+            `;
+        }
+
+        promptContainer.innerHTML = html;
+
+        const form = document.getElementById('submit-prompt-form');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = form.querySelector('button');
+                btn.disabled = true;
+                btn.innerHTML = 'Encrypting... ⏳';
+
+                try {
+                    await fetch(`${API_BASE_URL}/api/prompts/${prompt.id}/answer`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            user: document.getElementById('prompt-user').value,
+                            answer: document.getElementById('prompt-answer').value
+                        })
+                    });
+                    fetchBlindPrompt();
+                } catch (error) { console.error(error); btn.disabled = false; }
+            });
+        }
+    };
+
+    // لا تنسَ استدعاء الدالة عند تحميل الصفحة مع بقية الدوال
+    fetchBlindPrompt();
     
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
     window.switchTab = (tabName) => {
