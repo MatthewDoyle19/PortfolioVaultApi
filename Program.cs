@@ -314,6 +314,14 @@ app.MapPost("/api/sos", async (SosRequest req, VaultDb db) => {
 });
 
 // --- 💭 THE DUAL-LOCK BLIND PROMPT ---
+app.MapGet("/api/prompts/history", async (VaultDb db) => {
+    // نجلب فقط الأسئلة التي كُسر قفلها (كلاكما أجاب عليها)
+    return await db.BlindPrompts
+        .Where(p => p.MohammadAnswer != null && p.ZainabAnswer != null)
+        .OrderByDescending(p => p.Id)
+        .ToListAsync();
+});
+
 app.MapGet("/api/prompts/current", async (VaultDb db) => {
     return await db.BlindPrompts.OrderByDescending(p => p.Id).FirstOrDefaultAsync();
 });

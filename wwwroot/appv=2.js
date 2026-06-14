@@ -1261,12 +1261,57 @@ document.addEventListener('DOMContentLoaded', () => {
                         })
                     });
                     fetchBlindPrompt();
+                    fetchPromptHistory();
                 } catch (error) { console.error(error); btn.disabled = false; }
             });
         }
     };
 
     fetchBlindPrompt();
+
+    // --- 📜 PROMPTS HISTORY LOGIC ---
+    const fetchPromptHistory = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/prompts/history`);
+            const history = await res.json();
+            renderPromptHistory(history);
+        } catch(e) { console.error(e); }
+    };
+
+    const renderPromptHistory = (history) => {
+        const container = document.getElementById('prompts-history');
+        if(!container) return;
+
+        if(history.length === 0) {
+            container.innerHTML = `<p class="text-[10px] text-slate-600 text-center italic py-4">The archives are empty. Unlock prompts to save them here.</p>`;
+            return;
+        }
+
+        container.innerHTML = history.map(p => `
+            <div class="bg-black/20 border border-white/5 p-4 rounded-3xl fade-in relative overflow-hidden group hover:border-pink-500/20 transition-all">
+                <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-emerald-500 to-pink-500 opacity-50"></div>
+                
+                <p class="text-sm text-pink-300 font-bold mb-4 leading-relaxed pl-2">"${p.question}"</p>
+                
+                <div class="flex flex-col gap-3 pl-2">
+                    <div class="bg-black/40 p-3 rounded-2xl border-l-2 border-emerald-500/50">
+                        <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest block mb-1">7amodee 👨🏻‍💻</span>
+                        <p class="text-xs text-slate-300 font-medium">"${p.mohammadAnswer}"</p>
+                    </div>
+                    <div class="bg-black/40 p-3 rounded-2xl border-l-2 border-pink-500/50">
+                        <span class="text-[9px] text-pink-400 font-bold uppercase tracking-widest block mb-1">ZoZo 👸🏻</span>
+                        <p class="text-xs text-slate-300 font-medium">"${p.zainabAnswer}"</p>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end mt-3">
+                    <span class="text-[8px] text-slate-600 font-bold tracking-widest uppercase bg-black/40 px-2 py-1 rounded-md border border-white/5">${p.dateAdded}</span>
+                </div>
+            </div>
+        `).join('');
+    };
+
+    fetchPromptHistory();
 
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
     window.switchTab = (tabName) => {
