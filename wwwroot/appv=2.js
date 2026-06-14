@@ -1097,13 +1097,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 🚨 SOS & GEOLOCATION LOGIC ---
     window.triggerSOS = async () => {
-        const who = prompt("🚨 EMERGENCY PROTOCOL 🚨\nWho is sending this SOS? (Type: Mohammad or Zainab)");
-        if (who !== 'Mohammad' && who !== 'Zainab') {
+        const who = prompt("🚨 EMERGENCY PROTOCOL 🚨\nWho is sending this SOS? (Type: 7amodee or ZoZo)");
+        if (who !== '7amodee' && who !== 'ZoZo') {
             if (who) alert("Invalid name. SOS Aborted.");
             return;
         }
 
-        if (!confirm(`⚠️ Send high-priority SOS alert to ${who === 'Mohammad' ? 'Zainab' : 'Mohammad'} with your LIVE GPS location?`)) return;
+        if (!confirm(`⚠️ Send high-priority SOS alert to ${who === 'Mohammad' ? 'ZoZo' : '7amodee'} with your LIVE GPS location?`)) return;
 
         showToast('Processing...', 'Acquiring GPS coordinates 🛰️', '⏳');
 

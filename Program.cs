@@ -312,7 +312,7 @@ app.MapPost("/api/sos", async (SosRequest req, VaultDb db) => {
         : "\n📍 Location: (Location services were denied/disabled by device)";
 
     // 3. إرسال إنذار مرعب ومباشر على تليجرام
-    string target = req.User == "Mohammad" ? "Zozo 👸🏻" : "7modee 👨🏻‍💻";
+    string target = req.User == "Mohammad" ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻";
     await SendTelegramNotification($"🚨 EMERGENCY SOS TRIGGERED 🚨\n\n{req.User} has pressed the panic button and needs {target} ASAP!{mapLink}");
 
     return Results.Ok();
@@ -323,15 +323,39 @@ app.MapGet("/api/prompts/current", async (VaultDb db) => {
     return await db.BlindPrompts.OrderByDescending(p => p.Id).FirstOrDefaultAsync();
 });
 
-// قائمة الأسئلة العميقة (يمكنك إضافة المزيد لها لاحقاً)
+// قائمة الأسئلة العميقة (The Blind Prompts Arsenal)
 var deepQuestions = new List<string> {
-    "What is something small I did this week that made you smile? 🤍",
+    // 🕰️ Nostalgia & Memories
     "What is a memory of us you secretly replay in your mind? ✨",
+    "What was the exact moment you realized we were going to be close? 🦋",
+    "Which of our inside jokes is your absolute favorite? 😂",
+    "If you could relive one single day we spent together, which one would it be? ⏪",
+    
+    // 🥰 Appreciation & Validation
+    "What is something small I did this week that made you smile? 🤍",
     "When did you feel the most loved by me recently? 🥰",
+    "What is a personality trait of mine that you admire the most? 🌟",
+    "What is the most comforting thing I do when you are stressed or tired? 🔋",
+    "When was the last time I made you feel truly proud? 🦅",
     "What is a weird habit of mine that you actually like? 🫣",
-    "If we had a free day together with no responsibilities, what would we do? 🗺️",
-    "What is something you want to achieve together this year? 🎯",
-    "What made you realize you liked me for the first time? 🦋"
+
+    // 💭 Vulnerability & Deep Connection
+    "What is a fear or insecurity you have that you think I can help you overcome? 🛡️",
+    "How do you think you have changed for the better since we started talking? 🌱",
+    "What is something you’ve always wanted to tell me but haven't found the right moment? 🗝️",
+    "If you could read my mind for one minute, what do you think you would hear? 🧠",
+    "What does 'feeling safe' mean to you in our relationship? 🏰",
+
+    // 🚀 Future & Growth
+    "Where do you see us in exactly one year from today? 🎯",
+    "What is a new hobby or skill you want us to learn together? 🎨",
+    "How can I be a better support system for you in this current season of your life? 🤝",
+    "If we had an unlimited budget for one weekend, what is the first trip we would take? ✈️",
+
+    // 🎭 Fun & Quirky
+    "If I came with a warning label, what exactly would it say? ⚠️",
+    "What movie or TV show dynamic reminds you the most of us? 🍿",
+    "If we had to survive a zombie apocalypse together, what would be our roles? 🧟‍♂️"
 };
 
 app.MapPost("/api/prompts/generate", async (VaultDb db) => {
@@ -357,7 +381,7 @@ app.MapPut("/api/prompts/{id}/answer", async (int id, AnswerRequest req, VaultDb
     if (!string.IsNullOrEmpty(prompt.MohammadAnswer) && !string.IsNullOrEmpty(prompt.ZainabAnswer)) {
         await SendTelegramNotification($"🔓 THE DUAL-LOCK IS BROKEN!\nBoth of you have answered the Blind Prompt. Go check the Vault to read the answers! ✨");
     } else {
-        string target = req.User == "Mohammad" ? "Zozo 👸🏻" : "7modee 👨🏻‍💻";
+        string target = req.User == "Mohammad" ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻";
         await SendTelegramNotification($"🔒 {req.User} has locked their answer in the Blind Prompt! Waiting for {target} to answer...");
     }
     
