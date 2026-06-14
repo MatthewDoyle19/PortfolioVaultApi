@@ -1097,32 +1097,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 🚨 SOS & GEOLOCATION LOGIC ---
     window.triggerSOS = async () => {
-        const who = prompt("🚨 EMERGENCY PROTOCOL 🚨\nWho is sending this SOS? (Type: 7amodee or ZoZo)");
-        if (who !== '7amodee' && who !== 'ZoZo') {
-            if (who) alert("Invalid name. SOS Aborted.");
+        // نطلب الاسم المستعار اللطيف
+        const rawWho = prompt("🚨 EMERGENCY PROTOCOL 🚨\nWho is sending this SOS? (Type: 7amodee or Zozo)");
+        if (!rawWho) return;
+
+        const cleanWho = rawWho.trim().toLowerCase();
+        let standardUser = "";
+
+        // المترجم الذكي: يحول الدلع إلى الاسم الرسمي للنظام
+        if (cleanWho === '7amodee' || cleanWho === 'mohammad') {
+            standardUser = 'Mohammad';
+        } else if (cleanWho === 'zozo' || cleanWho === 'zainab') {
+            standardUser = 'Zainab';
+        } else {
+            alert("Invalid name. SOS Aborted.");
             return;
         }
 
-        if (!confirm(`⚠️ Send high-priority SOS alert to ${who === 'Mohammad' ? 'ZoZo' : '7amodee'} with your LIVE GPS location?`)) return;
+        const targetName = standardUser === 'Mohammad' ? 'Zozo 👸🏻' : '7modee 👨🏻‍💻';
+        if (!confirm(`⚠️ Send high-priority SOS alert to ${targetName} with your LIVE GPS location?`)) return;
 
         showToast('Processing...', 'Acquiring GPS coordinates 🛰️', '⏳');
 
         const sendSosReq = async (lat, lng) => {
             try {
+                // نرسل الاسم الرسمي (standardUser) للسيرفر
                 await fetch(`${API_BASE_URL}/api/sos`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user: who, lat: lat, lng: lng })
+                    body: JSON.stringify({ user: standardUser, lat: lat, lng: lng })
                 });
                 showToast('SOS SENT! 🚨', 'Emergency alert has been fired!', '🚨');
-                fetchSystemState(); // إجبار تحديث النظام لتبدأ الشاشة بالنبض
+                fetchSystemState();
             } catch (e) {
                 console.error("SOS failed", e);
                 showToast('Error', 'Failed to connect to server.', '❌');
             }
         };
 
-        // 🛰️ سحب الموقع الجغرافي من الهاتف
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -1131,7 +1143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 (error) => {
                     console.warn("Location access denied or failed.", error);
                     showToast('GPS Failed', 'Sending SOS without location data.', '⚠️');
-                    sendSosReq(null, null); // نرسل الطوارئ حتى لو رفض المستخدم إعطاء الصلاحية
+                    sendSosReq(null, null);
                 },
                 { enableHighAccuracy: true, timeout: 10000 }
             );
