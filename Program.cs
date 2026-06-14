@@ -344,10 +344,21 @@ var deepQuestions = new List<string> {
 };
 
 app.MapPost("/api/prompts/generate", async (VaultDb db) => {
+    // 🧹 1. تنظيف عميق: مسح أي أسئلة سابقة لم يتم الإجابة عليها لتجنب التراكم
+    var unfinished = await db.BlindPrompts
+        .Where(p => p.MohammadAnswer == null || p.ZainabAnswer == null)
+        .ToListAsync();
+        
+    if (unfinished.Any()) {
+        db.BlindPrompts.RemoveRange(unfinished);
+    }
+
+    // 2. توليد السؤال الجديد النظيف
     var q = deepQuestions[new Random().Next(deepQuestions.Count)];
     var prompt = new BlindPrompt { Question = q, DateAdded = DateTime.Now.ToString("dd MMM yyyy") };
     db.BlindPrompts.Add(prompt);
-    await db.SaveChangesAsync();
+    
+    await db.SaveChangesAsync(); // نحفظ التغييرات (الحذف والإضافة) بضربة واحدة
     
     await SendTelegramNotification($"💭 A new Blind Prompt has dropped in The Vault!\nGo answer it before the other does! 🔒");
     return Results.Ok(prompt);
@@ -374,12 +385,17 @@ app.MapPut("/api/prompts/{id}/answer", async (int id, AnswerRequest req, VaultDb
 });
 
 app.MapDelete("/api/prompts/current", async (VaultDb db) => {
-    var currentPrompt = await db.BlindPrompts.OrderByDescending(p => p.Id).FirstOrDefaultAsync();
-    if (currentPrompt != null) {
-        db.BlindPrompts.Remove(currentPrompt);
+    // 🧹 مسح *جميع* الأسئلة المعلقة لإنهاء الجلسة تماماً من جذورها
+    var unfinished = await db.BlindPrompts
+        .Where(p => p.MohammadAnswer == null || p.ZainabAnswer == null)
+        .ToListAsync();
+
+    if (unfinished.Any()) {
+        db.BlindPrompts.RemoveRange(unfinished);
         await db.SaveChangesAsync();
         await SendTelegramNotification("🚫 The current Blind Prompt session was cancelled.");
     }
+    
     return Results.Ok();
 });
 
