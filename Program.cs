@@ -293,6 +293,31 @@ app.MapDelete("/api/visit/dates/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
+// --- 🚨 LIVE SOS PROTOCOL ---
+app.MapPost("/api/sos", async (SosRequest req, VaultDb db) => {
+    // 1. تحويل المزاج فوراً إلى حالة الطوارئ باستخدام اسم الجدول الصحيح (Moods)
+    var existingMood = await db.Moods.FirstOrDefaultAsync(m => m.User == req.User);
+    if (existingMood != null) {
+        existingMood.Status = "SOS";
+        existingMood.UpdatedAt = DateTime.Now.ToString("hh:mm tt");
+    } else {
+        // استخدمنا هنا اسم الكلاس الصحيح (Mood)
+        db.Moods.Add(new Mood { User = req.User, Status = "SOS", UpdatedAt = DateTime.Now.ToString("hh:mm tt") });
+    }
+    await db.SaveChangesAsync();
+
+    // 2. تجهيز رابط خرائط جوجل إذا توفرت الإحداثيات
+    string mapLink = (req.Lat.HasValue && req.Lng.HasValue)
+        ? $"\n📍 Live Location: https://www.google.com/maps?q={req.Lat},{req.Lng}"
+        : "\n📍 Location: (Location services were denied/disabled by device)";
+
+    // 3. إرسال إنذار مرعب ومباشر على تليجرام
+    string target = req.User == "Mohammad" ? "Zozo 👸🏻" : "7modee 👨🏻‍💻";
+    await SendTelegramNotification($"🚨 EMERGENCY SOS TRIGGERED 🚨\n\n{req.User} has pressed the panic button and needs {target} ASAP!{mapLink}");
+
+    return Results.Ok();
+});
+
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<VaultDb>();
@@ -390,4 +415,13 @@ public class TaskToggleRequest
 {
     [JsonPropertyName("localTime")]
     public string? LocalTime { get; set; }
+}
+
+public class SosRequest 
+{
+    [JsonPropertyName("user")] public string User { get; set; } = string.Empty;
+    
+    [JsonPropertyName("lat")] public double? Lat { get; set; }
+    
+    [JsonPropertyName("lng")] public double? Lng { get; set; }
 }

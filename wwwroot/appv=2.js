@@ -689,6 +689,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('mohammad-mood-text').innerText = "Not set yet";
             document.getElementById('zainab-mood-text').innerText = "Not set yet";
 
+            let isEmergency = false; // تتبع حالة الطوارئ العامة
+
             moods.forEach(m => {
                 const iconEl = document.getElementById(`${m.user.toLowerCase()}-mood-icon`);
                 const textEl = document.getElementById(`${m.user.toLowerCase()}-mood-text`);
@@ -696,10 +698,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     iconEl.innerText = moodsList[m.status].icon;
                     textEl.innerText = `${moodsList[m.status].text} (${m.updatedAt})`;
 
-                    if(m.status === 'SOS') iconEl.classList.add('animate-pulse', 'bg-rose-500/50', 'border-rose-500');
-                    else iconEl.classList.remove('animate-pulse', 'bg-rose-500/50', 'border-rose-500');
+                    if(m.status === 'SOS') {
+                        iconEl.classList.add('animate-pulse', 'bg-rose-500/50', 'border-rose-500');
+                        isEmergency = true; // وجدنا حالة طوارئ
+                    } else {
+                        iconEl.classList.remove('animate-pulse', 'bg-rose-500/50', 'border-rose-500');
+                    }
                 }
             });
+
+            // 🚨 تفعيل النبض الأحمر على مستوى الشاشة بالكامل
+            if (isEmergency) {
+                document.body.classList.add('emergency-mode');
+            } else {
+                document.body.classList.remove('emergency-mode');
+            }
 
             const penRes = await fetch(`${API_BASE_URL}/api/penalties`, {
                 headers: { 'Cache-Control': 'no-cache' },
@@ -1076,6 +1089,51 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     fetchVisitData();
+
+    // --- 🚨 SOS & GEOLOCATION LOGIC ---
+    window.triggerSOS = async () => {
+        const who = prompt("🚨 EMERGENCY PROTOCOL 🚨\nWho is sending this SOS? (Type: Mohammad or Zainab)");
+        if (who !== 'Mohammad' && who !== 'Zainab') {
+            if (who) alert("Invalid name. SOS Aborted.");
+            return;
+        }
+
+        if (!confirm(`⚠️ Send high-priority SOS alert to ${who === 'Mohammad' ? 'Zainab' : 'Mohammad'} with your LIVE GPS location?`)) return;
+
+        showToast('Processing...', 'Acquiring GPS coordinates 🛰️', '⏳');
+
+        const sendSosReq = async (lat, lng) => {
+            try {
+                await fetch(`${API_BASE_URL}/api/sos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user: who, lat: lat, lng: lng })
+                });
+                showToast('SOS SENT! 🚨', 'Emergency alert has been fired!', '🚨');
+                fetchSystemState(); // إجبار تحديث النظام لتبدأ الشاشة بالنبض
+            } catch (e) {
+                console.error("SOS failed", e);
+                showToast('Error', 'Failed to connect to server.', '❌');
+            }
+        };
+
+        // 🛰️ سحب الموقع الجغرافي من الهاتف
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    sendSosReq(position.coords.latitude, position.coords.longitude);
+                },
+                (error) => {
+                    console.warn("Location access denied or failed.", error);
+                    showToast('GPS Failed', 'Sending SOS without location data.', '⚠️');
+                    sendSosReq(null, null); // نرسل الطوارئ حتى لو رفض المستخدم إعطاء الصلاحية
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        } else {
+            sendSosReq(null, null);
+        }
+    };
     
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
     window.switchTab = (tabName) => {
