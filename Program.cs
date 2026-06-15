@@ -376,18 +376,25 @@ app.MapPut("/api/prompts/{id}/answer", async (int id, AnswerRequest req, VaultDb
     var prompt = await db.BlindPrompts.FindAsync(id);
     if (prompt == null) return Results.NotFound();
     
+    // تسجيل إجابة الطرف الحالي
     if (req.User == "Mohammad") prompt.MohammadAnswer = req.Answer;
     else if (req.User == "Zainab") prompt.ZainabAnswer = req.Answer;
     
-    await db.SaveChangesAsync();
-    
+    // فحص القفل المزدوج
     if (!string.IsNullOrEmpty(prompt.MohammadAnswer) && !string.IsNullOrEmpty(prompt.ZainabAnswer)) {
+        
+        // 🕒 اللمسة الجديدة: توثيق تاريخ ووقت كسر القفل (اللحظة التي تكتمل فيها الذكرى)
+        prompt.DateAdded = DateTime.Now.ToString("dd MMM yyyy, hh:mm tt");
+        
         await SendTelegramNotification($"🔓 THE DUAL-LOCK IS BROKEN!\nBoth of you have answered the Blind Prompt. Go check the Vault to read the answers! ✨");
     } else {
         string displayUser = req.User == "Mohammad" ? "7amodee" : (req.User == "Zainab" ? "ZoZo" : req.User);
         string target = req.User == "Mohammad" ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻";
         await SendTelegramNotification($"🔒 {displayUser} has locked their answer in the Blind Prompt! Waiting for {target} to answer...");
     }
+    
+    // حفظ جميع التغييرات (الإجابة + الوقت الجديد) في قاعدة البيانات
+    await db.SaveChangesAsync();
     
     return Results.Ok(prompt);
 });
