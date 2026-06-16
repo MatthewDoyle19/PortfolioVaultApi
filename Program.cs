@@ -414,6 +414,34 @@ app.MapDelete("/api/prompts/current", async (VaultDb db) => {
     return Results.Ok();
 });
 
+app.MapGet("/api/media", async (VaultDb db) => {
+    return await db.MediaItems.OrderByDescending(m => m.Id).ToListAsync();
+});
+
+app.MapPost("/api/media", async (MediaItem item, VaultDb db) => {
+    db.MediaItems.Add(item);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/media/{item.Id}", item);
+});
+
+app.MapPut("/api/media/{id}/status", async (int id, string newStatus, VaultDb db) => {
+    var item = await db.MediaItems.FindAsync(id);
+    if (item == null) return Results.NotFound();
+    
+    item.Status = newStatus;
+    await db.SaveChangesAsync();
+    return Results.Ok(item);
+});
+
+app.MapDelete("/api/media/{id}", async (int id, VaultDb db) => {
+    var item = await db.MediaItems.FindAsync(id);
+    if (item != null) {
+        db.MediaItems.Remove(item);
+        await db.SaveChangesAsync();
+    }
+    return Results.Ok();
+});
+
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<VaultDb>();
@@ -439,6 +467,7 @@ class VaultDb : DbContext {
     public DbSet<VisitDates> VisitDates => Set<VisitDates>();
     public DbSet<VisitTask> VisitTasks => Set<VisitTask>();
     public DbSet<BlindPrompt> BlindPrompts => Set<BlindPrompt>();
+    public DbSet<MediaItem> MediaItems { get; set; }
 }
 
 class Link {
@@ -529,4 +558,13 @@ class BlindPrompt {
 public class AnswerRequest {
     [JsonPropertyName("user")] public string User { get; set; } = string.Empty;
     [JsonPropertyName("answer")] public string Answer { get; set; } = string.Empty;
+}
+
+public class MediaItem
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public string Status { get; set; } = "backlog"; 
+    public string AddedBy { get; set; }
+    public DateTime DateAdded { get; set; } = DateTime.UtcNow;
 }

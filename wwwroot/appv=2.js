@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderLinks = (links) => {
         const linkGrid = document.getElementById('link-grid');
+        if (!linkGrid) return;
         linkGrid.innerHTML = '';
 
         links.forEach((link) => {
@@ -78,47 +79,53 @@ document.addEventListener('DOMContentLoaded', () => {
             card.className = 'flex items-center justify-between bg-dark p-3 rounded-xl border border-slate-700 hover:border-accent hover:bg-slate-800 transition-all group relative overflow-hidden';
 
             let isLocked = false;
-            let lockedText = "";
             if (link.unlockDate) {
                 const unlockDateObj = new Date(link.unlockDate);
-                const now = new Date();
-                if (unlockDateObj > now) {
+                if (unlockDateObj > new Date()) {
                     isLocked = true;
-                    const daysLeft = Math.ceil((unlockDateObj - now) / (1000 * 60 * 60 * 24));
-                    lockedText = `Unlocks in ${daysLeft} days 🔒`;
                 }
             }
 
             if (isLocked) {
+                // Create a unique identifier for this specific link's countdown
+                const timerId = `timer-link-${link.id}`;
+
                 card.innerHTML = `
-                    <div class="flex items-center gap-3 flex-grow overflow-hidden opacity-60 cursor-not-allowed select-none" title="This is a time capsule!">
-                        <div class="bg-card p-2 rounded-lg text-slate-500 shadow-sm text-lg">🔒</div>
-                        <div class="flex flex-col">
-                            <span class="text-sm font-medium text-slate-400 truncate pr-2">Hidden Surprise</span>
-                            <span class="text-[10px] text-accent font-bold tracking-widest uppercase">${lockedText}</span>
-                        </div>
+                <div class="flex items-center gap-3 flex-grow overflow-hidden cursor-not-allowed select-none" title="This is a time capsule!">
+                    <div class="bg-card p-2 rounded-lg text-indigo-400 shadow-sm text-lg animate-pulse">🔒</div>
+                    <div class="flex flex-col w-full pr-2">
+                        <span class="text-sm font-medium text-slate-400 truncate mb-1">Hidden Surprise</span>
+                        
+                        <!-- The countdown will be injected right here -->
+                        <div id="${timerId}"></div>
                     </div>
-                    <button onclick="deleteLink(${link.id})" class="text-slate-500 hover:text-red-400 p-2 transition-colors z-10 relative">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                `;
+                </div>
+                <button onclick="deleteLink(${link.id})" class="text-slate-500 hover:text-red-400 p-2 transition-colors z-10 relative">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            `;
+                linkGrid.appendChild(card);
+
+                // 🔥 IGNITE THE COUNTDOWN
+                startCountdown(link.unlockDate, timerId);
+
             } else {
                 card.innerHTML = `
-                    <a href="${link.url}" target="_blank" class="flex items-center gap-3 flex-grow overflow-hidden">
-                        <div class="bg-card p-2 rounded-lg text-accent group-hover:text-white transition-colors shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-sm font-medium text-slate-300 group-hover:text-white truncate pr-2">${link.title}</span>
-                            ${link.unlockDate ? `<span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wide">Unlocked ✨</span>` : ''}
-                        </div>
-                    </a>
-                    <button onclick="deleteLink(${link.id})" class="text-slate-500 hover:text-red-400 p-2 transition-colors z-10 relative">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                `;
+                <a href="${link.url}" target="_blank" class="flex items-center gap-3 flex-grow overflow-hidden">
+                    <div class="bg-card p-2 rounded-lg text-accent group-hover:text-white transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-medium text-slate-300 group-hover:text-white truncate pr-2">${link.title}</span>
+                        ${link.unlockDate ? `<span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wide">Unlocked ✨</span>` : ''}
+                    </div>
+                </a>
+                <button onclick="deleteLink(${link.id})" class="text-slate-500 hover:text-red-400 p-2 transition-colors z-10 relative">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            `;
+                linkGrid.appendChild(card);
             }
-            linkGrid.appendChild(card);
         });
     };
 
@@ -235,43 +242,49 @@ document.addEventListener('DOMContentLoaded', () => {
             const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
             let isLocked = false;
-            let lockedText = "";
             if (commit.unlockDate) {
                 const unlockDateObj = new Date(commit.unlockDate);
-                const now = new Date();
-                if (unlockDateObj > now) {
+                if (unlockDateObj > new Date()) {
                     isLocked = true;
-                    const daysLeft = Math.ceil((unlockDateObj - now) / (1000 * 60 * 60 * 24));
-                    lockedText = `Unlocks in ${daysLeft} days 🔒`;
                 }
             }
 
             if (isLocked) {
+                // Create a unique identifier for this specific memory's countdown
+                const timerId = `timer-commit-${commit.id}`;
+
                 item.innerHTML = `
-                    <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
-                        <span class="text-4xl mb-2 animate-bounce">⏳</span>
-                        <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-1">Time Capsule</p>
-                        <p class="text-white text-sm font-medium">${lockedText}</p>
-                    </div>
-                    <div class="opacity-10 blur-sm">
-                        <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
-                        <div class="h-32 bg-white/5 rounded-lg"></div>
-                    </div>
-                `;
+                <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
+                    <span class="text-4xl mb-2 animate-bounce">⏳</span>
+                    <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
+                    
+                    <!-- The countdown will be injected right here -->
+                    <div id="${timerId}" class="w-full min-h-[30px]"></div>
+                </div>
+                <div class="opacity-10 blur-sm">
+                    <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
+                    <div class="h-32 bg-white/5 rounded-lg"></div>
+                </div>
+            `;
+                commitTimeline.appendChild(item);
+
+                // 🔥 IGNITE THE COUNTDOWN: Must be called AFTER the item is appended to the DOM
+                startCountdown(commit.unlockDate, timerId);
+
             } else {
                 item.innerHTML = `
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
-                    <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-                </div>
-                <p class="text-sm text-slate-200 font-medium leading-relaxed tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${commit.message}</p>
-                
-                ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
-                
-                ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
-            `;
+            <div class="flex justify-between items-start mb-4">
+                <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
+                <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <p class="text-sm text-slate-200 font-medium leading-relaxed tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${commit.message}</p>
+            
+            ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
+            
+            ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
+        `;
+                commitTimeline.appendChild(item);
             }
-            commitTimeline.appendChild(item);
         });
     };
 
@@ -1312,6 +1325,156 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     fetchPromptHistory();
+
+    // --- ⏳ TIME CAPSULE COUNTDOWN LOGIC ---
+    const startCountdown = (unlockDateString, displayElementId) => {
+        const unlockDate = new Date(unlockDateString).getTime();
+        const displayElement = document.getElementById(displayElementId);
+
+        if (!displayElement) return;
+
+        const interval = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = unlockDate - now;
+
+            // If the countdown is finished
+            if (distance < 0) {
+                clearInterval(interval);
+                displayElement.innerHTML = `<span class="text-emerald-400 animate-pulse">🔓 It's time. You can open this now.</span>`;
+                // You can also trigger a function here to actually reveal the content!
+                return;
+            }
+
+            // Time calculations for days, hours, minutes and seconds
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Render the ticking clock
+            displayElement.innerHTML = `
+            <div class="flex gap-2 justify-center font-mono text-sm tracking-widest text-pink-400">
+                <div class="bg-black/30 px-2 py-1 rounded">${days}d</div>
+                <div class="bg-black/30 px-2 py-1 rounded">${hours}h</div>
+                <div class="bg-black/30 px-2 py-1 rounded">${minutes}m</div>
+                <div class="bg-black/30 px-2 py-1 rounded text-white">${seconds}s</div>
+            </div>
+        `;
+        }, 1000);
+    };
+
+    const fetchMedia = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/media`);
+            const media = await res.json();
+            renderMediaQueue(media);
+        } catch (e) {
+            console.error("Media fetch error:", e);
+        }
+    };
+
+// 2. Render the Kanban Board Columns (Global Scope)
+    const renderMediaQueue = (mediaItems) => {
+        const backlog = document.getElementById('media-backlog');
+        const watching = document.getElementById('media-watching');
+        const finished = document.getElementById('media-finished');
+
+        // تأكد من وجود العناصر في الصفحة قبل إكمال العمل
+        if (!backlog || !watching || !finished) return;
+
+        // تفريغ الأعمدة قبل إعادة رسمها
+        backlog.innerHTML = '';
+        watching.innerHTML = '';
+        finished.innerHTML = '';
+
+        mediaItems.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'bg-black/40 p-2 rounded-xl border border-white/5 flex flex-col gap-2 group relative overflow-hidden transition-all hover:bg-black/60 shadow-sm';
+
+            // تحديد الأزرار التي ستظهر بناءً على حالة العنصر
+            let actionButtons = '';
+            if (item.status === 'backlog') {
+                actionButtons = `<button onclick="updateMediaStatus(${item.id}, 'watching')" class="text-[9px] bg-blue-500/20 text-blue-400 px-2 py-1 rounded hover:bg-blue-500/40 transition-all font-bold">Start ▶️</button>`;
+            } else if (item.status === 'watching') {
+                actionButtons = `<button onclick="updateMediaStatus(${item.id}, 'finished')" class="text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded hover:bg-emerald-500/40 transition-all font-bold">Finish ✅</button>`;
+            }
+
+            card.innerHTML = `
+            <div class="flex justify-between items-start">
+                <span class="text-xs font-bold text-slate-200 leading-tight pr-2">${item.title}</span>
+                <button onclick="deleteMedia(${item.id})" class="text-rose-400/30 hover:text-rose-400 transition-colors px-1 font-bold">✕</button>
+            </div>
+            <div class="flex justify-between items-end mt-1">
+                <span class="text-[8px] text-slate-500 uppercase tracking-widest font-semibold">
+                    Added by ${item.addedBy === 'Mohammad' ? '7amodee' : (item.addedBy === 'Zainab' ? 'ZoZo' : item.addedBy)}
+                </span>
+                ${actionButtons}
+            </div>
+        `;
+
+            // توزيع البطاقات على الأعمدة الصحيحة
+            if (item.status === 'backlog') backlog.appendChild(card);
+            if (item.status === 'watching') watching.appendChild(card);
+            if (item.status === 'finished') finished.appendChild(card);
+        });
+    };
+
+// 3. Update Status (Global Scope)
+    const updateMediaStatus = async (id, newStatus) => {
+        try {
+            await fetch(`${API_BASE_URL}/api/media/${id}/status?newStatus=${newStatus}`, { method: 'PUT' });
+            fetchMedia(); // تحديث الواجهة فوراً
+        } catch (e) {
+            console.error("Update status error:", e);
+        }
+    };
+
+// 4. Delete Media Item (Global Scope)
+    const deleteMedia = async (id) => {
+        if(!confirm("Are you sure you want to remove this from the queue?")) return;
+        try {
+            await fetch(`${API_BASE_URL}/api/media/${id}`, { method: 'DELETE' });
+            fetchMedia(); // تحديث الواجهة فوراً
+        } catch (e) {
+            console.error("Delete media error:", e);
+        }
+    };
+
+// ==========================================
+// 5. Initialize Event Listeners (Local Scope - DOMContentLoaded)
+// ==========================================
+    document.addEventListener('DOMContentLoaded', () => {
+        const addMediaBtn = document.getElementById('add-media-btn');
+
+        if (addMediaBtn) {
+            addMediaBtn.addEventListener('click', async () => {
+                const title = prompt("🍿 What do you want to watch together?");
+                if (!title || title.trim() === '') return;
+
+                const currentUser = localStorage.getItem('vault_user') || 'Unknown';
+
+                try {
+                    // إرسال البيانات للسيرفر
+                    await fetch(`${API_BASE_URL}/api/media`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            title: title.trim(),
+                            addedBy: currentUser,
+                            status: 'backlog'
+                        })
+                    });
+
+                    fetchMedia(); // جلب البيانات الجديدة وعرضها
+                } catch (e) {
+                    console.error("Add media error:", e);
+                }
+            });
+        }
+
+        // جلب القائمة تلقائياً عند تحميل الصفحة
+        fetchMedia();
+    });
 
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
     window.switchTab = (tabName) => {
