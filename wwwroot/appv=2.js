@@ -1363,6 +1363,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     };
 
+    // --- 🍿 THE WATCHLIST LOGIC ---
     const fetchMedia = async () => {
         try {
             const res = await fetch(`${API_BASE_URL}/api/media`);
@@ -1373,7 +1374,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-// 2. Render Single List
     const renderWatchlist = (mediaItems) => {
         const listContainer = document.getElementById('simple-media-list');
         if (!listContainer) return;
@@ -1405,8 +1405,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-// 3. Delete Media Item
-    const deleteMedia = async (id) => {
+    // 🚨 Critical fix: Attached to window so your HTML button can actually find it
+    window.deleteMedia = async (id) => {
         if(!confirm("Remove this from the watchlist?")) return;
         try {
             await fetch(`${API_BASE_URL}/api/media/${id}`, { method: 'DELETE' });
@@ -1416,39 +1416,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-// 4. Initialize Event Listeners
-    document.addEventListener('DOMContentLoaded', () => {
-        const addMediaBtn = document.getElementById('add-media-btn');
+    const addMediaForm = document.getElementById('add-media-form');
 
-        if (addMediaBtn) {
-            addMediaBtn.addEventListener('click', async () => {
-                const title = prompt("🍿 What do you want to watch together?");
-                if (!title || title.trim() === '') return;
+    if (addMediaForm) {
+        addMediaForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-                const currentUser = localStorage.getItem('vault_user') || 'Unknown';
+            const titleInput = document.getElementById('media-title');
+            const title = titleInput.value;
 
-                try {
-                    // We keep sending 'backlog' as status so the database doesn't crash, 
-                    // but our UI simply ignores it and renders everything in one list.
-                    await fetch(`${API_BASE_URL}/api/media`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            title: title.trim(),
-                            addedBy: currentUser,
-                            status: 'backlog'
-                        })
-                    });
+            if (!title || title.trim() === '') return;
 
-                    fetchMedia();
-                } catch (e) {
-                    console.error("Add media error:", e);
-                }
-            });
-        }
+            const currentUser = localStorage.getItem('vault_user') || 'Unknown';
+            const submitBtn = e.target.querySelector('button[type="submit"]');
 
-        fetchMedia();
-    });
+            submitBtn.disabled = true;
+
+            try {
+                await fetch(`${API_BASE_URL}/api/media`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: title.trim(),
+                        addedBy: currentUser,
+                        status: 'backlog'
+                    })
+                });
+
+                titleInput.value = '';
+                fetchMedia();
+            } catch (e) {
+                console.error("Add media error:", e);
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    fetchMedia();
 
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
     window.switchTab = (tabName) => {
