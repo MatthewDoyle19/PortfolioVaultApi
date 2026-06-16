@@ -1367,82 +1367,56 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch(`${API_BASE_URL}/api/media`);
             const media = await res.json();
-            renderMediaQueue(media);
+            renderWatchlist(media);
         } catch (e) {
             console.error("Media fetch error:", e);
         }
     };
 
-// 2. Render the Kanban Board Columns (Global Scope)
-    const renderMediaQueue = (mediaItems) => {
-        const backlog = document.getElementById('media-backlog');
-        const watching = document.getElementById('media-watching');
-        const finished = document.getElementById('media-finished');
+// 2. Render Single List
+    const renderWatchlist = (mediaItems) => {
+        const listContainer = document.getElementById('simple-media-list');
+        if (!listContainer) return;
 
-        // تأكد من وجود العناصر في الصفحة قبل إكمال العمل
-        if (!backlog || !watching || !finished) return;
+        listContainer.innerHTML = '';
 
-        // تفريغ الأعمدة قبل إعادة رسمها
-        backlog.innerHTML = '';
-        watching.innerHTML = '';
-        finished.innerHTML = '';
+        // Show empty state if there are no movies
+        if (mediaItems.length === 0) {
+            listContainer.innerHTML = `<div class="text-center text-slate-500 text-sm py-4 font-medium">The list is empty. Add something to watch!</div>`;
+            return;
+        }
 
         mediaItems.forEach(item => {
             const card = document.createElement('div');
-            card.className = 'bg-black/40 p-2 rounded-xl border border-white/5 flex flex-col gap-2 group relative overflow-hidden transition-all hover:bg-black/60 shadow-sm';
-
-            // تحديد الأزرار التي ستظهر بناءً على حالة العنصر
-            let actionButtons = '';
-            if (item.status === 'backlog') {
-                actionButtons = `<button onclick="updateMediaStatus(${item.id}, 'watching')" class="text-[9px] bg-blue-500/20 text-blue-400 px-2 py-1 rounded hover:bg-blue-500/40 transition-all font-bold">Start ▶️</button>`;
-            } else if (item.status === 'watching') {
-                actionButtons = `<button onclick="updateMediaStatus(${item.id}, 'finished')" class="text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded hover:bg-emerald-500/40 transition-all font-bold">Finish ✅</button>`;
-            }
+            card.className = 'bg-black/40 p-3 rounded-xl border border-white/5 flex justify-between items-center group transition-all hover:bg-black/60 hover:border-blue-500/30 shadow-sm';
 
             card.innerHTML = `
-            <div class="flex justify-between items-start">
-                <span class="text-xs font-bold text-slate-200 leading-tight pr-2">${item.title}</span>
-                <button onclick="deleteMedia(${item.id})" class="text-rose-400/30 hover:text-rose-400 transition-colors px-1 font-bold">✕</button>
-            </div>
-            <div class="flex justify-between items-end mt-1">
-                <span class="text-[8px] text-slate-500 uppercase tracking-widest font-semibold">
+            <div class="flex flex-col">
+                <span class="text-sm font-bold text-slate-200 leading-tight">${item.title}</span>
+                <span class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-1">
                     Added by ${item.addedBy === 'Mohammad' ? '7amodee' : (item.addedBy === 'Zainab' ? 'ZoZo' : item.addedBy)}
                 </span>
-                ${actionButtons}
             </div>
+            <button onclick="deleteMedia(${item.id})" class="text-rose-400/50 hover:text-rose-400 transition-colors p-2 font-bold active:scale-90 bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         `;
-
-            // توزيع البطاقات على الأعمدة الصحيحة
-            if (item.status === 'backlog') backlog.appendChild(card);
-            if (item.status === 'watching') watching.appendChild(card);
-            if (item.status === 'finished') finished.appendChild(card);
+            listContainer.appendChild(card);
         });
     };
 
-// 3. Update Status (Global Scope)
-    const updateMediaStatus = async (id, newStatus) => {
-        try {
-            await fetch(`${API_BASE_URL}/api/media/${id}/status?newStatus=${newStatus}`, { method: 'PUT' });
-            fetchMedia(); // تحديث الواجهة فوراً
-        } catch (e) {
-            console.error("Update status error:", e);
-        }
-    };
-
-// 4. Delete Media Item (Global Scope)
+// 3. Delete Media Item
     const deleteMedia = async (id) => {
-        if(!confirm("Are you sure you want to remove this from the queue?")) return;
+        if(!confirm("Remove this from the watchlist?")) return;
         try {
             await fetch(`${API_BASE_URL}/api/media/${id}`, { method: 'DELETE' });
-            fetchMedia(); // تحديث الواجهة فوراً
+            fetchMedia();
         } catch (e) {
             console.error("Delete media error:", e);
         }
     };
 
-// ==========================================
-// 5. Initialize Event Listeners (Local Scope - DOMContentLoaded)
-// ==========================================
+// 4. Initialize Event Listeners
     document.addEventListener('DOMContentLoaded', () => {
         const addMediaBtn = document.getElementById('add-media-btn');
 
@@ -1454,7 +1428,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const currentUser = localStorage.getItem('vault_user') || 'Unknown';
 
                 try {
-                    // إرسال البيانات للسيرفر
+                    // We keep sending 'backlog' as status so the database doesn't crash, 
+                    // but our UI simply ignores it and renders everything in one list.
                     await fetch(`${API_BASE_URL}/api/media`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1465,14 +1440,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         })
                     });
 
-                    fetchMedia(); // جلب البيانات الجديدة وعرضها
+                    fetchMedia();
                 } catch (e) {
                     console.error("Add media error:", e);
                 }
             });
         }
 
-        // جلب القائمة تلقائياً عند تحميل الصفحة
         fetchMedia();
     });
 
