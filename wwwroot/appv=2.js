@@ -687,8 +687,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     let lastHeartbeatId = null;
+
     const fetchSystemState = async () => {
         try {
+            // --- 1. فحص الحالة المزاجية (Moods) ---
             const moodRes = await fetch(`${API_BASE_URL}/api/moods`, {
                 method: 'GET',
                 headers: {
@@ -727,6 +729,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.body.classList.remove('emergency-mode');
             }
 
+            // --- 2. فحص العقوبات (Penalties) ---
             const penRes = await fetch(`${API_BASE_URL}/api/penalties`, {
                 headers: { 'Cache-Control': 'no-cache' },
                 cache: 'no-store'
@@ -741,6 +744,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             lastPenaltyCount = penalties.length;
 
+            // --- 3. فحص الذكريات (Commits) ---
             const commitRes = await fetch(`${API_BASE_URL}/api/commits`, {
                 headers: { 'Cache-Control': 'no-cache' },
                 cache: 'no-store'
@@ -753,6 +757,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             lastCommitCount = commits.length;
 
+            // --- 4. 📡 مراقبة النبضات (Sparks) ---
+            const hbRes = await fetch(`${API_BASE_URL}/api/heartbeats/latest`, {
+                headers: { 'Cache-Control': 'no-cache' },
+                cache: 'no-store'
+            });
+
+            if (hbRes.ok) {
+                const latestHb = await hbRes.json();
+                // الآن initialLoad لا تزال true في أول مرة، فلن يعمل الإشعار الكاذب!
+                if (latestHb && !initialLoad && latestHb.id > lastHeartbeatId) {
+                    const displaySender = latestHb.sender === 'Mohammad' ? '7amodee' : (latestHb.sender === 'Zainab' ? 'ZoZo' : latestHb.sender);
+                    showToast('✨ Incoming Spark!', `${displaySender} is thinking of you right now...`, '❤️');
+                }
+                if (latestHb) {
+                    // نحدث الـ ID بصمت في أول تحميل
+                    lastHeartbeatId = latestHb.id;
+                }
+            }
+
+            // 🚨 الحل النهائي: تأجيل إغلاق التحميل المبدئي حتى تنتهي كل الفحوصات بنجاح
             initialLoad = false;
 
         } catch (error) {
@@ -760,28 +784,11 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('mohammad-mood-text').innerText = "Connecting...";
             document.getElementById('zainab-mood-text').innerText = "Connecting...";
         }
-        
-        // --- 📡 مراقبة النبضات (Sparks) ---
-        const hbRes = await fetch(`${API_BASE_URL}/api/heartbeats/latest`, {
-            headers: { 'Cache-Control': 'no-cache' },
-            cache: 'no-store'
-        });
-
-        if (hbRes.ok) {
-            const latestHb = await hbRes.json();
-            if (latestHb && !initialLoad && latestHb.id > lastHeartbeatId) {
-                const displaySender = latestHb.sender === 'Mohammad' ? '7amodee' : (latestHb.sender === 'Zainab' ? 'ZoZo' : latestHb.sender);
-                showToast('✨ Incoming Spark!', `${displaySender} is thinking of you right now...`, '❤️');
-            }
-            if (latestHb) {
-                lastHeartbeatId = latestHb.id;
-            }
-        }
     };
 
     fetchSystemState();
     setInterval(fetchSystemState, 10000);
-
+    
     const addMansafBtn = document.getElementById('add-mansaf-btn');
     if (addMansafBtn) {
         addMansafBtn.addEventListener('click', async () => {
