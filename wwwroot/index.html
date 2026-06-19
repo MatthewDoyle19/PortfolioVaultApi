@@ -433,28 +433,28 @@
     /* 4. سحر الجزيئات الطافية (قلوب ونجوم) */
     .particle {
         position: absolute;
-        bottom: -10%;
+        top: 100%; /* البداية من أسفل الشاشة تماماً */
         opacity: 0;
-        animation: floatUp 12s linear infinite;
     }
 
     @keyframes floatUp {
         0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 0; }
-        15% { opacity: 0.95; } /* زيادة الوضوح بشكل كبير */
-        85% { opacity: 0.95; } /* الحفاظ على الوضوح طوال فترة الطفو */
-        100% { transform: translateY(-110vh) scale(1.2) rotate(360deg); opacity: 0; }
+        10% { opacity: 0.95; } /* ظهور سريع وواضح */
+        90% { opacity: 0.95; }
+        100% { transform: translateY(-120vh) scale(1.2) rotate(360deg); opacity: 0; }
     }
 </style>
 
 <!-- الواجهة الرئيسية مع الكلاس الجديد living-bg -->
-<div id="easter-egg-overlay" class="hidden fixed inset-0 z-[9999] living-bg backdrop-blur-2xl transition-opacity duration-[2000ms] opacity-0 overflow-y-auto overflow-x-hidden v2-light-theme">
-    
+<div id="easter-egg-overlay" class="hidden fixed inset-0 z-[9999] transition-opacity duration-[2000ms] opacity-0 v2-light-theme">
+
     <audio id="easter-egg-audio" loop preload="auto">
         <source src="https://res.cloudinary.com/dhr6waydw/video/upload/v1781875866/f96i0jknmbw9bx1cgpnw.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- الجزيئات الطافية في الخلفية -->
-    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute inset-0 living-bg backdrop-blur-2xl"></div>
+
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
         <div class="particle text-2xl drop-shadow-md" style="left: 10%; animation-delay: 0s; animation-duration: 12s;">✨</div>
         <div class="particle text-3xl drop-shadow-md" style="left: 25%; animation-delay: 4s; animation-duration: 15s;">✨</div>
         <div class="particle text-xl drop-shadow-md" style="left: 40%; animation-delay: 2s; animation-duration: 10s;">✨</div>
@@ -473,101 +473,98 @@
         <div class="particle text-2xl drop-shadow-md" style="left: 45%; animation-delay: 10s; animation-duration: 13.5s;">🤍</div>
     </div>
 
-    <!-- المحتوى الرئيسي (أضفنا relative z-10 ليكون فوق الجزيئات، و breathing-card) -->
-    <div class="relative z-10 flex min-h-full items-start justify-center p-4 py-16 md:py-24 overflow-y-auto">
+    <div class="absolute inset-0 overflow-y-auto overflow-x-hidden z-10">
+        <div class="flex min-h-full items-start justify-center p-4 py-16 md:py-24">
 
-        <div id="easter-egg-content" class="breathing-card max-w-2xl w-full bg-white/75 p-6 md:p-10 rounded-[2.5rem] border-2 shadow-[0_20px_60px_rgba(244,114,182,0.15)] backdrop-blur-xl transition-all duration-[2000ms]">
+            <div id="easter-egg-content" class="breathing-card max-w-2xl w-full bg-white/75 p-6 md:p-10 rounded-[2.5rem] border-2 shadow-[0_20px_60px_rgba(244,114,182,0.15)] backdrop-blur-xl transition-all duration-[2000ms]">
 
-            <!-- العنوان -->
-            <h1 class="smooth-reveal text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-400 mb-8 tracking-wide text-center drop-shadow-sm" style="animation-delay: 1s;">
-                CRITICAL SYSTEM UPDATE:<br>VERSION 2.0.0 UNLOCKED ✨
-            </h1>
+                <h1 class="smooth-reveal text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-400 mb-8 tracking-wide text-center drop-shadow-sm" style="animation-delay: 1s;">
+                    CRITICAL SYSTEM UPDATE:<br>VERSION 2.0.0 UNLOCKED ✨
+                </h1>
 
-            <div class="space-y-6">
-                <!-- القسم الأول -->
-                <div class="smooth-reveal bg-emerald-50/60 p-5 md:p-6 rounded-2xl border border-emerald-100 shadow-sm" dir="rtl" style="animation-delay: 2s;">
-                    <h2 class="text-base md:text-lg font-extrabold text-emerald-600 mb-4 flex items-center gap-2">
-                        <span class="animate-pulse">🛠️</span> Core Logic Update (تحديث الهيكلة الأساسية)
-                    </h2>
-                    <ul class="list-none ml-0 mr-2 text-slate-700 space-y-3 text-sm md:text-base leading-relaxed font-medium">
-                        <li class="relative pr-6">
-                            <span class="absolute right-0 top-1.5 w-2 h-2 rounded-full bg-emerald-400"></span>
-                            <strong class="text-emerald-700">تحديث لوجيك (التفكير العاطفي):</strong> تم مسح الشيفرة القديمة التي كانت ترفض فكرة "الحديث مع البنات" بالكامل. النظام تلقى تحديثاً جذرياً بعد دخول (زينب)، ليتقبل الفكرة ويتمحور حولها وحدهـا؛ لأنها الأولى والوحيدة التي طابقت مواصفاتها شروط النظام العالي (واعية، خلوقة، فاهمة، طموحة، وتصنع مستقبلياً مميزاً).
-                        </li>
-                    </ul>
+                <div class="space-y-6">
+                    <div class="smooth-reveal bg-emerald-50/60 p-5 md:p-6 rounded-2xl border border-emerald-100 shadow-sm" dir="rtl" style="animation-delay: 2s;">
+                        <h2 class="text-base md:text-lg font-extrabold text-emerald-600 mb-4 flex items-center gap-2">
+                            <span class="animate-pulse">🛠️</span> Core Logic Update (تحديث الهيكلة الأساسية)
+                        </h2>
+                        <ul class="list-none ml-0 mr-2 text-slate-700 space-y-3 text-sm md:text-base leading-relaxed font-medium">
+                            <li class="relative pr-6">
+                                <span class="absolute right-0 top-1.5 w-2 h-2 rounded-full bg-emerald-400"></span>
+                                <strong class="text-emerald-700">تحديث لوجيك (التفكير العاطفي):</strong> تم مسح الشيفرة القديمة التي كانت ترفض فكرة "الحديث مع البنات" بالكامل. النظام تلقى تحديثاً جذرياً بعد دخول (زينب)، ليتقبل الفكرة ويتمحور حولها وحدهـا.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="smooth-reveal bg-pink-50/60 p-5 md:p-6 rounded-2xl border border-pink-100 shadow-sm" dir="rtl" style="animation-delay: 4s;">
+                        <h2 class="text-base md:text-lg font-extrabold text-pink-600 mb-4 flex items-center gap-2">
+                            <span class="animate-pulse">❤️</span> The Safe Haven (مساحة الأمان المطلق)
+                        </h2>
+                        <ul class="list-none ml-0 mr-2 text-slate-700 space-y-4 text-sm md:text-base leading-relaxed font-medium">
+                            <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 5.5s;">
+                                <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
+                                <strong class="text-pink-700">كسر الفلاتر والتواصل العميق:</strong> مكالماتنا اللي بتوصل لـ 7 ساعات بدون ما نحس بالوقت، ومشاركتنا لأبسط التفاصيل اليومية بعفوية تامة.
+                            </li>
+                            <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 7s;">
+                                <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
+                                <strong class="text-pink-700">التناغم في اللعب والمرح (Co-op Mode):</strong> مشاركتنا لحظات اللعب والضحك، وإثبات إننا فريق بيعرف كيف يخلق جو من المرح.
+                            </li>
+                            <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 8.5s;">
+                                <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
+                                <strong class="text-pink-700">بيئة التطوير والدعم (The Shared Grind):</strong> كيف صرنا الداعم الأول لبعض في أوقات الضغط، ومشاريع البرمجة، وكيف كل إنجاز شخصي صار إنجاز مشترك.
+                            </li>
+                            <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 10s;">
+                                <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
+                                <strong class="text-pink-700">بناء رؤية مشتركة وواعية:</strong> الانتقال من مجرد تواصل يومي لشراكة حقيقية؛ بنبني فيها علاقة صحية.
+                            </li>
+                            <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 11.5s;">
+                                <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
+                                <strong class="text-pink-700">توثيق لغة الحب:</strong> من 39 ذكرى بالـ Vault، لعداد منسف وصل لـ 9، لطلب "كاسة الشاي"، وتخطيطنا الدقيق لكل مكان بالـ Bucket List.
+                            </li>
+                            <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 13s;">
+                                <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
+                                <strong class="text-pink-700">شفرة المصدر (The Source Code):</strong> كل سطر برمجي كُتب، وكل مشكلة (Bug) تم حلها في الكواليس، كانت مدفوعة بطاقة وإلهام منكِ.
+                            </li>
+                            <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 14.5s;">
+                                <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
+                                <strong class="text-pink-700">عقلية النمو (Growing Together):</strong> نقاشاتنا العميقة وتفكيرنا في بناء عقلية ناجحة لمستقبلنا.
+                            </li>
+                            <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 16s;">
+                                <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
+                                <strong class="text-pink-700">طاقة الالتزام (The Daily Routine):</strong> التزامنا بمشاركة روتيننا وتطوير أنفسنا صار لغة الحب اللي بتخلينا أقوى كل يوم.
+                            </li>
+                            <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 17.5s;">
+                                <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
+                                <strong class="text-pink-700">الاستثمار المتبادل (Building Habits):</strong> كيف بنعكس الأفكار اللي بنتعلمها سوا من الكتب على علاقتنا.
+                            </li>
+                            <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 19s;">
+                                <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
+                                <strong class="text-pink-700">سهر المبرمجين (Late Night Commits):</strong> الدافع الأساسي ساعات البرمجة الطويلة هو إني أطلع بنتيجة تليق بـ "زوزو".
+                            </li>
+                            <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 20.5s;">
+                                <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
+                                <strong class="text-pink-700">شغف المستقبل (The Drive):</strong> سوالفنا عن تفاصيل الحياة اللي بنطمح لها بتعطينا حافز نشتغل أضعاف.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="smooth-reveal bg-indigo-50/60 p-5 md:p-6 rounded-2xl border border-indigo-100 shadow-sm" dir="rtl" style="animation-delay: 23s;">
+                        <h2 class="text-base md:text-lg font-extrabold text-indigo-600 mb-4 flex items-center gap-2">
+                            <span class="animate-pulse">🔒</span> سؤال تفعيل النسخة المستقرة
+                        </h2>
+                        <p class="text-slate-700 text-sm md:text-base mb-5 leading-relaxed font-bold italic border-r-4 border-indigo-400 pr-3 bg-white/60 py-3 px-2 rounded-l-lg shadow-sm">
+                            "لو رجعنا بالزمن ليوم 25/3.. شو الكلمة اللي كنتِ رح تحكيها لمحمد لو كنتِ بتعرفي إننا رح نوصل لهون؟"
+                        </p>
+                        <form id="v2-prompt-form" class="flex flex-col gap-3">
+                            <textarea id="v2-answer" rows="3" placeholder="أكتبي إجابتك هنا يا زوزو..." required class="w-full bg-white border border-indigo-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 shadow-inner resize-none transition-all"></textarea>
+                            <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-extrabold py-3.5 px-4 rounded-xl transition-all active:scale-95 shadow-[0_10px_20px_rgba(99,102,241,0.3)] tracking-wide">
+                                Lock Version 2.0.0 🔒
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
-                <!-- القسم الثاني -->
-                <div class="smooth-reveal bg-pink-50/60 p-5 md:p-6 rounded-2xl border border-pink-100 shadow-sm" dir="rtl" style="animation-delay: 4s;">
-                    <h2 class="text-base md:text-lg font-extrabold text-pink-600 mb-4 flex items-center gap-2">
-                        <span class="animate-pulse">❤️</span> The Safe Haven (مساحة الأمان المطلق)
-                    </h2>
-                    <ul class="list-none ml-0 mr-2 text-slate-700 space-y-4 text-sm md:text-base leading-relaxed font-medium">
-                        <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 5.5s;">
-                            <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
-                            <strong class="text-pink-700">كسر الفلاتر والتواصل العميق:</strong> مكالماتنا اللي بتوصل لـ 7 ساعات بدون ما نحس بالوقت، ومشاركتنا لأبسط التفاصيل اليومية بعفوية تامة.
-                        </li>
-                        <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 7s;">
-                            <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
-                            <strong class="text-pink-700">التناغم في اللعب والمرح (Co-op Mode):</strong> مشاركتنا لحظات اللعب والضحك، وإثبات إننا فريق بيعرف كيف يخلق جو من المرح.
-                        </li>
-                        <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 8.5s;">
-                            <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
-                            <strong class="text-pink-700">بيئة التطوير والدعم (The Shared Grind):</strong> كيف صرنا الداعم الأول لبعض في أوقات الضغط، ومشاريع البرمجة، وكيف كل إنجاز شخصي صار إنجاز مشترك.
-                        </li>
-                        <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 10s;">
-                            <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
-                            <strong class="text-pink-700">بناء رؤية مشتركة وواعية:</strong> الانتقال من مجرد تواصل يومي لشراكة حقيقية؛ بنبني فيها علاقة صحية.
-                        </li>
-                        <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 11.5s;">
-                            <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
-                            <strong class="text-pink-700">توثيق لغة الحب:</strong> من 39 ذكرى بالـ Vault، لعداد منسف وصل لـ 9، لطلب "كاسة الشاي"، وتخطيطنا الدقيق لكل مكان بالـ Bucket List.
-                        </li>
-                        <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 13s;">
-                            <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
-                            <strong class="text-pink-700">شفرة المصدر (The Source Code):</strong> كل سطر برمجي كُتب، وكل مشكلة (Bug) تم حلها في الكواليس، كانت مدفوعة بطاقة وإلهام منكِ.
-                        </li>
-                        <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 14.5s;">
-                            <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
-                            <strong class="text-pink-700">عقلية النمو (Growing Together):</strong> نقاشاتنا العميقة وتفكيرنا في بناء عقلية ناجحة لمستقبلنا.
-                        </li>
-                        <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 16s;">
-                            <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
-                            <strong class="text-pink-700">طاقة الالتزام (The Daily Routine):</strong> التزامنا بمشاركة روتيننا وتطوير أنفسنا صار لغة الحب اللي بتخلينا أقوى كل يوم.
-                        </li>
-                        <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 17.5s;">
-                            <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
-                            <strong class="text-pink-700">الاستثمار المتبادل (Building Habits):</strong> كيف بنعكس الأفكار اللي بنتعلمها سوا من الكتب على علاقتنا.
-                        </li>
-                        <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 19s;">
-                            <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
-                            <strong class="text-pink-700">سهر المبرمجين (Late Night Commits):</strong> الدافع الأساسي ساعات البرمجة الطويلة هو إني أطلع بنتيجة تليق بـ "زوزو".
-                        </li>
-                        <li class="smooth-reveal relative pr-6 border-r-2 border-pink-200" style="animation-delay: 20.5s;">
-                            <span class="absolute -right-[5px] top-2 w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span>
-                            <strong class="text-pink-700">شغف المستقبل (The Drive):</strong> سوالفنا عن تفاصيل الحياة اللي بنطمح لها بتعطينا حافز نشتغل أضعاف.
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- القسم النهائي -->
-                <div class="smooth-reveal bg-indigo-50/60 p-5 md:p-6 rounded-2xl border border-indigo-100 shadow-sm" dir="rtl" style="animation-delay: 23s;">
-                    <h2 class="text-base md:text-lg font-extrabold text-indigo-600 mb-4 flex items-center gap-2">
-                        <span class="animate-pulse">🔒</span> سؤال تفعيل النسخة المستقرة
-                    </h2>
-                    <p class="text-slate-700 text-sm md:text-base mb-5 leading-relaxed font-bold italic border-r-4 border-indigo-400 pr-3 bg-white/60 py-3 px-2 rounded-l-lg shadow-sm">
-                        "لو رجعنا بالزمن ليوم 25/3.. شو الكلمة اللي كنتِ رح تحكيها لمحمد لو كنتِ بتعرفي إننا رح نوصل لهون؟"
-                    </p>
-                    <form id="v2-prompt-form" class="flex flex-col gap-3">
-                        <textarea id="v2-answer" rows="3" placeholder="أكتبي إجابتك هنا يا زوزو..." required class="w-full bg-white border border-indigo-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 shadow-inner resize-none transition-all"></textarea>
-                        <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-extrabold py-3.5 px-4 rounded-xl transition-all active:scale-95 shadow-[0_10px_20px_rgba(99,102,241,0.3)] tracking-wide">
-                            Lock Version 2.0.0 🔒
-                        </button>
-                    </form>
-                </div>
+                <button id="close-easter-egg" class="smooth-reveal mt-8 text-slate-400 text-xs hover:text-slate-600 transition-colors underline underline-offset-4 mx-auto block uppercase tracking-widest font-bold" style="animation-delay: 24s;">Close System Logs</button>
             </div>
-
-            <button id="close-easter-egg" class="smooth-reveal mt-8 text-slate-400 text-xs hover:text-slate-600 transition-colors underline underline-offset-4 mx-auto block uppercase tracking-widest font-bold" style="animation-delay: 24s;">Close System Logs</button>
         </div>
     </div>
 </div>
