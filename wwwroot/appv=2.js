@@ -690,6 +690,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    let lastHeartbeatId = null;
     const fetchSystemState = async () => {
         try {
             const moodRes = await fetch(`${API_BASE_URL}/api/moods`, {
@@ -763,7 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('mohammad-mood-text').innerText = "Connecting...";
             document.getElementById('zainab-mood-text').innerText = "Connecting...";
         }
-
+        
         // --- 📡 مراقبة النبضات (Sparks) ---
         const hbRes = await fetch(`${API_BASE_URL}/api/heartbeats/latest`, {
             headers: { 'Cache-Control': 'no-cache' },

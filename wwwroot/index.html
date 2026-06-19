@@ -410,15 +410,16 @@
 
     /* 3. تأثير النسخة 2.0 - خلفية الموقع الرئيسية تنبض بالحياة بعد تفعيل الخزنة */
     /* تأثير النسخة 2.0 - خلفية الموقع الرئيسية تنبض بالحياة بعد تفعيل الخزنة */
+    /* تأثير النسخة 2.0 - خلفية داكنة فخمة تنبض ببطء */
     body {
         transition: background 2s ease-in-out;
     }
 
-    /* نستخدم !important لكسر حماية Tailwind، ونستهدف الـ body وأي حاوية رئيسية داخله */
     body.v2-active-theme,
     body.v2-active-theme > div,
     body.v2-active-theme main {
-        background: linear-gradient(-45deg, #0a0a0a, #111827, #064e3b, #312e81) !important;
+        /* تدرج من الأسود المطلق، عنابي داكن جداً، بنفسجي ليلي، وأسود */
+        background: linear-gradient(-45deg, #050505, #1f0412, #0d0217, #000000) !important;
         background-size: 400% 400% !important;
         animation: v2Aura 15s ease infinite !important;
     }
