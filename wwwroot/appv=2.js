@@ -1464,49 +1464,81 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchMedia();
 
     // ==========================================
-    // 🚀 V2.0.0 EASTER EGG (CINEMATIC PEARL EDITION - SECURED)
-    // ==========================================
+// 🚀 V2.0.0 EASTER EGG & SECRET DOOR (CINEMATIC PEARL EDITION)
+// ==========================================
     const easterEggOverlay = document.getElementById('easter-egg-overlay');
     const easterEggAudio = document.getElementById('easter-egg-audio');
     const closeEasterEggBtn = document.getElementById('close-easter-egg');
     const v2PromptForm = document.getElementById('v2-prompt-form');
+    const versionTrigger = document.getElementById('version-trigger'); // تأكد من إضافة id="version-trigger" لنص الإصدار في الـ HTML
 
+// --- [1] فحص حالة النظام وتحديث رقم الإصدار فور دخول الموقع ---
+    if (versionTrigger) {
+        if (localStorage.getItem('v2_unlocked') === 'true') {
+            versionTrigger.innerText = 'v2.0.0';
+            versionTrigger.classList.add('text-pink-400', 'font-bold', 'drop-shadow-md');
+        } else {
+            versionTrigger.innerText = 'v1.5.9';
+        }
+    }
+
+// --- [2] دالة السحر: تفتح الشاشة وتشغل الموسيقى ---
+    const openEasterEgg = () => {
+        if (easterEggOverlay) {
+            easterEggOverlay.classList.remove('hidden');
+            if (easterEggAudio) {
+                easterEggAudio.volume = 0.5;
+                easterEggAudio.play().catch(e => console.log("Audio play blocked", e));
+            }
+            setTimeout(() => {
+                easterEggOverlay.classList.remove('opacity-0');
+            }, 50);
+        }
+    };
+
+// --- [3] التحقق من الموعد لفتحها تلقائياً لأول مرة ---
     const checkMilestone = () => {
         const startDate = new Date('2026-03-25T00:00:00');
         const now = new Date();
         const diff = now - startDate;
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
+        // تذكر إعادتها إلى 90 بعد التجربة
         if (days >= 80 && localStorage.getItem('v2_unlocked') !== 'true') {
-
             const loginCheckInterval = setInterval(() => {
                 const loginScreen = document.getElementById('login-screen');
-
                 if (loginScreen && loginScreen.classList.contains('hidden')) {
                     clearInterval(loginCheckInterval);
-
                     setTimeout(() => {
-                        if (easterEggOverlay) {
-                            easterEggOverlay.classList.remove('hidden');
-
-                            if (easterEggAudio) {
-                                easterEggAudio.volume = 0.5;
-                                easterEggAudio.play().catch(e => console.log("Audio play blocked", e));
-                            }
-
-                            setTimeout(() => {
-                                easterEggOverlay.classList.remove('opacity-0');
-                                // لا نحتاج لإظهار النصوص برمجياً، الـ CSS Keyframes ستقوم بعرضها بالتدريج
-                            }, 50);
-                        }
+                        openEasterEgg();
                     }, 3000);
                 }
             }, 500);
         }
     };
-
     checkMilestone();
 
+// --- [4] الباب السري: النقر 3 مرات بسرعة على رقم الإصدار ---
+    let clickCount = 0;
+    let clickTimeout;
+
+    if (versionTrigger) {
+        versionTrigger.addEventListener('click', () => {
+            clickCount++;
+            clearTimeout(clickTimeout);
+
+            if (clickCount >= 3) {
+                clickCount = 0;
+                openEasterEgg(); // فتح الشاشة!
+            } else {
+                clickTimeout = setTimeout(() => {
+                    clickCount = 0;
+                }, 800);
+            }
+        });
+    }
+
+// --- [5] إغلاق الواجهة وإيقاف الصوت بنعومة ---
     if (closeEasterEggBtn) {
         closeEasterEggBtn.addEventListener('click', () => {
             easterEggOverlay.classList.add('opacity-0');
@@ -1524,24 +1556,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }, 100);
             }
-
             setTimeout(() => { easterEggOverlay.classList.add('hidden'); }, 1000);
         });
     }
 
-    // قفل النسخة وحفظ الإجابة في الخزنة (The Vault)
+// --- [6] قفل النسخة، حفظ الإجابة، وتغيير الإصدار فوراً ---
     if (v2PromptForm) {
         v2PromptForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = v2PromptForm.querySelector('button');
-            const answerInput = document.getElementById('v2-answer').value; // التقاط إجابة زوزو
+            const answerInput = document.getElementById('v2-answer').value;
 
-            // تغيير شكل الزر ليدل على عملية الحفظ
             btn.disabled = true;
             btn.innerHTML = 'Encrypting & Saving to Vault... ⏳';
 
             try {
-                // إرسال الإجابة كـ "ذكرى جديدة" لقاعدة البيانات مباشرة
                 await fetch(`${API_BASE_URL}/api/commits`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1553,22 +1582,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 });
 
-                // تسجيل الإنجاز في المتصفح لكي لا تظهر الشاشة مرة أخرى
+                // تسجيل الإنجاز في المتصفح
                 localStorage.setItem('v2_unlocked', 'true');
 
-                // تحويل الزر للون الأخضر للإشارة إلى نجاح العملية
-                btn.innerHTML = 'System Upgraded & Saved ✨';
-                btn.classList.replace('from-indigo-500', 'from-emerald-400');
-                btn.classList.replace('to-purple-500', 'to-emerald-500');
-                btn.classList.replace('shadow-[0_10px_20px_rgba(99,102,241,0.2)]', 'shadow-[0_10px_20px_rgba(16,185,129,0.3)]');
-
-                // تحديث قسم الذكريات (Timeline) في الخلفية دون أن تشعر
-                if (typeof fetchCommits === "function") {
-                    fetchCommits();
+                // 🎯 السحر هنا: تغيير رقم الإصدار الفعلي في الموقع إلى 2.0.0
+                if (versionTrigger) {
+                    versionTrigger.innerText = 'v2.0.0';
+                    versionTrigger.classList.add('text-pink-400', 'font-bold', 'animate-pulse');
                 }
 
+                btn.innerHTML = 'System Upgraded & Saved ✨';
+                btn.classList.replace('from-indigo-600', 'from-emerald-500');
+                btn.classList.replace('to-purple-600', 'to-emerald-400');
+                btn.classList.replace('shadow-[0_10px_20px_rgba(99,102,241,0.2)]', 'shadow-[0_10px_20px_rgba(16,185,129,0.3)]');
+
+                if (typeof fetchCommits === "function") fetchCommits();
+
             } catch (error) {
-                console.error("Failed to save V2 answer:", error);
+                console.error("Failed to execute V2 save operation:", error);
                 btn.innerHTML = 'Error Saving. Try Again.';
                 btn.disabled = false;
             }
