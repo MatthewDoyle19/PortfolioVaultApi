@@ -1456,7 +1456,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchMedia();
 
     // ==========================================
-    // 🚀 V2.0.0 EASTER EGG (PEARL EDITION)
+    // 🚀 V2.0.0 EASTER EGG (CINEMATIC PEARL EDITION)
     // ==========================================
     const easterEggOverlay = document.getElementById('easter-egg-overlay');
     const easterEggContent = document.getElementById('easter-egg-content');
@@ -1470,42 +1470,52 @@ document.addEventListener('DOMContentLoaded', () => {
         const diff = now - startDate;
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-        // الشرط: 80 يوم للتجربة (لا تنسى ترجعها 90 بعد ما تخلص اختبار)
+        // تأكد من أن الأيام على 80 للتجربة الآن
         if (days >= 80 && localStorage.getItem('v2_unlocked') !== 'true') {
 
-            // التأخير 3 ثواني بعد ما تفتح الموقع عشان تكون لحقت تسجل دخول
+            // التأخير قبل بدء الحدث
             setTimeout(() => {
                 if (easterEggOverlay) {
+
+                    // 1. إزالة hidden لتجهيز العناصر في الـ DOM
                     easterEggOverlay.classList.remove('hidden');
 
-                    // تشغيل الأغنية الدافئة
+                    // 2. تشغيل الموسيقى فوراً
                     if (easterEggAudio) {
                         easterEggAudio.volume = 0.5;
                         easterEggAudio.play().catch(e => console.log("Audio play blocked", e));
                     }
 
-                    // إظهار الواجهة بنعومة
+                    // 3. الأنيميشن السينمائي المتدرج
                     setTimeout(() => {
+                        // أ) تفتيح الخلفية ببطء شديد
                         easterEggOverlay.classList.remove('opacity-0');
-                        if (easterEggContent) {
-                            easterEggContent.classList.remove('scale-95', 'translate-y-10');
-                        }
+
+                        // ب) بعد 1.5 ثانية (في منتصف تفتيح الخلفية)، نصعد بالمحتوى
+                        setTimeout(() => {
+                            if (easterEggContent) {
+                                easterEggContent.classList.remove('opacity-0', 'translate-y-32');
+                            }
+                        }, 1500);
+
                     }, 50);
                 }
             }, 3000);
         }
     };
 
-    // تشغيل الفحص
     checkMilestone();
 
-    // زر الإغلاق 
+    // إغلاق الواجهة وإخفاء الصوت
     if (closeEasterEggBtn) {
         closeEasterEggBtn.addEventListener('click', () => {
+            // سحب المحتوى للأسفل وإخفائه
+            if (easterEggContent) {
+                easterEggContent.classList.add('opacity-0', 'translate-y-32');
+            }
+            // إخفاء الخلفية
             easterEggOverlay.classList.add('opacity-0');
-            easterEggContent.classList.add('scale-95', 'translate-y-10');
 
-            // إخفاء الصوت تدريجياً
             if (easterEggAudio) {
                 let vol = easterEggAudio.volume;
                 let fadeOut = setInterval(() => {
@@ -1520,11 +1530,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 100);
             }
 
-            setTimeout(() => { easterEggOverlay.classList.add('hidden'); }, 1000);
+            // إخفاء العنصر بالكامل بعد انتهاء الأنيميشن
+            setTimeout(() => { easterEggOverlay.classList.add('hidden'); }, 3000);
         });
     }
 
-    // قفل النسخة وتأكيد التحديث
     if (v2PromptForm) {
         v2PromptForm.addEventListener('submit', async (e) => {
             e.preventDefault();
