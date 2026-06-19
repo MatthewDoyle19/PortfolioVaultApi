@@ -391,12 +391,12 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
 
-    /* 1. خط الشاشة اللؤلؤية */
+    /* 1. خط الشاشة اللؤلؤية الخاصة بالمفاجأة */
     .v2-light-theme {
         font-family: 'Tajawal', sans-serif;
     }
 
-    /* 2. أنيميشن الدخول السينمائي السلس جداً للنصوص (يعمل على الـ GPU) */
+    /* 2. أنيميشن الدخول السينمائي السلس جداً للنصوص */
     .smooth-reveal {
         opacity: 0;
         transform: translateY(25px) scale(0.98);
@@ -406,28 +406,6 @@
     @keyframes cinematicReveal {
         0% { opacity: 0; transform: translateY(25px) scale(0.98); }
         100% { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    /* 3. تأثير النسخة 2.0 - خلفية الموقع الرئيسية تنبض بالحياة بعد تفعيل الخزنة */
-    /* تأثير النسخة 2.0 - خلفية الموقع الرئيسية تنبض بالحياة بعد تفعيل الخزنة */
-    /* تأثير النسخة 2.0 - خلفية داكنة فخمة تنبض ببطء */
-    body {
-        transition: background 2s ease-in-out;
-    }
-
-    body.v2-active-theme,
-    body.v2-active-theme > div,
-    body.v2-active-theme main {
-        /* تدرج من الأسود المطلق، عنابي داكن جداً، بنفسجي ليلي، وأسود */
-        background: linear-gradient(-45deg, #050505, #1f0412, #0d0217, #000000) !important;
-        background-size: 400% 400% !important;
-        animation: v2Aura 15s ease infinite !important;
-    }
-
-    @keyframes v2Aura {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
     }
 </style>
 
