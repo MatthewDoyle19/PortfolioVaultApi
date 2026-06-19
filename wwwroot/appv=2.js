@@ -1521,18 +1521,49 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // قفل النسخة وحفظ الإجابة في الخزنة (The Vault)
     if (v2PromptForm) {
         v2PromptForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = v2PromptForm.querySelector('button');
+            const answerInput = document.getElementById('v2-answer').value; // التقاط إجابة زوزو
 
-            localStorage.setItem('v2_unlocked', 'true');
-
+            // تغيير شكل الزر ليدل على عملية الحفظ
             btn.disabled = true;
-            btn.innerHTML = 'System Upgraded Successfully ✨';
-            btn.classList.replace('from-indigo-500', 'from-emerald-400');
-            btn.classList.replace('to-purple-500', 'to-emerald-500');
-            btn.classList.replace('shadow-[0_10px_20px_rgba(99,102,241,0.2)]', 'shadow-[0_10px_20px_rgba(16,185,129,0.3)]');
+            btn.innerHTML = 'Encrypting & Saving to Vault... ⏳';
+
+            try {
+                // إرسال الإجابة كـ "ذكرى جديدة" لقاعدة البيانات مباشرة
+                await fetch(`${API_BASE_URL}/api/commits`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date: new Date().toISOString().split('T')[0],
+                        message: `[V2.0.0 SYSTEM UPGRADE UNLOCKED] ❤️ ZoZo's Answer: "${answerInput}"`,
+                        imageUrl: null,
+                        audioUrl: null
+                    })
+                });
+
+                // تسجيل الإنجاز في المتصفح لكي لا تظهر الشاشة مرة أخرى
+                localStorage.setItem('v2_unlocked', 'true');
+
+                // تحويل الزر للون الأخضر للإشارة إلى نجاح العملية
+                btn.innerHTML = 'System Upgraded & Saved ✨';
+                btn.classList.replace('from-indigo-500', 'from-emerald-400');
+                btn.classList.replace('to-purple-500', 'to-emerald-500');
+                btn.classList.replace('shadow-[0_10px_20px_rgba(99,102,241,0.2)]', 'shadow-[0_10px_20px_rgba(16,185,129,0.3)]');
+
+                // تحديث قسم الذكريات (Timeline) في الخلفية دون أن تشعر
+                if (typeof fetchCommits === "function") {
+                    fetchCommits();
+                }
+
+            } catch (error) {
+                console.error("Failed to save V2 answer:", error);
+                btn.innerHTML = 'Error Saving. Try Again.';
+                btn.disabled = false;
+            }
         });
     }
 
