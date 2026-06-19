@@ -1,5 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    if (localStorage.getItem('v2_unlocked') === 'true') {
+        document.body.classList.add('v2-active-theme');
+    }
+
     const loginScreen = document.getElementById('login-screen');
     const dashboard = document.getElementById('dashboard');
     const authKey = document.getElementById('auth-key');
@@ -1547,6 +1551,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // تسجيل الإنجاز في المتصفح لكي لا تظهر الشاشة مرة أخرى
                 localStorage.setItem('v2_unlocked', 'true');
+                // حقن كلاس النسخة الجديدة لتغيير شكل الموقع بالكامل في الخلفية
+                document.body.classList.add('v2-active-theme');
 
                 // تحويل الزر للون الأخضر للإشارة إلى نجاح العملية
                 btn.innerHTML = 'System Upgraded & Saved ✨';

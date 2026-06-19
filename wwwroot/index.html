@@ -390,9 +390,13 @@
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
-    .v2-light-theme { font-family: 'Tajawal', sans-serif; }
 
-    /* أنيميشن الدخول السينمائي السلس جداً للنصوص (يعمل على الـ GPU) */
+    /* 1. خط الشاشة اللؤلؤية */
+    .v2-light-theme {
+        font-family: 'Tajawal', sans-serif;
+    }
+
+    /* 2. أنيميشن الدخول السينمائي السلس جداً للنصوص (يعمل على الـ GPU) */
     .smooth-reveal {
         opacity: 0;
         transform: translateY(25px) scale(0.98);
@@ -402,6 +406,23 @@
     @keyframes cinematicReveal {
         0% { opacity: 0; transform: translateY(25px) scale(0.98); }
         100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* 3. تأثير النسخة 2.0 - خلفية الموقع الرئيسية تنبض بالحياة بعد تفعيل الخزنة */
+    body {
+        transition: background 2s ease-in-out;
+    }
+
+    body.v2-active-theme {
+        background: linear-gradient(-45deg, #0a0a0a, #111827, #064e3b, #312e81);
+        background-size: 400% 400%;
+        animation: v2Aura 15s ease infinite;
+    }
+
+    @keyframes v2Aura {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
 </style>
 
