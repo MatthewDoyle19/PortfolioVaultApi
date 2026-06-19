@@ -433,13 +433,17 @@
     /* 4. سحر الجزيئات الطافية (قلوب ونجوم) */
     .particle {
         position: absolute;
-        top: 100%; /* البداية من أسفل الشاشة تماماً */
+        top: 100%;
         opacity: 0;
+        /* السطر الذي سقط سهواً لتعريف الحركة: */
+        animation-name: floatUp;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
     }
 
     @keyframes floatUp {
         0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 0; }
-        10% { opacity: 0.95; } /* ظهور سريع وواضح */
+        10% { opacity: 0.95; }
         90% { opacity: 0.95; }
         100% { transform: translateY(-120vh) scale(1.2) rotate(360deg); opacity: 0; }
     }
