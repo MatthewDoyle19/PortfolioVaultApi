@@ -1455,6 +1455,89 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchMedia();
 
+    // ==========================================
+    // 🚀 V2.0.0 EASTER EGG LOGIC
+    // ==========================================
+    let versionClickCount = 0;
+    let clickTimer;
+
+    const versionTrigger = document.getElementById('version-trigger');
+    const easterEggOverlay = document.getElementById('easter-egg-overlay');
+    const easterEggContent = document.getElementById('easter-egg-content');
+    const easterEggAudio = document.getElementById('easter-egg-audio');
+    const closeEasterEggBtn = document.getElementById('close-easter-egg');
+    const v2PromptForm = document.getElementById('v2-prompt-form');
+
+    if (versionTrigger && easterEggOverlay) {
+        // 1. The 3-Click Trigger
+        versionTrigger.addEventListener('click', () => {
+            versionClickCount++;
+
+            // Reset counter if they don't click 3 times within 1.5 seconds
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(() => { versionClickCount = 0; }, 1500);
+
+            if (versionClickCount === 3) {
+                // Remove hidden class first
+                easterEggOverlay.classList.remove('hidden');
+
+                // Play audio softly (vol 0.3 = 30%)
+                if (easterEggAudio) {
+                    easterEggAudio.volume = 0.3;
+                    easterEggAudio.play().catch(e => console.log("Audio play blocked by browser", e));
+                }
+
+                // Trigger smooth fade-in animation
+                setTimeout(() => {
+                    easterEggOverlay.classList.remove('opacity-0');
+                    easterEggContent.classList.remove('scale-95', 'translate-y-10');
+                }, 50);
+
+                versionClickCount = 0; // Reset counter
+            }
+        });
+
+        // 2. Close Modal & Fade Out Audio
+        closeEasterEggBtn.addEventListener('click', () => {
+            easterEggOverlay.classList.add('opacity-0');
+            easterEggContent.classList.add('scale-95', 'translate-y-10');
+
+            if (easterEggAudio) {
+                let vol = easterEggAudio.volume;
+                let fadeOut = setInterval(() => {
+                    if (vol > 0.05) {
+                        vol -= 0.05;
+                        easterEggAudio.volume = vol;
+                    } else {
+                        clearInterval(fadeOut);
+                        easterEggAudio.pause();
+                        easterEggAudio.currentTime = 0; // Reset track to beginning
+                    }
+                }, 100);
+            }
+
+            setTimeout(() => { easterEggOverlay.classList.add('hidden'); }, 1000);
+        });
+
+        // 3. Handle the Final V2.0.0 Form Submission
+        if (v2PromptForm) {
+            v2PromptForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = v2PromptForm.querySelector('button');
+                const answerInput = document.getElementById('v2-answer').value;
+
+                // Visual feedback for the UI
+                btn.disabled = true;
+                btn.innerHTML = 'System Upgraded Successfully ✨';
+                btn.classList.replace('from-indigo-600', 'from-emerald-500');
+                btn.classList.replace('to-purple-600', 'to-emerald-400');
+
+                // Optional: Save this directly to your backend prompts database
+                // await fetch(`${API_BASE_URL}/api/prompts/...`, { ... });
+            });
+        }
+    }
+
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
     window.switchTab = (tabName) => {
         document.getElementById('view-home').classList.add('hidden');
