@@ -1508,7 +1508,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const diff = now - startDate;
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-        if (days >= 90 && localStorage.getItem('v2_unlocked') !== 'true') {
+        if (days >= 80 && localStorage.getItem('v2_unlocked') !== 'true') {
             setTimeout(() => {
                 if (easterEggOverlay) {
                     // إظهار الشاشة السوداء بالكامل فوراً (لبدء تأثير الاختراق)
