@@ -1504,7 +1504,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
         // تذكر إعادتها إلى 90 بعد التجربة
-        if (days >= 80 && localStorage.getItem('v2_unlocked') !== 'true') {
+        if (days >= 90 && localStorage.getItem('v2_unlocked') !== 'true') {
             const loginCheckInterval = setInterval(() => {
                 const loginScreen = document.getElementById('login-screen');
                 if (loginScreen && loginScreen.classList.contains('hidden')) {
