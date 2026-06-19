@@ -440,26 +440,37 @@
 
     @keyframes floatUp {
         0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 0; }
-        20% { opacity: 0.6; }
-        80% { opacity: 0.6; }
+        15% { opacity: 0.95; } /* زيادة الوضوح بشكل كبير */
+        85% { opacity: 0.95; } /* الحفاظ على الوضوح طوال فترة الطفو */
         100% { transform: translateY(-110vh) scale(1.2) rotate(360deg); opacity: 0; }
     }
 </style>
 
 <!-- الواجهة الرئيسية مع الكلاس الجديد living-bg -->
-<div id="easter-egg-overlay" class="hidden fixed inset-0 z-[9999] living-bg backdrop-blur-2xl transition-opacity duration-[2000ms] opacity-0 overflow-hidden v2-light-theme">
-
+<div id="easter-egg-overlay" class="hidden fixed inset-0 z-[9999] living-bg backdrop-blur-2xl transition-opacity duration-[2000ms] opacity-0 overflow-y-auto overflow-x-hidden v2-light-theme">
+    
     <audio id="easter-egg-audio" loop preload="auto">
         <source src="https://res.cloudinary.com/dhr6waydw/video/upload/v1781875866/f96i0jknmbw9bx1cgpnw.mp3" type="audio/mpeg">
     </audio>
 
     <!-- الجزيئات الطافية في الخلفية -->
-    <div class="fixed inset-0 pointer-events-none z-0">
-        <div class="particle text-2xl" style="left: 15%; animation-delay: 0s;">✨</div>
-        <div class="particle text-xl" style="left: 30%; animation-delay: 5s;">🤍</div>
-        <div class="particle text-3xl" style="left: 65%; animation-delay: 2s;">✨</div>
-        <div class="particle text-xl" style="left: 85%; animation-delay: 7s;">🤍</div>
-        <div class="particle text-2xl" style="left: 50%; animation-delay: 10s;">✨</div>
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="particle text-2xl drop-shadow-md" style="left: 10%; animation-delay: 0s; animation-duration: 12s;">✨</div>
+        <div class="particle text-3xl drop-shadow-md" style="left: 25%; animation-delay: 4s; animation-duration: 15s;">✨</div>
+        <div class="particle text-xl drop-shadow-md" style="left: 40%; animation-delay: 2s; animation-duration: 10s;">✨</div>
+        <div class="particle text-2xl drop-shadow-md" style="left: 60%; animation-delay: 6s; animation-duration: 14s;">✨</div>
+        <div class="particle text-3xl drop-shadow-md" style="left: 75%; animation-delay: 1s; animation-duration: 13s;">✨</div>
+        <div class="particle text-xl drop-shadow-md" style="left: 90%; animation-delay: 5s; animation-duration: 11s;">✨</div>
+        <div class="particle text-2xl drop-shadow-md" style="left: 55%; animation-delay: 8.5s; animation-duration: 12.5s;">✨</div>
+
+        <div class="particle text-xl drop-shadow-md" style="left: 15%; animation-delay: 3s; animation-duration: 14s;">🤍</div>
+        <div class="particle text-2xl drop-shadow-md" style="left: 35%; animation-delay: 7s; animation-duration: 12s;">🤍</div>
+        <div class="particle text-xl drop-shadow-md" style="left: 50%; animation-delay: 1s; animation-duration: 15s;">🤍</div>
+        <div class="particle text-xl drop-shadow-md" style="left: 70%; animation-delay: 8s; animation-duration: 11s;">🤍</div>
+        <div class="particle text-2xl drop-shadow-md" style="left: 85%; animation-delay: 4s; animation-duration: 13s;">🤍</div>
+        <div class="particle text-xl drop-shadow-md" style="left: 5%; animation-delay: 9s; animation-duration: 16s;">🤍</div>
+        <div class="particle text-3xl drop-shadow-md" style="left: 95%; animation-delay: 2s; animation-duration: 14s;">🤍</div>
+        <div class="particle text-2xl drop-shadow-md" style="left: 45%; animation-delay: 10s; animation-duration: 13.5s;">🤍</div>
     </div>
 
     <!-- المحتوى الرئيسي (أضفنا relative z-10 ليكون فوق الجزيئات، و breathing-card) -->
