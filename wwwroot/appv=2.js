@@ -1456,51 +1456,13 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchMedia();
 
     // ==========================================
-    // 🚀 V2.0.0 EASTER EGG (CINEMATIC AUTO-TRIGGER)
+    // 🚀 V2.0.0 EASTER EGG (PEARL EDITION)
     // ==========================================
     const easterEggOverlay = document.getElementById('easter-egg-overlay');
-    const bootSequence = document.getElementById('boot-sequence');
-    const terminalText = document.getElementById('terminal-text');
-    const v2MainContent = document.getElementById('v2-main-content');
+    const easterEggContent = document.getElementById('easter-egg-content');
     const easterEggAudio = document.getElementById('easter-egg-audio');
     const closeEasterEggBtn = document.getElementById('close-easter-egg');
     const v2PromptForm = document.getElementById('v2-prompt-form');
-
-    // النصوص التي ستنطبع على الشاشة كأنها هاكر
-    const bootLines = [
-        "Initializing root access...",
-        "Bypassing standard filters...",
-        "Decrypting The Safe Haven...",
-        "Loading ZoZo_Profile.exe...",
-        "STATUS: Connection Established.",
-        "Deploying Version 2.0.0..."
-    ];
-
-    const typeTerminal = async () => {
-        for (let i = 0; i < bootLines.length; i++) {
-            terminalText.innerHTML += `<p class="mb-2 opacity-80">> ${bootLines[i]}</p>`;
-            // تأخير عشوائي بسيط بين كل سطر لجعله واقعياً
-            await new Promise(r => setTimeout(r, Math.random() * 400 + 300));
-        }
-
-        // بعد انتهاء الطباعة
-        await new Promise(r => setTimeout(r, 800));
-
-        // إخفاء شاشة الـ Boot
-        bootSequence.classList.add('opacity-0');
-
-        // تشغيل الأغنية بأعلى جودة ممكنة وحماس
-        if (easterEggAudio) {
-            easterEggAudio.volume = 0.5; // مستوى صوت ممتاز
-            easterEggAudio.play().catch(e => console.log("Audio play blocked", e));
-        }
-
-        // إظهار المحتوى الفخم
-        setTimeout(() => {
-            bootSequence.classList.add('hidden');
-            v2MainContent.classList.remove('opacity-0');
-        }, 1000);
-    };
 
     const checkMilestone = () => {
         const startDate = new Date('2026-03-25T00:00:00');
@@ -1508,26 +1470,42 @@ document.addEventListener('DOMContentLoaded', () => {
         const diff = now - startDate;
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
+        // الشرط: 80 يوم للتجربة (لا تنسى ترجعها 90 بعد ما تخلص اختبار)
         if (days >= 80 && localStorage.getItem('v2_unlocked') !== 'true') {
+
+            // التأخير 3 ثواني بعد ما تفتح الموقع عشان تكون لحقت تسجل دخول
             setTimeout(() => {
                 if (easterEggOverlay) {
-                    // إظهار الشاشة السوداء بالكامل فوراً (لبدء تأثير الاختراق)
                     easterEggOverlay.classList.remove('hidden');
-                    // بدء تأثير الطباعة
-                    typeTerminal();
+
+                    // تشغيل الأغنية الدافئة
+                    if (easterEggAudio) {
+                        easterEggAudio.volume = 0.5;
+                        easterEggAudio.play().catch(e => console.log("Audio play blocked", e));
+                    }
+
+                    // إظهار الواجهة بنعومة
+                    setTimeout(() => {
+                        easterEggOverlay.classList.remove('opacity-0');
+                        if (easterEggContent) {
+                            easterEggContent.classList.remove('scale-95', 'translate-y-10');
+                        }
+                    }, 50);
                 }
-            }, 2500);
+            }, 3000);
         }
     };
 
     // تشغيل الفحص
     checkMilestone();
 
-    // إغلاق الشاشة وإيقاف الصوت
+    // زر الإغلاق 
     if (closeEasterEggBtn) {
         closeEasterEggBtn.addEventListener('click', () => {
-            v2MainContent.classList.add('opacity-0');
+            easterEggOverlay.classList.add('opacity-0');
+            easterEggContent.classList.add('scale-95', 'translate-y-10');
 
+            // إخفاء الصوت تدريجياً
             if (easterEggAudio) {
                 let vol = easterEggAudio.volume;
                 let fadeOut = setInterval(() => {
@@ -1542,10 +1520,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 100);
             }
 
-            setTimeout(() => { easterEggOverlay.classList.add('hidden'); }, 1500);
+            setTimeout(() => { easterEggOverlay.classList.add('hidden'); }, 1000);
         });
     }
 
+    // قفل النسخة وتأكيد التحديث
     if (v2PromptForm) {
         v2PromptForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1555,9 +1534,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             btn.disabled = true;
             btn.innerHTML = 'System Upgraded Successfully ✨';
-            btn.classList.replace('bg-indigo-600', 'bg-emerald-500');
-            btn.classList.replace('hover:bg-indigo-500', 'hover:bg-emerald-400');
-            btn.classList.replace('shadow-[0_0_20px_rgba(99,102,241,0.3)]', 'shadow-[0_0_20px_rgba(16,185,129,0.3)]');
+            btn.classList.replace('from-indigo-500', 'from-emerald-400');
+            btn.classList.replace('to-purple-500', 'to-emerald-500');
+            btn.classList.replace('shadow-[0_10px_20px_rgba(99,102,241,0.2)]', 'shadow-[0_10px_20px_rgba(16,185,129,0.3)]');
         });
     }
 
