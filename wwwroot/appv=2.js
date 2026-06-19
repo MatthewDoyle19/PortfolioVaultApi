@@ -1456,51 +1456,77 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchMedia();
 
     // ==========================================
-    // 🚀 V2.0.0 EASTER EGG LOGIC
+    // 🚀 V2.0.0 EASTER EGG (CINEMATIC AUTO-TRIGGER)
     // ==========================================
-    let versionClickCount = 0;
-    let clickTimer;
-
-    const versionTrigger = document.getElementById('version-trigger');
     const easterEggOverlay = document.getElementById('easter-egg-overlay');
-    const easterEggContent = document.getElementById('easter-egg-content');
+    const bootSequence = document.getElementById('boot-sequence');
+    const terminalText = document.getElementById('terminal-text');
+    const v2MainContent = document.getElementById('v2-main-content');
     const easterEggAudio = document.getElementById('easter-egg-audio');
     const closeEasterEggBtn = document.getElementById('close-easter-egg');
     const v2PromptForm = document.getElementById('v2-prompt-form');
 
-    if (versionTrigger && easterEggOverlay) {
-        // 1. The 3-Click Trigger
-        versionTrigger.addEventListener('click', () => {
-            versionClickCount++;
+    // النصوص التي ستنطبع على الشاشة كأنها هاكر
+    const bootLines = [
+        "Initializing root access...",
+        "Bypassing standard filters...",
+        "Decrypting The Safe Haven...",
+        "Loading ZoZo_Profile.exe...",
+        "STATUS: Connection Established.",
+        "Deploying Version 2.0.0..."
+    ];
 
-            // Reset counter if they don't click 3 times within 1.5 seconds
-            clearTimeout(clickTimer);
-            clickTimer = setTimeout(() => { versionClickCount = 0; }, 1500);
+    const typeTerminal = async () => {
+        for (let i = 0; i < bootLines.length; i++) {
+            terminalText.innerHTML += `<p class="mb-2 opacity-80">> ${bootLines[i]}</p>`;
+            // تأخير عشوائي بسيط بين كل سطر لجعله واقعياً
+            await new Promise(r => setTimeout(r, Math.random() * 400 + 300));
+        }
 
-            if (versionClickCount === 3) {
-                // Remove hidden class first
-                easterEggOverlay.classList.remove('hidden');
+        // بعد انتهاء الطباعة
+        await new Promise(r => setTimeout(r, 800));
 
-                // Play audio softly (vol 0.3 = 30%)
-                if (easterEggAudio) {
-                    easterEggAudio.volume = 0.3;
-                    easterEggAudio.play().catch(e => console.log("Audio play blocked by browser", e));
+        // إخفاء شاشة الـ Boot
+        bootSequence.classList.add('opacity-0');
+
+        // تشغيل الأغنية بأعلى جودة ممكنة وحماس
+        if (easterEggAudio) {
+            easterEggAudio.volume = 0.5; // مستوى صوت ممتاز
+            easterEggAudio.play().catch(e => console.log("Audio play blocked", e));
+        }
+
+        // إظهار المحتوى الفخم
+        setTimeout(() => {
+            bootSequence.classList.add('hidden');
+            v2MainContent.classList.remove('opacity-0');
+        }, 1000);
+    };
+
+    const checkMilestone = () => {
+        const startDate = new Date('2026-03-25T00:00:00');
+        const now = new Date();
+        const diff = now - startDate;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+        if (days >= 90 && localStorage.getItem('v2_unlocked') !== 'true') {
+            setTimeout(() => {
+                if (easterEggOverlay) {
+                    // إظهار الشاشة السوداء بالكامل فوراً (لبدء تأثير الاختراق)
+                    easterEggOverlay.classList.remove('hidden');
+                    // بدء تأثير الطباعة
+                    typeTerminal();
                 }
+            }, 2500);
+        }
+    };
 
-                // Trigger smooth fade-in animation
-                setTimeout(() => {
-                    easterEggOverlay.classList.remove('opacity-0');
-                    easterEggContent.classList.remove('scale-95', 'translate-y-10');
-                }, 50);
+    // تشغيل الفحص
+    checkMilestone();
 
-                versionClickCount = 0; // Reset counter
-            }
-        });
-
-        // 2. Close Modal & Fade Out Audio
+    // إغلاق الشاشة وإيقاف الصوت
+    if (closeEasterEggBtn) {
         closeEasterEggBtn.addEventListener('click', () => {
-            easterEggOverlay.classList.add('opacity-0');
-            easterEggContent.classList.add('scale-95', 'translate-y-10');
+            v2MainContent.classList.add('opacity-0');
 
             if (easterEggAudio) {
                 let vol = easterEggAudio.volume;
@@ -1511,31 +1537,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         clearInterval(fadeOut);
                         easterEggAudio.pause();
-                        easterEggAudio.currentTime = 0; // Reset track to beginning
+                        easterEggAudio.currentTime = 0;
                     }
                 }, 100);
             }
 
-            setTimeout(() => { easterEggOverlay.classList.add('hidden'); }, 1000);
+            setTimeout(() => { easterEggOverlay.classList.add('hidden'); }, 1500);
         });
+    }
 
-        // 3. Handle the Final V2.0.0 Form Submission
-        if (v2PromptForm) {
-            v2PromptForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const btn = v2PromptForm.querySelector('button');
-                const answerInput = document.getElementById('v2-answer').value;
+    if (v2PromptForm) {
+        v2PromptForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = v2PromptForm.querySelector('button');
 
-                // Visual feedback for the UI
-                btn.disabled = true;
-                btn.innerHTML = 'System Upgraded Successfully ✨';
-                btn.classList.replace('from-indigo-600', 'from-emerald-500');
-                btn.classList.replace('to-purple-600', 'to-emerald-400');
+            localStorage.setItem('v2_unlocked', 'true');
 
-                // Optional: Save this directly to your backend prompts database
-                // await fetch(`${API_BASE_URL}/api/prompts/...`, { ... });
-            });
-        }
+            btn.disabled = true;
+            btn.innerHTML = 'System Upgraded Successfully ✨';
+            btn.classList.replace('bg-indigo-600', 'bg-emerald-500');
+            btn.classList.replace('hover:bg-indigo-500', 'hover:bg-emerald-400');
+            btn.classList.replace('shadow-[0_0_20px_rgba(99,102,241,0.3)]', 'shadow-[0_0_20px_rgba(16,185,129,0.3)]');
+        });
     }
 
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
