@@ -1456,10 +1456,9 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchMedia();
 
     // ==========================================
-    // 🚀 V2.0.0 EASTER EGG (CINEMATIC PEARL EDITION)
+    // 🚀 V2.0.0 EASTER EGG (CINEMATIC PEARL EDITION - SECURED)
     // ==========================================
     const easterEggOverlay = document.getElementById('easter-egg-overlay');
-    const easterEggContent = document.getElementById('easter-egg-content');
     const easterEggAudio = document.getElementById('easter-egg-audio');
     const closeEasterEggBtn = document.getElementById('close-easter-egg');
     const v2PromptForm = document.getElementById('v2-prompt-form');
@@ -1470,50 +1469,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const diff = now - startDate;
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-        // تأكد من أن الأيام على 80 للتجربة الآن
         if (days >= 80 && localStorage.getItem('v2_unlocked') !== 'true') {
 
-            // التأخير قبل بدء الحدث
-            setTimeout(() => {
-                if (easterEggOverlay) {
+            const loginCheckInterval = setInterval(() => {
+                const loginScreen = document.getElementById('login-screen');
 
-                    // 1. إزالة hidden لتجهيز العناصر في الـ DOM
-                    easterEggOverlay.classList.remove('hidden');
+                if (loginScreen && loginScreen.classList.contains('hidden')) {
+                    clearInterval(loginCheckInterval);
 
-                    // 2. تشغيل الموسيقى فوراً
-                    if (easterEggAudio) {
-                        easterEggAudio.volume = 0.5;
-                        easterEggAudio.play().catch(e => console.log("Audio play blocked", e));
-                    }
-
-                    // 3. الأنيميشن السينمائي المتدرج
                     setTimeout(() => {
-                        // أ) تفتيح الخلفية ببطء شديد
-                        easterEggOverlay.classList.remove('opacity-0');
+                        if (easterEggOverlay) {
+                            easterEggOverlay.classList.remove('hidden');
 
-                        // ب) بعد 1.5 ثانية (في منتصف تفتيح الخلفية)، نصعد بالمحتوى
-                        setTimeout(() => {
-                            if (easterEggContent) {
-                                easterEggContent.classList.remove('opacity-0', 'translate-y-32');
+                            if (easterEggAudio) {
+                                easterEggAudio.volume = 0.5;
+                                easterEggAudio.play().catch(e => console.log("Audio play blocked", e));
                             }
-                        }, 1500);
 
-                    }, 50);
+                            setTimeout(() => {
+                                easterEggOverlay.classList.remove('opacity-0');
+                                // لا نحتاج لإظهار النصوص برمجياً، الـ CSS Keyframes ستقوم بعرضها بالتدريج
+                            }, 50);
+                        }
+                    }, 3000);
                 }
-            }, 3000);
+            }, 500);
         }
     };
 
     checkMilestone();
 
-    // إغلاق الواجهة وإخفاء الصوت
     if (closeEasterEggBtn) {
         closeEasterEggBtn.addEventListener('click', () => {
-            // سحب المحتوى للأسفل وإخفائه
-            if (easterEggContent) {
-                easterEggContent.classList.add('opacity-0', 'translate-y-32');
-            }
-            // إخفاء الخلفية
             easterEggOverlay.classList.add('opacity-0');
 
             if (easterEggAudio) {
@@ -1530,8 +1517,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 100);
             }
 
-            // إخفاء العنصر بالكامل بعد انتهاء الأنيميشن
-            setTimeout(() => { easterEggOverlay.classList.add('hidden'); }, 3000);
+            setTimeout(() => { easterEggOverlay.classList.add('hidden'); }, 1000);
         });
     }
 

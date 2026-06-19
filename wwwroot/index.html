@@ -391,29 +391,36 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
     .v2-light-theme { font-family: 'Tajawal', sans-serif; }
+
+    /* أنيميشن الدخول السينمائي السلس جداً للنصوص (يعمل على الـ GPU) */
+    .smooth-reveal {
+        opacity: 0;
+        transform: translateY(25px) scale(0.98);
+        animation: cinematicReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes cinematicReveal {
+        0% { opacity: 0; transform: translateY(25px) scale(0.98); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
 </style>
 
-<!-- 🚀 V2.0.0 EASTER EGG OVERLAY (CINEMATIC PEARL EDITION) -->
-<div id="easter-egg-overlay" class="hidden fixed inset-0 z-[9999] bg-white/90 backdrop-blur-3xl transition-opacity duration-[3000ms] opacity-0 overflow-y-auto v2-light-theme">
+<div id="easter-egg-overlay" class="hidden fixed inset-0 z-[9999] bg-white/95 backdrop-blur-2xl transition-opacity duration-1000 opacity-0 overflow-y-auto v2-light-theme">
 
-    <!-- ضع الرابط الخاص بك هنا -->
     <audio id="easter-egg-audio" loop preload="auto">
         <source src="https://res.cloudinary.com/dhr6waydw/video/upload/v1781875866/f96i0jknmbw9bx1cgpnw.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- حاوية المحاذاة (تضمن عدم قص المحتوى من الأعلى وتسمح بالـ Scroll المريح) -->
     <div class="flex min-h-full items-start justify-center p-4 py-16 md:py-24">
 
-        <!-- المحتوى (يبدأ مخفياً ومسحوباً للأسفل) -->
-        <div id="easter-egg-content" class="opacity-0 translate-y-32 transition-all duration-[3000ms] ease-[cubic-bezier(0.16,1,0.3,1)] max-w-2xl w-full bg-white/70 p-6 md:p-10 rounded-[2.5rem] border border-pink-100 shadow-[0_20px_60px_rgba(244,114,182,0.15)] backdrop-blur-xl">
+        <div id="easter-egg-content" class="max-w-2xl w-full bg-white/70 p-6 md:p-10 rounded-[2.5rem] border border-pink-100 shadow-[0_20px_60px_rgba(244,114,182,0.15)] backdrop-blur-xl transition-all duration-1000">
 
-            <h1 class="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-400 mb-8 tracking-wide text-center drop-shadow-sm animate-pulse">
+            <h1 class="smooth-reveal text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-400 mb-8 tracking-wide text-center drop-shadow-sm" style="animation-delay: 1s;">
                 CRITICAL SYSTEM UPDATE:<br>VERSION 2.0.0 UNLOCKED ✨
             </h1>
 
             <div class="space-y-6">
-                <!-- Section 1 -->
-                <div class="bg-emerald-50/50 p-5 md:p-6 rounded-2xl border border-emerald-100 shadow-sm" dir="rtl">
+                <div class="smooth-reveal bg-emerald-50/50 p-5 md:p-6 rounded-2xl border border-emerald-100 shadow-sm" dir="rtl" style="animation-delay: 1.5s;">
                     <h2 class="text-base md:text-lg font-extrabold text-emerald-600 mb-4 flex items-center gap-2">
                         <span>🛠️</span> Core Logic Update (تحديث الهيكلة الأساسية)
                     </h2>
@@ -425,10 +432,9 @@
                     </ul>
                 </div>
 
-                <!-- Section 2 -->
-                <div class="bg-pink-50/50 p-5 md:p-6 rounded-2xl border border-pink-100 shadow-sm" dir="rtl">
+                <div class="smooth-reveal bg-pink-50/50 p-5 md:p-6 rounded-2xl border border-pink-100 shadow-sm" dir="rtl" style="animation-delay: 2.5s;">
                     <h2 class="text-base md:text-lg font-extrabold text-pink-600 mb-4 flex items-center gap-2">
-                        <span>❤️</span> The Safe Haven (مساحة الأمان المطلق)
+                        <span>🤍</span> The Safe Haven (مساحة الأمان المطلق)
                     </h2>
                     <ul class="list-none ml-0 mr-2 text-slate-700 space-y-4 text-sm md:text-base leading-relaxed font-medium">
                         <li class="relative pr-6 border-r-2 border-pink-200">
@@ -478,8 +484,7 @@
                     </ul>
                 </div>
 
-                <!-- Section 3 -->
-                <div class="bg-indigo-50/50 p-5 md:p-6 rounded-2xl border border-indigo-100 shadow-sm" dir="rtl">
+                <div class="smooth-reveal bg-indigo-50/50 p-5 md:p-6 rounded-2xl border border-indigo-100 shadow-sm" dir="rtl" style="animation-delay: 3.5s;">
                     <h2 class="text-base md:text-lg font-extrabold text-indigo-600 mb-4 flex items-center gap-2">
                         <span>🔒</span> سؤال تفعيل النسخة المستقرة
                     </h2>
@@ -495,7 +500,7 @@
                 </div>
             </div>
 
-            <button id="close-easter-egg" class="mt-8 text-slate-400 text-xs hover:text-slate-600 transition-colors underline underline-offset-4 mx-auto block uppercase tracking-widest font-bold">Close System Logs</button>
+            <button id="close-easter-egg" class="smooth-reveal mt-8 text-slate-400 text-xs hover:text-slate-600 transition-colors underline underline-offset-4 mx-auto block uppercase tracking-widest font-bold" style="animation-delay: 4s;">Close System Logs</button>
         </div>
     </div>
 </div>
