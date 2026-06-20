@@ -1599,7 +1599,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 // 3. التحول للأخضر الزمردي
+                // 3. التحول للأخضر الزمردي المطلق (تدمير الكلاسات القديمة والـ hover)
                 btn.innerHTML = 'System Upgraded & Saved ✨';
+                btn.className = 'w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-[0_10px_20px_rgba(16,185,129,0.3)] tracking-wide pointer-events-none';
                 btn.classList.replace('from-indigo-500', 'from-emerald-500');
                 btn.classList.replace('to-purple-500', 'to-emerald-400');
                 btn.classList.replace('shadow-[0_10px_20px_rgba(99,102,241,0.3)]', 'shadow-[0_10px_20px_rgba(16,185,129,0.3)]');
