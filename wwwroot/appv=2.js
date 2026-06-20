@@ -800,38 +800,53 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchSystemState();
     setInterval(fetchSystemState, 10000);
 
+    // --- 🥘 INDEPENDENT MANSAF LOGIC ---
+    const mansafCountEl = document.getElementById('mansaf-count');
     const addMansafBtn = document.getElementById('add-mansaf-btn');
-    if (addMansafBtn) {
-        addMansafBtn.addEventListener('click', async () => {
-            addMansafBtn.disabled = true;
-            addMansafBtn.classList.add('opacity-50');
+    const minusMansafBtn = document.getElementById('minus-mansaf-btn');
 
-            try {
-                await fetch(`${API_BASE_URL}/api/commits`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        date: new Date().toISOString().split('T')[0],
-                        message: "The Court recorded that 7amodee ate Mansaf today! 🥘 (By ZoZo's request)",
-                        imageUrl: null,
-                        audioUrl: null
-                    })
-                });
-
-                const countEl = document.getElementById('mansaf-count');
-                countEl.classList.add('text-emerald-400', 'scale-125');
-                setTimeout(() => countEl.classList.remove('text-emerald-400', 'scale-125'), 500);
-
-                fetchCommits();
-
-            } catch (error) {
-                console.error("Error recording Mansaf:", error);
-            } finally {
-                addMansafBtn.disabled = false;
-                addMansafBtn.classList.remove('opacity-50');
+// 1. جلب الرقم الحالي من السيرفر المستقل
+    const fetchMansafCount = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/mansaf`);
+            if (res.ok) {
+                const data = await res.json();
+                if (mansafCountEl) mansafCountEl.innerText = data.count;
             }
-        });
-    }
+        } catch (e) { console.error("Error loading Mansaf count", e); }
+    };
+
+// 2. معالجة الضغطات (زيادة أو تنقيص)
+    const handleMansafAction = async (change) => {
+        if (!mansafCountEl) return;
+        const currentCount = parseInt(mansafCountEl.innerText) || 0;
+
+        if (change === -1 && currentCount <= 0) return; // منع النزول تحت الصفر
+
+        // تحديث الشاشة فوراً لسرعة الاستجابة
+        mansafCountEl.innerText = currentCount + change;
+        mansafCountEl.classList.add('text-emerald-400', 'scale-125');
+        setTimeout(() => mansafCountEl.classList.remove('text-emerald-400', 'scale-125'), 300);
+
+        try {
+            // إرسال التغيير للسيرفر (يتم تسجيله كـ Log)
+            await fetch(`${API_BASE_URL}/api/mansaf/action`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ change: change })
+            });
+        } catch (error) {
+            console.error("Failed to sync Mansaf", error);
+            mansafCountEl.innerText = currentCount; // التراجع في حال الفشل
+        }
+    };
+
+// 3. ربط الأزرار بالوظائف
+    if (addMansafBtn) addMansafBtn.addEventListener('click', () => handleMansafAction(1));
+    if (minusMansafBtn) minusMansafBtn.addEventListener('click', () => handleMansafAction(-1));
+
+// تفعيل جلب الرقم عند فتح الصفحة
+    fetchMansafCount();
 
     // --- 🗺️ THE BUCKET LIST ---
     const bucketGrid = document.getElementById('bucket-grid');

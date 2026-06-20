@@ -442,6 +442,35 @@ app.MapDelete("/api/media/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
+// --- MANSAF STANDALONE SYSTEM ---
+app.MapGet("/api/mansaf", async (VaultDb db) => {
+    var counter = await db.MansafCounters.FirstOrDefaultAsync() ?? new MansafCounter { Count = 0 };
+    return Results.Ok(counter);
+});
+
+app.MapPost("/api/mansaf/action", async (MansafActionRequest req, VaultDb db) => {
+    var counter = await db.MansafCounters.FirstOrDefaultAsync();
+    if (counter == null) {
+        counter = new MansafCounter { Count = 0 };
+        db.MansafCounters.Add(counter);
+    }
+    
+    // تحديث الرقم
+    counter.Count += req.Change;
+    
+    // تسجيل العملية بتوقيت الأردن
+    var jordanZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman");
+    var jordanTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, jordanZone);
+    
+    db.MansafLogs.Add(new MansafLog { 
+        Change = req.Change, 
+        Timestamp = jordanTime 
+    });
+    
+    await db.SaveChangesAsync();
+    return Results.Ok(counter);
+});
+
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<VaultDb>();
@@ -468,6 +497,8 @@ class VaultDb : DbContext {
     public DbSet<VisitTask> VisitTasks => Set<VisitTask>();
     public DbSet<BlindPrompt> BlindPrompts => Set<BlindPrompt>();
     public DbSet<MediaItem> MediaItems { get; set; }
+    public DbSet<MansafCounter> MansafCounters => Set<MansafCounter>();
+    public DbSet<MansafLog> MansafLogs => Set<MansafLog>();
 }
 
 class Link {
@@ -567,4 +598,19 @@ public class MediaItem
     public string Status { get; set; } = "backlog"; 
     public string AddedBy { get; set; }
     public DateTime DateAdded { get; set; } = DateTime.UtcNow;
+}
+
+class MansafCounter {
+    [JsonPropertyName("id")] public int Id { get; set; }
+    [JsonPropertyName("count")] public int Count { get; set; }
+}
+
+class MansafLog {
+    [JsonPropertyName("id")] public int Id { get; set; }
+    [JsonPropertyName("change")] public int Change { get; set; }
+    [JsonPropertyName("timestamp")] public DateTime Timestamp { get; set; }
+}
+
+public class MansafActionRequest { 
+    public int Change { get; set; } 
 }
