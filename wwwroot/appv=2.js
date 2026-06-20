@@ -1645,8 +1645,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 🪄 سحر الظهور المتتابع للصور في الألبوم
     document.querySelectorAll('.polaroid').forEach((p, index) => {
-        // 0.4 يعني تقريباً نصف ثانية انتظار قبل أن تظهر الصورة التالية!
+        // 1. تأخير الظهور (نصف ثانية بين كل صورة)
         p.style.animationDelay = `${index * 0.4}s`;
+
+        // 2. 🛠️ استعادة تأثير الـ Hover بمجرد انتهاء حركة الظهور
+        p.addEventListener('animationend', () => {
+            p.style.animation = 'none'; // تحرير العنصر من سيطرة الأنيميشن
+            p.style.opacity = '1'; // تثبيت الرؤية
+            p.style.transform = 'rotate(var(--rot))'; // تثبيت زاوية الميلان العشوائية
+        });
     });
 
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
