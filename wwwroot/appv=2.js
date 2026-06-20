@@ -1538,27 +1538,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-// --- [5] إغلاق الواجهة وإيقاف الصوت بنعومة ---
-    if (closeEasterEggBtn) {
-        closeEasterEggBtn.addEventListener('click', () => {
-            easterEggOverlay.classList.add('opacity-0');
+// --- [5] إغلاق الواجهة وإيقاف الصوت بنعومة (Bulletproof Close) ---
+    const closeFunctions = () => {
+        const overlay = document.getElementById('easter-egg-overlay');
+        const audio = document.getElementById('easter-egg-audio');
 
-            if (easterEggAudio) {
-                let vol = easterEggAudio.volume;
-                let fadeOut = setInterval(() => {
-                    if (vol > 0.05) {
-                        vol -= 0.05;
-                        easterEggAudio.volume = vol;
-                    } else {
-                        clearInterval(fadeOut);
-                        easterEggAudio.pause();
-                        easterEggAudio.currentTime = 0;
-                    }
-                }, 100);
-            }
-            setTimeout(() => { easterEggOverlay.classList.add('hidden'); }, 1000);
-        });
-    }
+        if (overlay) overlay.classList.add('opacity-0');
+
+        if (audio) {
+            let vol = audio.volume;
+            let fadeOut = setInterval(() => {
+                if (vol > 0.05) {
+                    vol -= 0.05;
+                    audio.volume = vol;
+                } else {
+                    clearInterval(fadeOut);
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+            }, 100);
+        }
+        setTimeout(() => { if (overlay) overlay.classList.add('hidden'); }, 1000);
+    };
+
+// استخدام Event Delegation لضمان استجابة الأزرار دائماً
+    document.addEventListener('click', (e) => {
+        if (e.target.id === 'close-easter-egg' || e.target.id === 'close-gallery-btn') {
+            closeFunctions();
+        }
+    });
 
 // --- [6] قفل النسخة، حفظ الإجابة، والانتقال للألبوم ---
     if (v2PromptForm) {
