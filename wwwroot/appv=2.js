@@ -1601,9 +1601,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 2. تسجيل الإنجاز في المتصفح
                 localStorage.setItem('v2_unlocked', 'true');
 
+                // التحديث الفوري للإصدار في الخلفية (قمنا بإزالة animate-pulse ليكون طبيعياً)
                 if (versionTrigger) {
                     versionTrigger.innerText = 'v2.0.0';
-                    versionTrigger.classList.add('text-pink-400', 'font-bold', 'animate-pulse');
+                    versionTrigger.classList.add('text-pink-400', 'font-bold');
                 }
 
                 // 3. التحول للأخضر الزمردي
@@ -1627,13 +1628,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (textContent) textContent.classList.add('hidden');
 
                         if (gallery) {
+                            // 🚀 التعديل الجديد: إرجاع السحب للأعلى فوراً قبل ظهور الصور
+                            const scrollContainer = gallery.closest('.overflow-y-auto');
+                            if (scrollContainer) {
+                                // إعادة السحب لنقطة الصفر (أعلى الشاشة)
+                                scrollContainer.scrollTop = 0;
+                            }
+
                             gallery.classList.remove('hidden');
                             setTimeout(() => gallery.classList.remove('opacity-0', 'translate-y-10'), 50);
                         } else {
                             console.error("⚠️ لم يظهر الألبوم لأن كود الـ HTML الخاص به مفقود!");
                         }
                     }, 1000);
-                }, 2500); // ⏱️ ينتظر ثانيتين ونصف بعد الأخضر ليبدأ الانتقال
+                }, 2500);
 
             } catch (error) {
                 console.error("Failed to execute V2 save:", error);
