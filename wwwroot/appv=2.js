@@ -800,45 +800,35 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchSystemState();
     setInterval(fetchSystemState, 10000);
 
-    // ربط زر الزيادة
     const addMansafBtn = document.getElementById('add-mansaf-btn');
-    const minusMansafBtn = document.getElementById('minus-mansaf-btn');
-    const countEl = document.getElementById('mansaf-count');
-    const API_URL = 'https://zainabvault.onrender.com'; // تأكد من الرابط
-
-    async function updateMansaf(change) {
-        try {
-            const response = await fetch(`${API_URL}/api/mansaf/action`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ change: change }) // يرسل 1 أو -1
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                // تحديث الرقم على الشاشة
-                countEl.innerText = data.count;
-
-                // تأثير بصري بسيط
-                countEl.classList.add('text-emerald-400', 'scale-125');
-                setTimeout(() => countEl.classList.remove('text-emerald-400', 'scale-125'), 300);
-            } else {
-                console.error("فشل الاتصال بالسيرفر");
-            }
-        } catch (error) {
-            console.error("خطأ:", error);
-        }
-    }
-
     if (addMansafBtn) {
-        addMansafBtn.addEventListener('click', () => updateMansaf(1));
-    }
+        addMansafBtn.addEventListener('click', async () => {
+            addMansafBtn.disabled = true;
+            addMansafBtn.classList.add('opacity-50');
 
-    if (minusMansafBtn) {
-        minusMansafBtn.addEventListener('click', () => {
-            // منع النزول تحت الصفر
-            if (parseInt(countEl.innerText) > 0) {
-                updateMansaf(-1);
+            try {
+                await fetch(`${API_BASE_URL}/api/commits`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date: new Date().toISOString().split('T')[0],
+                        message: "The Court recorded that 7amodee ate Mansaf today! 🥘 (By ZoZo's request)",
+                        imageUrl: null,
+                        audioUrl: null
+                    })
+                });
+
+                const countEl = document.getElementById('mansaf-count');
+                countEl.classList.add('text-emerald-400', 'scale-125');
+                setTimeout(() => countEl.classList.remove('text-emerald-400', 'scale-125'), 500);
+
+                fetchCommits();
+
+            } catch (error) {
+                console.error("Error recording Mansaf:", error);
+            } finally {
+                addMansafBtn.disabled = false;
+                addMansafBtn.classList.remove('opacity-50');
             }
         });
     }
