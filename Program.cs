@@ -443,11 +443,6 @@ app.MapDelete("/api/media/{id}", async (int id, VaultDb db) => {
 });
 
 // --- MANSAF STANDALONE SYSTEM ---
-app.MapGet("/api/mansaf", async (VaultDb db) => {
-    var counter = await db.MansafCounters.FirstOrDefaultAsync() ?? new MansafCounter { Count = 0 };
-    return Results.Ok(counter);
-});
-
 app.MapPost("/api/mansaf/action", async (MansafActionRequest req, VaultDb db) => {
     var counter = await db.MansafCounters.FirstOrDefaultAsync();
     if (counter == null) {
@@ -455,10 +450,10 @@ app.MapPost("/api/mansaf/action", async (MansafActionRequest req, VaultDb db) =>
         db.MansafCounters.Add(counter);
     }
     
-    // تحديث الرقم
+    // 1. Update the Count
     counter.Count += req.Change;
     
-    // تسجيل العملية بتوقيت الأردن
+    // 2. Log the action with Jordan Time
     var jordanZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman");
     var jordanTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, jordanZone);
     
@@ -467,7 +462,15 @@ app.MapPost("/api/mansaf/action", async (MansafActionRequest req, VaultDb db) =>
         Timestamp = jordanTime 
     });
     
+    // 3. Save to Database
     await db.SaveChangesAsync();
+
+    // 4. TELEGRAM NOTIFICATION LOGIC
+    string actionWord = req.Change > 0 ? "added 🟢" : "removed 🔴";
+    string target = req.Change > 0 ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻"; // Optional flavor
+    
+    await SendTelegramNotification($"🥘 Mansaf Update!\n\n1 portion was {actionWord}.\nTotal Mansaf Count: {counter.Count} 🤤");
+
     return Results.Ok(counter);
 });
 

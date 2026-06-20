@@ -821,23 +821,33 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!mansafCountEl) return;
         const currentCount = parseInt(mansafCountEl.innerText) || 0;
 
-        if (change === -1 && currentCount <= 0) return; // منع النزول تحت الصفر
+        if (change === -1 && currentCount <= 0) return; // Prevent negative Mansaf
 
-        // تحديث الشاشة فوراً لسرعة الاستجابة
+        // Optimistic UI Update
         mansafCountEl.innerText = currentCount + change;
         mansafCountEl.classList.add('text-emerald-400', 'scale-125');
         setTimeout(() => mansafCountEl.classList.remove('text-emerald-400', 'scale-125'), 300);
 
         try {
-            // إرسال التغيير للسيرفر (يتم تسجيله كـ Log)
-            await fetch(`${API_BASE_URL}/api/mansaf/action`, {
+            const response = await fetch(`${API_BASE_URL}/api/mansaf/action`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ change: change })
             });
+
+            if (!response.ok) {
+                // If the server rejects it, throw an error to trigger the catch block
+                throw new Error(`Server returned status: ${response.status}`);
+            }
+
+            // If it succeeds, the Telegram notification will have fired from the backend!
+
         } catch (error) {
             console.error("Failed to sync Mansaf", error);
-            mansafCountEl.innerText = currentCount; // التراجع في حال الفشل
+            alert("Server Error: Could not save the Mansaf count! Check the console.");
+
+            // Revert the visual number back to what it was since the save failed
+            mansafCountEl.innerText = currentCount;
         }
     };
 
