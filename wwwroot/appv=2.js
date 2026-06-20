@@ -250,14 +250,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (isLocked) {
-                // Create a unique identifier for this specific memory's countdown
                 const timerId = `timer-commit-${commit.id}`;
-
                 item.innerHTML = `
             <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
                 <span class="text-4xl mb-2 animate-bounce">⏳</span>
                 <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
-                
                 <div id="${timerId}" class="w-full min-h-[30px]"></div>
             </div>
             <div class="opacity-10 blur-sm">
@@ -266,34 +263,32 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
                 commitTimeline.appendChild(item);
-
-                // 🔥 IGNITE THE COUNTDOWN: Must be called AFTER the item is appended to the DOM
                 startCountdown(commit.unlockDate, timerId);
 
             } else {
-                // 🧠 1. الذكاء الاصطناعي لاكتشاف لغة النص
-                const isArabic = /[\u0600-\u06FF]/.test(commit.message);
+                // 🛡️ درع الحماية: التأكد من وجود نص أصلاً لتجنب انهيار المتصفح
+                const safeMessage = commit.message || '';
 
-                // 2. 🎯 التعديل هنا: إذا إنجليزي نترك الكلاس فارغاً '' ليرث الخط الأصلي
+                // 🧠 الذكاء الاصطناعي لاكتشاف اللغة
+                const isArabic = /[\u0600-\u06FF]/.test(safeMessage);
                 const fontClass = isArabic ? 'font-poetic' : '';
                 const alignClass = isArabic ? 'text-right' : 'text-left';
                 const dirAttr = isArabic ? 'rtl' : 'ltr';
-
-                // 3. علامة (RLM) السحرية لمنع الإيموجي من القفز في العربي
-                const displayMessage = isArabic ? `${commit.message}&#x200F;` : commit.message;
+                const displayMessage = isArabic ? `${safeMessage}&#x200F;` : safeMessage;
 
                 item.innerHTML = `
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
-                    <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-                </div>
+        <div class="flex justify-between items-start mb-4">
+            <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
+            <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        </div>
         
-                <p dir="${dirAttr}" class="${fontClass} ${alignClass} whitespace-pre-wrap text-base md:text-lg text-slate-200 font-medium leading-loose tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${displayMessage}</p>
+        ${safeMessage ? `<p dir="${dirAttr}" class="${fontClass} ${alignClass} whitespace-pre-wrap text-base md:text-lg text-slate-200 font-medium leading-loose tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${displayMessage}</p>` : ''}
         
-                ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
+        ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
         
-                ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
+        ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
     `;
+                commitTimeline.appendChild(item);
             }
         });
     };
