@@ -266,13 +266,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 startCountdown(commit.unlockDate, timerId);
 
             } else {
-                // 🛡️ درع الحماية: التأكد من وجود نص أصلاً لتجنب انهيار المتصفح
+                // 🛡️ درع الحماية: التأكد من وجود نص
                 const safeMessage = commit.message || '';
 
                 // 🧠 الذكاء الاصطناعي لاكتشاف اللغة
                 const isArabic = /[\u0600-\u06FF]/.test(safeMessage);
-                const fontClass = isArabic ? 'font-poetic' : '';
-                const alignClass = isArabic ? 'text-right' : 'text-left';
+
+                // 🎯 السحر هنا: فصل التنسيق بالكامل بين اللغتين!
+                // إذا عربي: خط أميري، حجم كبير، مسافات واسعة، يمين
+                // إذا إنجليزي: نفس تنسيق موقعك الأصلي بالضبط (حجم صغير text-sm)، يسار
+                const textFormatClasses = isArabic
+                    ? 'font-poetic text-base md:text-lg leading-loose text-right'
+                    : 'text-sm leading-relaxed text-left';
+
                 const dirAttr = isArabic ? 'rtl' : 'ltr';
                 const displayMessage = isArabic ? `${safeMessage}&#x200F;` : safeMessage;
 
@@ -282,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         </div>
         
-        ${safeMessage ? `<p dir="${dirAttr}" class="${fontClass} ${alignClass} whitespace-pre-wrap text-base md:text-lg text-slate-200 font-medium leading-loose tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${displayMessage}</p>` : ''}
+        ${safeMessage ? `<p dir="${dirAttr}" class="${textFormatClasses} whitespace-pre-wrap text-slate-200 font-medium tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${displayMessage}</p>` : ''}
         
         ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
         
