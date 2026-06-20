@@ -800,50 +800,53 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(fetchSystemState, 10000);
 
     // ==========================================
-// 🥘 STANDALONE MANSAF COUNTER (NO COMMITS)
+// 🥘 STANDALONE MANSAF COUNTER (BUG-FREE)
 // ==========================================
-    const mansafCountDisplay = document.getElementById('mansaf-count');
-    const addMansafBtn = document.getElementById('add-mansaf-btn');
-    const minusMansafBtn = document.getElementById('minus-mansaf-btn'); // زر التراجع الجديد
+    document.addEventListener('DOMContentLoaded', () => {
+        const mansafCountDisplay = document.getElementById('mansaf-count');
+        const addMansafBtn = document.getElementById('add-mansaf-btn');
+        const minusMansafBtn = document.getElementById('minus-mansaf-btn');
 
-    if (mansafCountDisplay && addMansafBtn) {
-        // جلب الرقم القديم من الذاكرة (سيبدأ من 9 تلقائياً إذا لم يكن هناك رقم)
-        let mansafCount = parseInt(localStorage.getItem('mansaf_count')) || 9;
+        if (mansafCountDisplay && addMansafBtn) {
+            // قراءة الذاكرة بطريقة آمنة جداً لا تتأثر بالـ Refresh
+            let savedCount = localStorage.getItem('mansaf_count');
+            // إذا كان هناك رقم محفوظ نقرأه، وإذا لم يكن نبدأ من 0 (أو 9 كما تريد)
+            let mansafCount = savedCount !== null ? parseInt(savedCount, 10) : 0;
 
-        // دالة تحديث الواجهة مع تأثير النبض السريع 120fps
-        const updateMansafDisplay = () => {
-            mansafCountDisplay.innerText = mansafCount;
-            localStorage.setItem('mansaf_count', mansafCount); // حفظ محلي فقط
+            const updateMansafDisplay = () => {
+                mansafCountDisplay.innerText = mansafCount;
+                localStorage.setItem('mansaf_count', mansafCount);
 
-            // تأثير النبض اللحظي
-            mansafCountDisplay.style.transform = 'scale(1.3)';
-            mansafCountDisplay.style.color = '#f472b6'; // لون وردي للحظات
+                // تأثير النبض 120fps
+                mansafCountDisplay.style.transform = 'scale(1.3)';
+                mansafCountDisplay.style.color = '#f472b6';
 
-            setTimeout(() => {
-                mansafCountDisplay.style.transform = 'scale(1)';
-                mansafCountDisplay.style.color = '#ffffff'; // يعود أبيض
-            }, 150);
-        };
+                setTimeout(() => {
+                    mansafCountDisplay.style.transform = 'scale(1)';
+                    mansafCountDisplay.style.color = '#ffffff';
+                }, 150);
+            };
 
-        // تشغيل العداد فور فتح الصفحة
-        updateMansafDisplay();
-
-        // 1. زر الزيادة (+): يرفع الرقم محلياً فقط بدون إرسال للسيرفر
-        addMansafBtn.addEventListener('click', () => {
-            mansafCount++;
+            // تحديث الرقم فوراً عند فتح الصفحة
             updateMansafDisplay();
-        });
 
-        // 2. زر التراجع (-): ينقص الرقم في حال الخطأ
-        if (minusMansafBtn) {
-            minusMansafBtn.addEventListener('click', () => {
-                if (mansafCount > 0) {
-                    mansafCount--;
-                    updateMansafDisplay();
-                }
+            addMansafBtn.addEventListener('click', () => {
+                mansafCount++;
+                updateMansafDisplay();
             });
+
+            if (minusMansafBtn) {
+                minusMansafBtn.addEventListener('click', () => {
+                    if (mansafCount > 0) {
+                        mansafCount--;
+                        updateMansafDisplay();
+                    }
+                });
+            }
+        } else {
+            console.warn("⚠️ أزرار المنسف غير موجودة في الشاشة الحالية.");
         }
-    }
+    });
 
     // --- 🗺️ THE BUCKET LIST ---
     const bucketGrid = document.getElementById('bucket-grid');
