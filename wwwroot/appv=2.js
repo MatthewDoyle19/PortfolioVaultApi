@@ -1643,6 +1643,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 🪄 سحر الظهور المتتابع للصور في الألبوم
+    document.querySelectorAll('.polaroid').forEach((p, index) => {
+        // كل صورة تتأخر 0.15 ثانية عن الصورة التي تسبقها
+        p.style.animationDelay = `${index * 0.15}s`;
+    });
+
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
     window.switchTab = (tabName) => {
         document.getElementById('view-home').classList.add('hidden');

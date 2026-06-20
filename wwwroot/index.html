@@ -441,25 +441,38 @@
         100% { transform: translateY(-120vh) scale(1.2) rotate(360deg); opacity: 0; }
     }
 
-    /* 5. ألبوم بطاقات البولارॉइड الذكي وتأثير التدوير العشوائي التلقائي */
+    /* 5. ألبوم البولارอยด์ (الإصدار السينمائي المتتابع) */
     .polaroid {
         background: rgba(255, 255, 255, 0.95);
-        padding: 8px 8px 16px 8px; /* مساحة سفلية أنيقة تناسب غياب النص */
+        padding: 8px 8px 16px 8px;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         border-radius: 8px;
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         border: 1px solid rgba(255, 255, 255, 0.8);
         position: relative;
+
+        /* 🪄 السحر الجديد: إخفاء مبدئي وأنيميشن الظهور المدمج */
+        opacity: 0;
+        animation: polaroidReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+
     .polaroid:hover {
         transform: scale(1.12) rotate(0deg) !important;
         z-index: 50;
         box-shadow: 0 20px 40px rgba(244, 114, 182, 0.35);
     }
-    .polaroid:nth-child(odd) { transform: rotate(-3deg); }
-    .polaroid:nth-child(even) { transform: rotate(3deg); }
-    .polaroid:nth-child(3n) { transform: rotate(-4deg); }
-    .polaroid:nth-child(4n) { transform: rotate(2deg); }
+
+    /* 🎯 استخدام المتغيرات (--rot) لحفظ الزوايا العشوائية أثناء الأنيميشن */
+    .polaroid:nth-child(odd) { --rot: -3deg; }
+    .polaroid:nth-child(even) { --rot: 3deg; }
+    .polaroid:nth-child(3n) { --rot: -4deg; }
+    .polaroid:nth-child(4n) { --rot: 2deg; }
+
+    /* حركة الظهور: تبدأ من الأسفل صغيرة ومموهة، ثم تكبر وتوضح */
+    @keyframes polaroidReveal {
+        0% { opacity: 0; filter: blur(10px); transform: rotate(var(--rot)) scale(0.5) translateY(50px); }
+        100% { opacity: 1; filter: blur(0); transform: rotate(var(--rot)) scale(1) translateY(0); }
+    }
 </style>
 
 <div id="easter-egg-overlay" class="hidden fixed inset-0 z-[9999] transition-opacity duration-[2000ms] opacity-0 v2-light-theme">
