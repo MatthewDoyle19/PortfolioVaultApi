@@ -1462,7 +1462,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     fetchMedia();
-
+    
     // ==========================================
 // 🚀 V2.0.0 EASTER EGG & SECRET DOOR (CINEMATIC PEARL EDITION)
 // ==========================================
