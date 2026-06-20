@@ -132,17 +132,23 @@
                 <span id="version-trigger" class="text-xl font-bold text-slate-200 cursor-pointer select-none transition-all duration-500 hover:text-white">v1.5.9</span>
             </div>
 
-            <div class="col-span-2 premium-glass p-5 rounded-[2rem] flex items-center justify-between group border border-white/5 hover:border-accent/30 transition-all">
+            <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <div class="text-4xl animate-bounce" style="animation-duration: 2s;">🥘</div>
-                    <div class="text-left">
+                    <div class="text-4xl">🥘</div>
+                    <div>
                         <h3 class="text-[10px] text-accent uppercase tracking-[0.2em] font-black mb-1">Requested by ZoZo ❤️</h3>
                         <div class="text-sm font-bold text-white">7amodee's Mansaf Counter</div>
                     </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <div class="text-3xl font-extrabold text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300" id="mansaf-count">0</div>
-                    <button id="add-mansaf-btn" class="bg-gradient-to-br from-accent to-purple-600 hover:from-purple-500 hover:to-accent text-white p-3 rounded-xl transition-all active:scale-95 shadow-lg shadow-accent/20">
+
+                <div class="flex items-center gap-3">
+                    <button id="minus-mansaf-btn" class="bg-white/5 p-3 rounded-xl hover:bg-rose-500/20 active:scale-95 transition-all border border-white/5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path></svg>
+                    </button>
+
+                    <div id="mansaf-count" class="text-3xl font-extrabold text-white w-12 text-center">0</div>
+
+                    <button id="add-mansaf-btn" class="bg-gradient-to-br from-accent to-purple-600 p-3 rounded-xl shadow-lg active:scale-95 transition-all">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
                     </button>
                 </div>
