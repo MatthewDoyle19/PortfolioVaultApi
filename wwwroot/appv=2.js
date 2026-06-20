@@ -801,19 +801,18 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(fetchSystemState, 10000);
 
     // ==========================================
-// 🥘 CLOUD-SYNCED MANSAF COUNTER (120fps)
+// 🥘 CLOUD-SYNCED MANSAF COUNTER (FAILSAFE)
 // ==========================================
     document.addEventListener('DOMContentLoaded', () => {
         const mansafCountDisplay = document.getElementById('mansaf-count');
-
-        // سيبدأ مؤقتاً بصفر حتى يأتي الرقم الحقيقي من السيرفر في أجزاء من الثانية
         let mansafCount = 0;
 
-        // 1. دالة تحديث الواجهة بنبض 120fps
+        // 1. Update the UI (The pulse effect will trigger immediately)
         const updateMansafUI = () => {
             if (mansafCountDisplay) {
                 mansafCountDisplay.innerText = mansafCount;
 
+                // 120fps smooth pulse effect
                 mansafCountDisplay.style.transform = 'scale(1.3)';
                 mansafCountDisplay.style.color = '#f472b6';
 
@@ -824,21 +823,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        // 2. جلب الرقم الحقيقي من قاعدة البيانات فور فتح الصفحة
-        fetch(`${API_BASE_URL}/api/mansaf`)
-            .then(res => res.json())
-            .then(data => {
-                if(data && data.count !== undefined) {
-                    mansafCount = data.count;
-                    if(mansafCountDisplay) mansafCountDisplay.innerText = mansafCount;
-                }
-            })
-            .catch(err => console.error("Error loading mansaf count:", err));
+        // 2. Safely fetch the current count from the database
+        if (typeof API_BASE_URL !== 'undefined') {
+            fetch(`${API_BASE_URL}/api/mansaf`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Server not updated yet (Did you forget to 'git push' the backend?)");
+                    return res.json();
+                })
+                .then(data => {
+                    if(data && data.count !== undefined) {
+                        mansafCount = data.count;
+                        if(mansafCountDisplay) mansafCountDisplay.innerText = mansafCount;
+                    }
+                })
+                .catch(err => console.warn("⚠️ System message:", err.message));
+        } else {
+            console.error("🚨 API_BASE_URL is missing or not defined!");
+        }
 
-        // 3. دالة إرسال التحديث للسيرفر (خلف الكواليس)
+        // 3. Sync the updated count with the server (runs in the background)
         const syncMansafWithServer = async (newCount) => {
             mansafCount = newCount;
-            updateMansafUI(); // Optimistic Update: تحديث الشاشة فوراً دون انتظار السيرفر
+            updateMansafUI(); // Optimistic UI update (updates screen before server responds)
 
             try {
                 await fetch(`${API_BASE_URL}/api/mansaf/update`, {
@@ -847,23 +853,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({ count: mansafCount })
                 });
             } catch (error) {
-                console.error("Sync error:", error);
+                console.error("⚠️ Failed to sync with server:", error);
             }
         };
 
-        // 4. مراقبة الضغطات
+        // 4. Global Event Listener for the buttons
         document.addEventListener('click', (e) => {
             const addBtn = e.target.closest('#add-mansaf-btn');
             const minusBtn = e.target.closest('#minus-mansaf-btn');
 
             if (addBtn) {
-                syncMansafWithServer(mansafCount + 1); // سيزيد الرقم ويصلك إشعار تيليجرام!
+                syncMansafWithServer(mansafCount + 1);
             }
 
-            if (minusBtn) {
-                if (mansafCount > 0) {
-                    syncMansafWithServer(mansafCount - 1); // سينقص الرقم بدون إرسال إشعار
-                }
+            if (minusBtn && mansafCount > 0) {
+                syncMansafWithServer(mansafCount - 1);
             }
         });
     });
