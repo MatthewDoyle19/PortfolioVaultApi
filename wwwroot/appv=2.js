@@ -1596,8 +1596,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 btn.innerHTML = 'System Upgraded & Saved ✨';
-                btn.classList.replace('from-indigo-600', 'from-emerald-500');
-                btn.classList.replace('to-purple-600', 'to-emerald-400');
+                btn.classList.replace('from-indigo-500', 'from-emerald-500');
+                btn.classList.replace('to-purple-500', 'to-emerald-400');
                 btn.classList.replace('shadow-[0_10px_20px_rgba(99,102,241,0.2)]', 'shadow-[0_10px_20px_rgba(16,185,129,0.3)]');
 
                 if (typeof fetchCommits === "function") fetchCommits();
