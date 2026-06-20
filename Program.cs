@@ -442,36 +442,57 @@ app.MapDelete("/api/media/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
-// --- MANSAF STANDALONE SYSTEM ---
-app.MapPost("/api/mansaf/action", async (MansafActionRequest req, VaultDb db) => {
+// --- 🥘 MANSAF STANDALONE SYSTEM ---
+
+// 1. The GET Route (Fixes the 404 Error)
+app.MapGet("/api/mansaf", async (VaultDb db) => {
     var counter = await db.MansafCounters.FirstOrDefaultAsync();
     if (counter == null) {
         counter = new MansafCounter { Count = 0 };
         db.MansafCounters.Add(counter);
+        await db.SaveChangesAsync();
     }
-    
-    // 1. Update the Count
-    counter.Count += req.Change;
-    
-    // 2. Log the action with Jordan Time
-    var jordanZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman");
-    var jordanTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, jordanZone);
-    
-    db.MansafLogs.Add(new MansafLog { 
-        Change = req.Change, 
-        Timestamp = jordanTime 
-    });
-    
-    // 3. Save to Database
-    await db.SaveChangesAsync();
-
-    // 4. TELEGRAM NOTIFICATION LOGIC
-    string actionWord = req.Change > 0 ? "added 🟢" : "removed 🔴";
-    string target = req.Change > 0 ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻"; // Optional flavor
-    
-    await SendTelegramNotification($"🥘 Mansaf Update!\n\n1 portion was {actionWord}.\nTotal Mansaf Count: {counter.Count} 🤤");
-
     return Results.Ok(counter);
+});
+
+// 2. The POST Route (Fixes the 500 Error with precise logging)
+app.MapPost("/api/mansaf/action", async (MansafActionRequest req, VaultDb db) => {
+    try {
+        var counter = await db.MansafCounters.FirstOrDefaultAsync();
+        if (counter == null) {
+            counter = new MansafCounter { Count = 0 };
+            db.MansafCounters.Add(counter);
+        }
+        
+        // Update the Count
+        counter.Count += req.Change;
+        
+        // Log the action with Jordan Time
+        var jordanZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman");
+        var jordanTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, jordanZone);
+        
+        db.MansafLogs.Add(new MansafLog { 
+            Change = req.Change, 
+            Timestamp = jordanTime 
+        });
+        
+        // Save to Database
+        await db.SaveChangesAsync();
+
+        // TELEGRAM NOTIFICATION LOGIC
+        string actionWord = req.Change > 0 ? "added 🟢" : "removed 🔴";
+        await SendTelegramNotification($"🥘 Mansaf Update!\n\n1 portion was {actionWord}.\nTotal Mansaf Count: {counter.Count} 🤤");
+
+        return Results.Ok(counter);
+        
+    } catch (Exception ex) {
+        // If it crashes again, this will tell us EXACTLY why in the Render Logs
+        Console.WriteLine($"[CRITICAL MANSAF DB ERROR] {ex.Message}");
+        if (ex.InnerException != null) {
+            Console.WriteLine($"[INNER EXCEPTION] {ex.InnerException.Message}");
+        }
+        return Results.Problem(ex.Message);
+    }
 });
 
 // --- DB SEEDING ---
