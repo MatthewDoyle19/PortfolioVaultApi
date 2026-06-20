@@ -1560,18 +1560,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-// --- [6] قفل النسخة، حفظ الإجابة، وتغيير الإصدار فوراً ---
+// --- [6] قفل النسخة، حفظ الإجابة، والانتقال للألبوم ---
     if (v2PromptForm) {
         v2PromptForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = v2PromptForm.querySelector('button');
             const answerInput = document.getElementById('v2-answer').value;
 
+            // 1. عرض حالة التحميل
             btn.disabled = true;
             btn.innerHTML = 'Encrypting & Saving to Vault... ⏳';
 
             try {
-                // --- بداية التعطيل للاختبار ---
+                // 🛑 السحر هنا: إضافة تأخير وهمي (ثانيتين) لترى رسالة التحميل بوضوح!
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // --- كود السيرفر (معطل للاختبار) ---
                 /*
                 await fetch(`${API_BASE_URL}/api/commits`, {
                     method: 'POST',
@@ -1584,26 +1588,45 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 });
                 */
-                // --- نهاية التعطيل ---
+                // -----------------------------------
 
-                // تسجيل الإنجاز في المتصفح
+                // 2. تسجيل الإنجاز في المتصفح
                 localStorage.setItem('v2_unlocked', 'true');
 
-                // 🎯 السحر هنا: تغيير رقم الإصدار الفعلي في الموقع إلى 2.0.0
                 if (versionTrigger) {
                     versionTrigger.innerText = 'v2.0.0';
                     versionTrigger.classList.add('text-pink-400', 'font-bold', 'animate-pulse');
                 }
 
+                // 3. التحول للأخضر الزمردي
                 btn.innerHTML = 'System Upgraded & Saved ✨';
                 btn.classList.replace('from-indigo-500', 'from-emerald-500');
                 btn.classList.replace('to-purple-500', 'to-emerald-400');
-                btn.classList.replace('shadow-[0_10px_20px_rgba(99,102,241,0.2)]', 'shadow-[0_10px_20px_rgba(16,185,129,0.3)]');
+                btn.classList.replace('shadow-[0_10px_20px_rgba(99,102,241,0.3)]', 'shadow-[0_10px_20px_rgba(16,185,129,0.3)]');
 
                 if (typeof fetchCommits === "function") fetchCommits();
 
+                // 4. تلاشي النص وظهور الألبوم السري
+                setTimeout(() => {
+                    const textContent = document.getElementById('easter-egg-content');
+                    const gallery = document.getElementById('easter-egg-gallery');
+
+                    if (textContent) textContent.classList.add('opacity-0', 'scale-95');
+
+                    setTimeout(() => {
+                        if (textContent) textContent.classList.add('hidden');
+
+                        if (gallery) {
+                            gallery.classList.remove('hidden');
+                            setTimeout(() => gallery.classList.remove('opacity-0', 'translate-y-10'), 50);
+                        } else {
+                            console.error("⚠️ لم يظهر الألبوم لأن كود الـ HTML الخاص به مفقود!");
+                        }
+                    }, 1000);
+                }, 2500); // ⏱️ ينتظر ثانيتين ونصف بعد الأخضر ليبدأ الانتقال
+
             } catch (error) {
-                console.error("Failed to execute V2 save operation:", error);
+                console.error("Failed to execute V2 save:", error);
                 btn.innerHTML = 'Error Saving. Try Again.';
                 btn.disabled = false;
             }
