@@ -28,12 +28,12 @@ async Task SendTelegramNotification(string message)
     string chatId = "-5233134027"; 
 
     string url = $"https://api.telegram.org/bot{botToken}/sendMessage";
-    
+
     var payload = System.Text.Json.JsonSerializer.Serialize(new {
         chat_id = chatId,
         text = message
     });
-    
+
     var content = new StringContent(payload, System.Text.Encoding.UTF8, "application/json");
 
     try { 
@@ -68,9 +68,9 @@ app.MapGet("/api/links", async (VaultDb db) => await db.Links.ToListAsync());
 app.MapPost("/api/links", async (Link link, VaultDb db) => {
     db.Links.Add(link);
     await db.SaveChangesAsync();
-    
+
     await SendTelegramNotification($"🔗 A new link has been saved!\nTitle: {link.Title}");
-    
+
     return Results.Created($"/api/links/{link.Id}", link);
 });
 
@@ -79,9 +79,9 @@ app.MapDelete("/api/links/{id}", async (int id, VaultDb db) => {
     if (link is null) return Results.NotFound();
     db.Links.Remove(link);
     await db.SaveChangesAsync();
-    
+
     await SendTelegramNotification($"🗑️ A link was deleted from the Vault!\nTitle: {link.Title}");
-    
+
     return Results.Ok();
 });
 
@@ -92,9 +92,9 @@ app.MapGet("/api/commits", async (VaultDb db) =>
 app.MapPost("/api/commits", async (Commit commit, VaultDb db) => {
     db.Commits.Add(commit);
     await db.SaveChangesAsync();
-    
+
     await SendTelegramNotification($"📸 A new memory has been added!\n\nDescription: {commit.Message}");
-    
+
     return Results.Created($"/api/commits/{commit.Id}", commit);
 });
 
@@ -103,9 +103,9 @@ app.MapDelete("/api/commits/{id}", async (int id, VaultDb db) => {
     if (commit is null) return Results.NotFound();
     db.Commits.Remove(commit);
     await db.SaveChangesAsync();
-    
+
     await SendTelegramNotification($"🗑️ A memory was unfortunately deleted!\nLost description: {commit.Message}");
-    
+
     return Results.Ok();
 });
 
@@ -116,13 +116,13 @@ app.MapGet("/api/penalties", async (VaultDb db) =>
 app.MapPost("/api/penalties", async (Penalty penalty, VaultDb db) => {
     db.Penalties.Add(penalty);
     await db.SaveChangesAsync();
-    
+
     // UI Transform for Telegram
     string displayPunisher = penalty.Punisher == "Mohammad" ? "7amodee" : (penalty.Punisher == "Zainab" ? "ZoZo" : penalty.Punisher);
     string displayPunished = penalty.Punished == "Mohammad" ? "7amodee" : (penalty.Punished == "Zainab" ? "ZoZo" : penalty.Punished);
 
     await SendTelegramNotification($"⚖️ Digital Court: A new verdict has been issued!\n\nJudge: {displayPunisher}\nPunished: {displayPunished}\n\nVerdict:\n{penalty.PenaltyText}");
-    
+
     return Results.Created($"/api/penalties/{penalty.Id}", penalty);
 });
 
@@ -131,10 +131,10 @@ app.MapDelete("/api/penalties/{id}", async (int id, VaultDb db) => {
     if (penalty is null) return Results.NotFound();
     db.Penalties.Remove(penalty);
     await db.SaveChangesAsync();
-    
+
     string displayPunished = penalty.Punished == "Mohammad" ? "7amodee" : (penalty.Punished == "Zainab" ? "ZoZo" : penalty.Punished);
     await SendTelegramNotification($"🗑️ A verdict was deleted/canceled from the ledger!\nThe punished was: {displayPunished}");
-    
+
     return Results.Ok();
 });
 
@@ -150,12 +150,12 @@ app.MapPost("/api/moods", async (Mood newMood, VaultDb db) => {
         db.Moods.Add(newMood);
     }
     await db.SaveChangesAsync();
-    
+
     string alertEmoji = newMood.Status == "SOS" ? "🚨 EMERGENCY!" : "📡 Mood Update:";
     string displayUser = newMood.User == "Mohammad" ? "7amodee" : (newMood.User == "Zainab" ? "ZoZo" : newMood.User);
 
     await SendTelegramNotification($"{alertEmoji}\n{displayUser} updated their status to ({newMood.Status})\nat {newMood.UpdatedAt}");
-    
+
     return Results.Ok(newMood);
 });
 
@@ -184,11 +184,11 @@ app.MapGet("/api/heartbeats/latest", async (VaultDb db) =>
 app.MapPost("/api/heartbeats", async (Heartbeat hb, VaultDb db) => {
     db.Heartbeats.Add(hb);
     await db.SaveChangesAsync();
-    
+
     string displaySender = hb.Sender == "Mohammad" ? "7amodee" : (hb.Sender == "Zainab" ? "ZoZo" : hb.Sender);
     string target = hb.Sender == "Mohammad" ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻";
-    await SendTelegramNotification($"✨ {displaySender} is thinking of {target} right now and sent a Spark! ❤️");
-    
+    await SendTelegramNotification($"✨ {displaySender} is thinking of {target} right now and sent a Spark! 🤍");
+
     return Results.Ok(hb);
 });
 
@@ -199,22 +199,22 @@ app.MapGet("/api/bucketlist", async (VaultDb db) =>
 app.MapPost("/api/bucketlist", async (BucketListItem item, VaultDb db) => {
     db.BucketListItems.Add(item);
     await db.SaveChangesAsync();
-    
+
     await SendTelegramNotification($"🗺️ A new goal/place was added to the Bucket List!\nGoal: {item.Title}");
-    
+
     return Results.Created($"/api/bucketlist/{item.Id}", item);
 });
 
 app.MapPut("/api/bucketlist/{id}", async (int id, VaultDb db) => {
     var item = await db.BucketListItems.FindAsync(id);
     if (item is null) return Results.NotFound();
-    
+
     item.IsCompleted = !item.IsCompleted; 
     await db.SaveChangesAsync();
-    
+
     string status = item.IsCompleted ? "✅ Completed!" : "❌ Reverted";
     await SendTelegramNotification($"🗺️ Bucket List Update:\nGoal: {item.Title}\nStatus: {status}");
-    
+
     return Results.Ok(item);
 });
 
@@ -230,14 +230,14 @@ app.MapDelete("/api/bucketlist/{id}", async (int id, VaultDb db) => {
 app.MapGet("/api/visit/all", async (VaultDb db) => {
     var dates = await db.VisitDates.OrderByDescending(d => d.Id).ToListAsync();
     var tasks = await db.VisitTasks.ToListAsync();
-    
+
     var result = dates.Select(d => new {
         Id = d.Id,
         StartDate = d.StartDate,
         EndDate = d.EndDate,
         Tasks = tasks.Where(t => t.VisitDatesId == d.Id).OrderBy(t => t.IsCompleted).ThenBy(t => t.Id).ToList()
     });
-    
+
     return Results.Ok(result);
 });
 
@@ -258,15 +258,15 @@ app.MapPost("/api/visit/tasks", async (VisitTask task, VaultDb db) => {
 app.MapPut("/api/visit/tasks/{id}", async (int id, TaskToggleRequest req, VaultDb db) => {
     var task = await db.VisitTasks.FindAsync(id);
     if (task is null) return Results.NotFound();
-    
+
     task.IsCompleted = !task.IsCompleted;
     task.CompletedAt = task.IsCompleted ? req.LocalTime : null; 
-    
+
     await db.SaveChangesAsync();
-    
+
     string status = task.IsCompleted ? $"✅ Done at {task.CompletedAt}" : "❌ Reverted";
     await SendTelegramNotification($"📌 Visit Update:\nPlan: {task.Title}\nStatus: {status}");
-    
+
     return Results.Ok(task);
 });
 
@@ -281,12 +281,12 @@ app.MapDelete("/api/visit/tasks/{id}", async (int id, VaultDb db) => {
 app.MapDelete("/api/visit/dates/{id}", async (int id, VaultDb db) => {
     var trip = await db.VisitDates.FindAsync(id);
     if (trip is null) return Results.NotFound();
-    
+
     db.VisitDates.Remove(trip);
     await db.SaveChangesAsync();
-    
+
     await SendTelegramNotification($"🗑️ An entire trip container ({trip.StartDate} to {trip.EndDate}) was deleted from the Vault!");
-    
+
     return Results.Ok();
 });
 
@@ -356,7 +356,7 @@ app.MapPost("/api/prompts/generate", async (VaultDb db) => {
     var unfinished = await db.BlindPrompts
         .Where(p => p.MohammadAnswer == null || p.ZainabAnswer == null)
         .ToListAsync();
-        
+
     if (unfinished.Any()) {
         db.BlindPrompts.RemoveRange(unfinished);
     }
@@ -365,9 +365,9 @@ app.MapPost("/api/prompts/generate", async (VaultDb db) => {
     var q = deepQuestions[new Random().Next(deepQuestions.Count)];
     var prompt = new BlindPrompt { Question = q, DateAdded = DateTime.Now.ToString("dd MMM yyyy") };
     db.BlindPrompts.Add(prompt);
-    
+
     await db.SaveChangesAsync(); // نحفظ التغييرات (الحذف والإضافة) بضربة واحدة
-    
+
     await SendTelegramNotification($"💭 A new Blind Prompt has dropped in The Vault!\nGo answer it before the other does! 🔒");
     return Results.Ok(prompt);
 });
@@ -375,27 +375,27 @@ app.MapPost("/api/prompts/generate", async (VaultDb db) => {
 app.MapPut("/api/prompts/{id}/answer", async (int id, AnswerRequest req, VaultDb db) => {
     var prompt = await db.BlindPrompts.FindAsync(id);
     if (prompt == null) return Results.NotFound();
-    
+
     // تسجيل إجابة الطرف الحالي
     if (req.User == "Mohammad") prompt.MohammadAnswer = req.Answer;
     else if (req.User == "Zainab") prompt.ZainabAnswer = req.Answer;
-    
+
     // فحص القفل المزدوج
     if (!string.IsNullOrEmpty(prompt.MohammadAnswer) && !string.IsNullOrEmpty(prompt.ZainabAnswer)) {
-        
+
         // 🕒 اللمسة الجديدة: توثيق تاريخ ووقت كسر القفل (اللحظة التي تكتمل فيها الذكرى)
         prompt.DateAdded = DateTime.Now.ToString("dd MMM yyyy, hh:mm tt");
-        
+
         await SendTelegramNotification($"🔓 THE DUAL-LOCK IS BROKEN!\nBoth of you have answered the Blind Prompt. Go check the Vault to read the answers! ✨");
     } else {
         string displayUser = req.User == "Mohammad" ? "7amodee" : (req.User == "Zainab" ? "ZoZo" : req.User);
         string target = req.User == "Mohammad" ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻";
         await SendTelegramNotification($"🔒 {displayUser} has locked their answer in the Blind Prompt! Waiting for {target} to answer...");
     }
-    
+
     // حفظ جميع التغييرات (الإجابة + الوقت الجديد) في قاعدة البيانات
     await db.SaveChangesAsync();
-    
+
     return Results.Ok(prompt);
 });
 
@@ -410,7 +410,7 @@ app.MapDelete("/api/prompts/current", async (VaultDb db) => {
         await db.SaveChangesAsync();
         await SendTelegramNotification("🚫 The current Blind Prompt session was cancelled.");
     }
-    
+
     return Results.Ok();
 });
 
@@ -442,38 +442,6 @@ app.MapDelete("/api/media/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
-// --- 🥘 MANSAF COUNTER ---
-app.MapGet("/api/mansaf", async (VaultDb db) => {
-    var counter = await db.MansafCounters.FirstOrDefaultAsync();
-    if (counter == null) {
-        counter = new MansafCounter { Count = 9 }; // الرقم الابتدائي كما اتفقنا
-        db.MansafCounters.Add(counter);
-        await db.SaveChangesAsync();
-    }
-    return Results.Ok(counter);
-});
-
-app.MapPost("/api/mansaf/update", async (MansafUpdateRequest req, VaultDb db) => {
-    var counter = await db.MansafCounters.FirstOrDefaultAsync();
-    if (counter == null) {
-        counter = new MansafCounter { Count = 0 };
-        db.MansafCounters.Add(counter);
-    }
-    
-    // فحص إذا كانت العملية زيادة (لإرسال إشعار) أم مجرد تراجع
-    bool isIncrement = req.Count > counter.Count;
-    counter.Count = req.Count;
-    
-    await db.SaveChangesAsync();
-
-    // 🚀 إرسال إشعار تيليجرام فقط عند زيادة الرقم!
-    if (isIncrement) {
-        await SendTelegramNotification($"🥘 Alert! 7amodee just ate Mansaf! 🤤\nTotal Mansaf count: {counter.Count} 🚀");
-    }
-    
-    return Results.Ok(counter);
-});
-
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<VaultDb>();
@@ -500,7 +468,6 @@ class VaultDb : DbContext {
     public DbSet<VisitTask> VisitTasks => Set<VisitTask>();
     public DbSet<BlindPrompt> BlindPrompts => Set<BlindPrompt>();
     public DbSet<MediaItem> MediaItems { get; set; }
-    public DbSet<MansafCounter> MansafCounters { get; set; }
 }
 
 class Link {
@@ -600,13 +567,4 @@ public class MediaItem
     public string Status { get; set; } = "backlog"; 
     public string AddedBy { get; set; }
     public DateTime DateAdded { get; set; } = DateTime.UtcNow;
-}
-
-class MansafCounter {
-    [JsonPropertyName("id")] public int Id { get; set; }
-    [JsonPropertyName("count")] public int Count { get; set; }
-}
-
-public class MansafUpdateRequest {
-    [JsonPropertyName("count")] public int Count { get; set; }
 }

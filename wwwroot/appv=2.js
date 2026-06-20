@@ -800,82 +800,38 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchSystemState();
     setInterval(fetchSystemState, 10000);
 
-    // ==========================================
-// 🥘 CLOUD-SYNCED MANSAF COUNTER (FAILSAFE)
-// ==========================================
-    document.addEventListener('DOMContentLoaded', () => {
-        const mansafCountDisplay = document.getElementById('mansaf-count');
-        let mansafCount = 0;
-
-        // 1. Update the UI (The pulse effect will trigger immediately)
-        const updateMansafUI = () => {
-            if (mansafCountDisplay) {
-                mansafCountDisplay.innerText = mansafCount;
-
-                // 120fps smooth pulse effect
-                mansafCountDisplay.style.transform = 'scale(1.3)';
-                mansafCountDisplay.style.color = '#f472b6';
-
-                setTimeout(() => {
-                    mansafCountDisplay.style.transform = 'scale(1)';
-                    mansafCountDisplay.style.color = '#ffffff';
-                }, 150);
-            }
-        };
-
-        // 2. Safely fetch the current count from the database
-        if (typeof API_BASE_URL !== 'undefined') {
-            fetch(`${API_BASE_URL}/api/mansaf`)
-                .then(res => {
-                    if (!res.ok) throw new Error("Server not updated yet (Did you forget to 'git push' the backend?)");
-                    return res.json();
-                })
-                .then(data => {
-                    if(data && data.count !== undefined) {
-                        mansafCount = data.count;
-                        if(mansafCountDisplay) mansafCountDisplay.innerText = mansafCount;
-                    }
-                })
-                .catch(err => console.warn("⚠️ System message:", err.message));
-        } else {
-            console.error("🚨 API_BASE_URL is missing or not defined!");
-        }
-
-        // 3. Sync the updated count with the server (runs in the background)
-        const syncMansafWithServer = async (newCount) => {
-            mansafCount = newCount;
-            updateMansafUI(); // Optimistic UI update (updates screen before server responds)
+    const addMansafBtn = document.getElementById('add-mansaf-btn');
+    if (addMansafBtn) {
+        addMansafBtn.addEventListener('click', async () => {
+            addMansafBtn.disabled = true;
+            addMansafBtn.classList.add('opacity-50');
 
             try {
-                await fetch(`${API_BASE_URL}/api/mansaf/update`, {
+                await fetch(`${API_BASE_URL}/api/commits`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ count: mansafCount })
+                    body: JSON.stringify({
+                        date: new Date().toISOString().split('T')[0],
+                        message: "The Court recorded that 7amodee ate Mansaf today! 🥘 (By ZoZo's request)",
+                        imageUrl: null,
+                        audioUrl: null
+                    })
                 });
+
+                const countEl = document.getElementById('mansaf-count');
+                countEl.classList.add('text-emerald-400', 'scale-125');
+                setTimeout(() => countEl.classList.remove('text-emerald-400', 'scale-125'), 500);
+
+                fetchCommits();
+
             } catch (error) {
-                console.error("⚠️ Failed to sync with server:", error);
-            }
-        };
-
-        // 4. Global Event Listener for the buttons
-        document.addEventListener('click', (e) => {
-            // ADD THIS LOG
-            console.log("Clicked element:", e.target);
-
-            const addBtn = e.target.closest('#add-mansaf-btn');
-            const minusBtn = e.target.closest('#minus-mansaf-btn');
-
-            if (addBtn) {
-                console.log("Add button detected!"); // CHECK CONSOLE FOR THIS
-                syncMansafWithServer(mansafCount + 1);
-            }
-
-            if (minusBtn && mansafCount > 0) {
-                console.log("Minus button detected!"); // CHECK CONSOLE FOR THIS
-                syncMansafWithServer(mansafCount - 1);
+                console.error("Error recording Mansaf:", error);
+            } finally {
+                addMansafBtn.disabled = false;
+                addMansafBtn.classList.remove('opacity-50');
             }
         });
-    });
+    }
 
     // --- 🗺️ THE BUCKET LIST ---
     const bucketGrid = document.getElementById('bucket-grid');
