@@ -187,7 +187,7 @@ app.MapPost("/api/heartbeats", async (Heartbeat hb, VaultDb db) => {
     
     string displaySender = hb.Sender == "Mohammad" ? "7amodee" : (hb.Sender == "Zainab" ? "ZoZo" : hb.Sender);
     string target = hb.Sender == "Mohammad" ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻";
-    await SendTelegramNotification($"✨ {displaySender} is thinking of {target} right now and sent a Spark! 🤍");
+    await SendTelegramNotification($"✨ {displaySender} is thinking of {target} right now and sent a Spark! ❤️");
     
     return Results.Ok(hb);
 });
