@@ -219,12 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('commit-count').innerText = commits.length;
             }
 
-            const mansafCount = commits.filter(c => c.message.includes('Mansaf')).length;
-            const mansafEl = document.getElementById('mansaf-count');
-            if (mansafEl) {
-                mansafEl.innerText = mansafCount;
-            }
-
             renderCommits(commits);
         } catch (error) { console.error(error); }
     };
