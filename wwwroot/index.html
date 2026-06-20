@@ -27,6 +27,14 @@
     <script src="appv=2.js" defer></script>
 
     <style>
+        /* استيراد خط "أميري" الراقي المخصص للنصوص العربية فقط */
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+
+        .arabic-poetry {
+            font-family: 'Amiri', serif !important;
+            direction: rtl; /* إجبار النص على البدء من اليمين لليسار */
+            line-height: 2; /* إعطاء مساحة تنفس بين السطور */
+        }
         /* 🚨 تأثير النبض الأحمر لحالة الطوارئ */
         .emergency-mode {
             animation: red-alert 1.5s infinite;
@@ -132,8 +140,16 @@
                         <div class="text-sm font-bold text-white">7amodee's Mansaf Counter</div>
                     </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <div class="text-3xl font-extrabold text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300" id="mansaf-count">0</div>
+
+                <div class="flex items-center gap-3">
+                    <button id="minus-mansaf-btn" class="bg-white/5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 p-2.5 rounded-xl transition-all active:scale-95 border border-white/5 hover:border-rose-500/30">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path></svg>
+                    </button>
+
+                    <div id="mansaf-count" class="text-3xl font-extrabold text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-200 w-10 text-center gpu-accelerate">
+                        0
+                    </div>
+
                     <button id="add-mansaf-btn" class="bg-gradient-to-br from-accent to-purple-600 hover:from-purple-500 hover:to-accent text-white p-3 rounded-xl transition-all active:scale-95 shadow-lg shadow-accent/20">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
                     </button>

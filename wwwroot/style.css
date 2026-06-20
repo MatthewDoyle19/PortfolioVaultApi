@@ -1,3 +1,11 @@
+/* Import Premium Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+
+/* Typography Classes */
+.font-poetic {
+    font-family: 'Amiri', serif !important;
+}
+
 /* Custom Animations */
 .fade-in { animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .fade-out { animation: fadeOut 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -121,4 +129,12 @@ audio {
 
 audio:hover {
     opacity: 1;
+}
+
+/* ⚡ GPU Acceleration for 120fps Smoothness */
+.gpu-accelerate {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
 }

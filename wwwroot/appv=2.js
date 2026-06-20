@@ -254,18 +254,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const timerId = `timer-commit-${commit.id}`;
 
                 item.innerHTML = `
-                <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
-                    <span class="text-4xl mb-2 animate-bounce">⏳</span>
-                    <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
-                    
-                    <!-- The countdown will be injected right here -->
-                    <div id="${timerId}" class="w-full min-h-[30px]"></div>
-                </div>
-                <div class="opacity-10 blur-sm">
-                    <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
-                    <div class="h-32 bg-white/5 rounded-lg"></div>
-                </div>
-            `;
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
+                <span class="text-4xl mb-2 animate-bounce">⏳</span>
+                <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
+                
+                <div id="${timerId}" class="w-full min-h-[30px]"></div>
+            </div>
+            <div class="opacity-10 blur-sm">
+                <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
+                <div class="h-32 bg-white/5 rounded-lg"></div>
+            </div>
+        `;
                 commitTimeline.appendChild(item);
 
                 // 🔥 IGNITE THE COUNTDOWN: Must be called AFTER the item is appended to the DOM
@@ -273,16 +272,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } else {
                 item.innerHTML = `
-            <div class="flex justify-between items-start mb-4">
-                <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
-                <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-            </div>
-            <p class="text-sm text-slate-200 font-medium leading-relaxed tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${commit.message}</p>
-            
-            ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
-            
-            ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
-        `;
+        <div class="flex justify-between items-start mb-4">
+            <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
+            <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        </div>
+        
+        <p dir="auto" class="font-poetic whitespace-pre-wrap text-base md:text-lg text-slate-200 font-medium leading-loose tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${commit.message}</p>
+        
+        ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
+        
+        ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
+    `;
                 commitTimeline.appendChild(item);
             }
         });
@@ -788,38 +788,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchSystemState();
     setInterval(fetchSystemState, 10000);
-    
+
+    // ==========================================
+// 🥘 STANDALONE MANSAF COUNTER (NO COMMITS)
+// ==========================================
+    const mansafCountDisplay = document.getElementById('mansaf-count');
     const addMansafBtn = document.getElementById('add-mansaf-btn');
-    if (addMansafBtn) {
-        addMansafBtn.addEventListener('click', async () => {
-            addMansafBtn.disabled = true;
-            addMansafBtn.classList.add('opacity-50');
+    const minusMansafBtn = document.getElementById('minus-mansaf-btn'); // زر التراجع الجديد
 
-            try {
-                await fetch(`${API_BASE_URL}/api/commits`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        date: new Date().toISOString().split('T')[0],
-                        message: "The Court recorded that 7amodee ate Mansaf today! 🥘 (By ZoZo's request)",
-                        imageUrl: null,
-                        audioUrl: null
-                    })
-                });
+    if (mansafCountDisplay && addMansafBtn) {
+        // جلب الرقم القديم من الذاكرة (سيبدأ من 9 تلقائياً إذا لم يكن هناك رقم)
+        let mansafCount = parseInt(localStorage.getItem('mansaf_count')) || 9;
 
-                const countEl = document.getElementById('mansaf-count');
-                countEl.classList.add('text-emerald-400', 'scale-125');
-                setTimeout(() => countEl.classList.remove('text-emerald-400', 'scale-125'), 500);
+        // دالة تحديث الواجهة مع تأثير النبض السريع 120fps
+        const updateMansafDisplay = () => {
+            mansafCountDisplay.innerText = mansafCount;
+            localStorage.setItem('mansaf_count', mansafCount); // حفظ محلي فقط
 
-                fetchCommits();
+            // تأثير النبض اللحظي
+            mansafCountDisplay.style.transform = 'scale(1.3)';
+            mansafCountDisplay.style.color = '#f472b6'; // لون وردي للحظات
 
-            } catch (error) {
-                console.error("Error recording Mansaf:", error);
-            } finally {
-                addMansafBtn.disabled = false;
-                addMansafBtn.classList.remove('opacity-50');
-            }
+            setTimeout(() => {
+                mansafCountDisplay.style.transform = 'scale(1)';
+                mansafCountDisplay.style.color = '#ffffff'; // يعود أبيض
+            }, 150);
+        };
+
+        // تشغيل العداد فور فتح الصفحة
+        updateMansafDisplay();
+
+        // 1. زر الزيادة (+): يرفع الرقم محلياً فقط بدون إرسال للسيرفر
+        addMansafBtn.addEventListener('click', () => {
+            mansafCount++;
+            updateMansafDisplay();
         });
+
+        // 2. زر التراجع (-): ينقص الرقم في حال الخطأ
+        if (minusMansafBtn) {
+            minusMansafBtn.addEventListener('click', () => {
+                if (mansafCount > 0) {
+                    mansafCount--;
+                    updateMansafDisplay();
+                }
+            });
+        }
     }
 
     // --- 🗺️ THE BUCKET LIST ---
