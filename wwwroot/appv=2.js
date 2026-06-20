@@ -1645,8 +1645,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 🪄 سحر الظهور المتتابع للصور في الألبوم
     document.querySelectorAll('.polaroid').forEach((p, index) => {
-        // كل صورة تتأخر 0.15 ثانية عن الصورة التي تسبقها
-        p.style.animationDelay = `${index * 0.15}s`;
+        // 0.4 يعني تقريباً نصف ثانية انتظار قبل أن تظهر الصورة التالية!
+        p.style.animationDelay = `${index * 0.4}s`;
     });
 
     // --- 📱 Bottom Navigation Logic (4 Tabs) ---
