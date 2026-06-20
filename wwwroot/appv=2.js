@@ -1612,7 +1612,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 // 🛑 السحر هنا: إضافة تأخير وهمي (ثانيتين) لترى رسالة التحميل بوضوح!
                 await new Promise(resolve => setTimeout(resolve, 2000));
-
+/*
                 await fetch(`${API_BASE_URL}/api/commits`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1623,7 +1623,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         audioUrl: null
                     })
                 });
-
+*/
                 // 2. تسجيل الإنجاز في المتصفح
                 localStorage.setItem('v2_unlocked', 'true');
 
