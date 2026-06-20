@@ -801,51 +801,52 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(fetchSystemState, 10000);
 
     // ==========================================
-// 🥘 STANDALONE MANSAF COUNTER (BUG-FREE)
+// 🥘 BULLETPROOF MANSAF COUNTER
 // ==========================================
-    document.addEventListener('DOMContentLoaded', () => {
-        const mansafCountDisplay = document.getElementById('mansaf-count');
-        const addMansafBtn = document.getElementById('add-mansaf-btn');
-        const minusMansafBtn = document.getElementById('minus-mansaf-btn');
 
-        if (mansafCountDisplay && addMansafBtn) {
-            // قراءة الذاكرة بطريقة آمنة جداً لا تتأثر بالـ Refresh
-            let savedCount = localStorage.getItem('mansaf_count');
-            // إذا كان هناك رقم محفوظ نقرأه، وإذا لم يكن نبدأ من 0 (أو 9 كما تريد)
-            let mansafCount = savedCount !== null ? parseInt(savedCount, 10) : 0;
+// 1. قراءة الرقم من الذاكرة بشكل آمن (وحمايته من أي أخطاء سابقة)
+    let savedMansaf = parseInt(localStorage.getItem('mansaf_count'));
+    let mansafCount = isNaN(savedMansaf) ? 0 : savedMansaf;
 
-            const updateMansafDisplay = () => {
-                mansafCountDisplay.innerText = mansafCount;
-                localStorage.setItem('mansaf_count', mansafCount);
+// 2. دالة التحديث (تبحث عن الشاشة الحية لضمان عملها دائماً)
+    const updateMansafUI = () => {
+        const countDisplay = document.getElementById('mansaf-count');
+        localStorage.setItem('mansaf_count', mansafCount); // الحفظ الفوري
 
-                // تأثير النبض 120fps
-                mansafCountDisplay.style.transform = 'scale(1.3)';
-                mansafCountDisplay.style.color = '#f472b6';
+        if (countDisplay) {
+            countDisplay.innerText = mansafCount;
 
-                setTimeout(() => {
-                    mansafCountDisplay.style.transform = 'scale(1)';
-                    mansafCountDisplay.style.color = '#ffffff';
-                }, 150);
-            };
+            // تأثير النبض 120fps
+            countDisplay.style.transform = 'scale(1.3)';
+            countDisplay.style.color = '#f472b6';
 
-            // تحديث الرقم فوراً عند فتح الصفحة
-            updateMansafDisplay();
+            setTimeout(() => {
+                countDisplay.style.transform = 'scale(1)';
+                countDisplay.style.color = '#ffffff';
+            }, 150);
+        }
+    };
 
-            addMansafBtn.addEventListener('click', () => {
-                mansafCount++;
-                updateMansafDisplay();
-            });
+// 3. تأمين التشغيل المبدئي (نستدعيها مرتين لضمان ظهور الرقم حتى مع بطء التحميل)
+    updateMansafUI();
+    setTimeout(updateMansafUI, 500);
 
-            if (minusMansafBtn) {
-                minusMansafBtn.addEventListener('click', () => {
-                    if (mansafCount > 0) {
-                        mansafCount--;
-                        updateMansafDisplay();
-                    }
-                });
+// 4. 🚀 السحر هنا: Event Delegation (مراقبة نقرات الصفحة كلها)
+    document.addEventListener('click', (e) => {
+        // استخدمنا closest لضمان استجابة الزر حتى لو ضغطت على الأيقونة (SVG) بداخله
+        const addBtn = e.target.closest('#add-mansaf-btn');
+        const minusBtn = e.target.closest('#minus-mansaf-btn');
+
+        if (addBtn) {
+            mansafCount++;
+            updateMansafUI();
+        }
+
+        if (minusBtn) {
+            if (mansafCount > 0) {
+                mansafCount--;
+                updateMansafUI();
             }
-        } else {
-            console.warn("⚠️ أزرار المنسف غير موجودة في الشاشة الحالية.");
         }
     });
 
