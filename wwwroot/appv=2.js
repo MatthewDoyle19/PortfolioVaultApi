@@ -800,43 +800,48 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchSystemState();
     setInterval(fetchSystemState, 10000);
 
-    // --- 🥘 MANSAF LOGIC (CLEAN & INDEPENDENT) ---
-    document.addEventListener('DOMContentLoaded', () => {
-        const countEl = document.getElementById('mansaf-count');
-        const API_URL = 'https://zainabvaultapi.onrender.com'; // تأكد من الرابط الصحيح
+    // ربط زر الزيادة
+    const addMansafBtn = document.getElementById('add-mansaf-btn');
+    const minusMansafBtn = document.getElementById('minus-mansaf-btn');
+    const countEl = document.getElementById('mansaf-count');
+    const API_URL = 'https://zainabvault.onrender.com'; // تأكد من الرابط
 
-        const updateMansaf = async (change) => {
-            const currentCount = parseInt(countEl.innerText);
-            const newCount = currentCount + change;
+    async function updateMansaf(change) {
+        try {
+            const response = await fetch(`${API_URL}/api/mansaf/action`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ change: change }) // يرسل 1 أو -1
+            });
 
-            // تحديث بصري فوراً
-            countEl.innerText = newCount;
-            countEl.classList.add('text-emerald-400', 'scale-125');
-            setTimeout(() => countEl.classList.remove('text-emerald-400', 'scale-125'), 300);
+            if (response.ok) {
+                const data = await response.json();
+                // تحديث الرقم على الشاشة
+                countEl.innerText = data.count;
 
-            // إرسال الطلب للسيرفر فقط (بدون ذكريات)
-            try {
-                const response = await fetch(`${API_URL}/api/mansaf/action`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ change: change })
-                });
-
-                if (!response.ok) throw new Error("Server failed");
-                console.log("✅ Success!");
-            } catch (error) {
-                console.error("❌ Mansaf update failed:", error);
-                // إعادة الرقم القديم إذا فشل السيرفر
-                countEl.innerText = currentCount;
+                // تأثير بصري بسيط
+                countEl.classList.add('text-emerald-400', 'scale-125');
+                setTimeout(() => countEl.classList.remove('text-emerald-400', 'scale-125'), 300);
+            } else {
+                console.error("فشل الاتصال بالسيرفر");
             }
-        };
+        } catch (error) {
+            console.error("خطأ:", error);
+        }
+    }
 
-        // ربط الأزرار
-        document.getElementById('add-mansaf-btn').onclick = () => updateMansaf(1);
-        document.getElementById('minus-mansaf-btn').onclick = () => {
-            if(parseInt(countEl.innerText) > 0) updateMansaf(-1);
-        };
-    });
+    if (addMansafBtn) {
+        addMansafBtn.addEventListener('click', () => updateMansaf(1));
+    }
+
+    if (minusMansafBtn) {
+        minusMansafBtn.addEventListener('click', () => {
+            // منع النزول تحت الصفر
+            if (parseInt(countEl.innerText) > 0) {
+                updateMansaf(-1);
+            }
+        });
+    }
 
     // --- 🗺️ THE BUCKET LIST ---
     const bucketGrid = document.getElementById('bucket-grid');
