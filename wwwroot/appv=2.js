@@ -1571,6 +1571,8 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.innerHTML = 'Encrypting & Saving to Vault... ⏳';
 
             try {
+                // --- بداية التعطيل للاختبار ---
+                /*
                 await fetch(`${API_BASE_URL}/api/commits`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1581,6 +1583,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         audioUrl: null
                     })
                 });
+                */
+                // --- نهاية التعطيل ---
 
                 // تسجيل الإنجاز في المتصفح
                 localStorage.setItem('v2_unlocked', 'true');
