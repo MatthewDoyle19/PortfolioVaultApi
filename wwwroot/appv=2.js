@@ -250,50 +250,39 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (isLocked) {
+                // Create a unique identifier for this specific memory's countdown
                 const timerId = `timer-commit-${commit.id}`;
+
                 item.innerHTML = `
-            <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
-                <span class="text-4xl mb-2 animate-bounce">⏳</span>
-                <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
-                <div id="${timerId}" class="w-full min-h-[30px]"></div>
-            </div>
-            <div class="opacity-10 blur-sm">
-                <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
-                <div class="h-32 bg-white/5 rounded-lg"></div>
-            </div>
-        `;
+                <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
+                    <span class="text-4xl mb-2 animate-bounce">⏳</span>
+                    <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
+                    
+                    <!-- The countdown will be injected right here -->
+                    <div id="${timerId}" class="w-full min-h-[30px]"></div>
+                </div>
+                <div class="opacity-10 blur-sm">
+                    <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
+                    <div class="h-32 bg-white/5 rounded-lg"></div>
+                </div>
+            `;
                 commitTimeline.appendChild(item);
+
+                // 🔥 IGNITE THE COUNTDOWN: Must be called AFTER the item is appended to the DOM
                 startCountdown(commit.unlockDate, timerId);
 
             } else {
-                // 🛡️ درع الحماية: التأكد من وجود نص
-                const safeMessage = commit.message || '';
-
-                // 🧠 الذكاء الاصطناعي لاكتشاف اللغة
-                const isArabic = /[\u0600-\u06FF]/.test(safeMessage);
-
-                // 🎯 السحر هنا: فصل التنسيق بالكامل بين اللغتين!
-                // إذا عربي: خط أميري، حجم كبير، مسافات واسعة، يمين
-                // إذا إنجليزي: نفس تنسيق موقعك الأصلي بالضبط (حجم صغير text-sm)، يسار
-                const textFormatClasses = isArabic
-                    ? 'font-poetic text-base md:text-lg leading-loose text-right'
-                    : 'text-sm leading-relaxed text-left';
-
-                const dirAttr = isArabic ? 'rtl' : 'ltr';
-                const displayMessage = isArabic ? `${safeMessage}&#x200F;` : safeMessage;
-
                 item.innerHTML = `
-        <div class="flex justify-between items-start mb-4">
-            <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
-            <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-        </div>
-        
-        ${safeMessage ? `<p dir="${dirAttr}" class="${textFormatClasses} whitespace-pre-wrap text-slate-200 font-medium tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${displayMessage}</p>` : ''}
-        
-        ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
-        
-        ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
-    `;
+            <div class="flex justify-between items-start mb-4">
+                <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
+                <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <p class="text-sm text-slate-200 font-medium leading-relaxed tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${commit.message}</p>
+            
+            ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
+            
+            ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
+        `;
                 commitTimeline.appendChild(item);
             }
         });
@@ -1473,7 +1462,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     fetchMedia();
-    
+
     // ==========================================
 // 🚀 V2.0.0 EASTER EGG & SECRET DOOR (CINEMATIC PEARL EDITION)
 // ==========================================
@@ -1593,7 +1582,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 // 🛑 السحر هنا: إضافة تأخير وهمي (ثانيتين) لترى رسالة التحميل بوضوح!
                 await new Promise(resolve => setTimeout(resolve, 2000));
-                
+
                 await fetch(`${API_BASE_URL}/api/commits`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1604,7 +1593,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         audioUrl: null
                     })
                 });
-                
+
                 // 2. تسجيل الإنجاز في المتصفح
                 localStorage.setItem('v2_unlocked', 'true');
 
