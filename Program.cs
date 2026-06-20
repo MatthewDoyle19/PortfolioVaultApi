@@ -464,33 +464,33 @@ app.MapPost("/api/mansaf/action", async (MansafActionRequest req, VaultDb db) =>
             db.MansafCounters.Add(counter);
         }
         
-        // Update the Count
+        // 1. تحديث العدد
         counter.Count += req.Change;
         
-        // Log the action with Jordan Time
+        // 2. استخراج توقيت الأردن الفعلي
         var jordanZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman");
         var jordanTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, jordanZone);
         
+        // 3. السحر الهندسي: إجبار قاعدة البيانات على قبول الوقت بدون خطأ 500
+        var dbFriendlyTime = DateTime.SpecifyKind(jordanTime, DateTimeKind.Utc);
+        
         db.MansafLogs.Add(new MansafLog { 
             Change = req.Change, 
-            Timestamp = jordanTime 
+            Timestamp = dbFriendlyTime 
         });
         
-        // Save to Database
+        // 4. الحفظ في قاعدة البيانات
         await db.SaveChangesAsync();
 
-        // TELEGRAM NOTIFICATION LOGIC
+        // 5. إشعار التيليجرام
         string actionWord = req.Change > 0 ? "added 🟢" : "removed 🔴";
         await SendTelegramNotification($"🥘 Mansaf Update!\n\n1 portion was {actionWord}.\nTotal Mansaf Count: {counter.Count} 🤤");
 
         return Results.Ok(counter);
         
     } catch (Exception ex) {
-        // If it crashes again, this will tell us EXACTLY why in the Render Logs
         Console.WriteLine($"[CRITICAL MANSAF DB ERROR] {ex.Message}");
-        if (ex.InnerException != null) {
-            Console.WriteLine($"[INNER EXCEPTION] {ex.InnerException.Message}");
-        }
+        if (ex.InnerException != null) Console.WriteLine($"[INNER] {ex.InnerException.Message}");
         return Results.Problem(ex.Message);
     }
 });
