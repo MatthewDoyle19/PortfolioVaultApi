@@ -800,38 +800,41 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchSystemState();
     setInterval(fetchSystemState, 10000);
 
-    const addMansafBtn = document.getElementById('add-mansaf-btn');
-    if (addMansafBtn) {
-        addMansafBtn.addEventListener('click', async () => {
-            addMansafBtn.disabled = true;
-            addMansafBtn.classList.add('opacity-50');
+    // --- 🥘 MANSAF LOGIC (INDEPENDENT & CLEAN) ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const countDisplay = document.getElementById('mansaf-count');
+        const API_URL = 'https://zainabvaultapi.onrender.com'; // تأكد من رابط سيرفرك
 
+        // 1. جلب العدد عند التحميل
+        fetch(`${API_URL}/api/mansaf`)
+            .then(res => res.json())
+            .then(data => { if(countDisplay) countDisplay.innerText = data.count; })
+            .catch(err => console.error("Error:", err));
+
+        // 2. دالة التنفيذ (تزيد أو تنقص)
+        const performAction = async (change) => {
+            const current = parseInt(countDisplay.innerText);
+            if (change === -1 && current <= 0) return; // قفل لمنع النزول تحت الصفر
+
+            // تحديث بصري فوراً
+            countDisplay.innerText = current + change;
+            countDisplay.classList.add('scale-125');
+            setTimeout(() => countDisplay.classList.remove('scale-125'), 300);
+
+            // إرسال للباك-إند
             try {
-                await fetch(`${API_BASE_URL}/api/commits`, {
+                await fetch(`${API_URL}/api/mansaf/action`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        date: new Date().toISOString().split('T')[0],
-                        message: "The Court recorded that 7amodee ate Mansaf today! 🥘 (By ZoZo's request)",
-                        imageUrl: null,
-                        audioUrl: null
-                    })
+                    body: JSON.stringify({ change: change })
                 });
+            } catch (e) { console.error("Action failed:", e); }
+        };
 
-                const countEl = document.getElementById('mansaf-count');
-                countEl.classList.add('text-emerald-400', 'scale-125');
-                setTimeout(() => countEl.classList.remove('text-emerald-400', 'scale-125'), 500);
-
-                fetchCommits();
-
-            } catch (error) {
-                console.error("Error recording Mansaf:", error);
-            } finally {
-                addMansafBtn.disabled = false;
-                addMansafBtn.classList.remove('opacity-50');
-            }
-        });
-    }
+        // 3. ربط الأزرار (تأكد أن الـ IDs تطابق الـ HTML)
+        document.getElementById('add-mansaf-btn').onclick = () => performAction(1);
+        document.getElementById('minus-mansaf-btn').onclick = () => performAction(-1);
+    });
 
     // --- 🗺️ THE BUCKET LIST ---
     const bucketGrid = document.getElementById('bucket-grid');
