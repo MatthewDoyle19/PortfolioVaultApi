@@ -271,13 +271,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 startCountdown(commit.unlockDate, timerId);
 
             } else {
+                // 🧠 1. الذكاء الاصطناعي لاكتشاف لغة النص
+                const isArabic = /[\u0600-\u06FF]/.test(commit.message);
+
+                // 2. تحديد الكلاسات والاتجاهات ديناميكياً بناءً على اللغة
+                const fontClass = isArabic ? 'font-poetic' : 'font-sans';
+                const alignClass = isArabic ? 'text-right' : 'text-left';
+                const dirAttr = isArabic ? 'rtl' : 'ltr';
+
+                // 3. علامة (RLM) السحرية: تمنع الإيموجيات من القفز للجهة الخاطئة في العربي
+                const displayMessage = isArabic ? `${commit.message}&#x200F;` : commit.message;
+
                 item.innerHTML = `
         <div class="flex justify-between items-start mb-4">
             <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
             <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         </div>
         
-        <p dir="auto" class="font-poetic whitespace-pre-wrap text-base md:text-lg text-slate-200 font-medium leading-loose tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${commit.message}</p>
+        <p dir="${dirAttr}" class="${fontClass} ${alignClass} whitespace-pre-wrap text-base md:text-lg text-slate-200 font-medium leading-loose tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${displayMessage}</p>
         
         ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
         
