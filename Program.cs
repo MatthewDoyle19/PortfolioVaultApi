@@ -442,6 +442,38 @@ app.MapDelete("/api/media/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
+// --- 🥘 MANSAF COUNTER ---
+app.MapGet("/api/mansaf", async (VaultDb db) => {
+    var counter = await db.MansafCounters.FirstOrDefaultAsync();
+    if (counter == null) {
+        counter = new MansafCounter { Count = 9 }; // الرقم الابتدائي كما اتفقنا
+        db.MansafCounters.Add(counter);
+        await db.SaveChangesAsync();
+    }
+    return Results.Ok(counter);
+});
+
+app.MapPost("/api/mansaf/update", async (MansafUpdateRequest req, VaultDb db) => {
+    var counter = await db.MansafCounters.FirstOrDefaultAsync();
+    if (counter == null) {
+        counter = new MansafCounter { Count = 0 };
+        db.MansafCounters.Add(counter);
+    }
+    
+    // فحص إذا كانت العملية زيادة (لإرسال إشعار) أم مجرد تراجع
+    bool isIncrement = req.Count > counter.Count;
+    counter.Count = req.Count;
+    
+    await db.SaveChangesAsync();
+
+    // 🚀 إرسال إشعار تيليجرام فقط عند زيادة الرقم!
+    if (isIncrement) {
+        await SendTelegramNotification($"🥘 Alert! 7amodee just ate Mansaf! 🤤\nTotal Mansaf count: {counter.Count} 🚀");
+    }
+    
+    return Results.Ok(counter);
+});
+
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<VaultDb>();
@@ -468,6 +500,7 @@ class VaultDb : DbContext {
     public DbSet<VisitTask> VisitTasks => Set<VisitTask>();
     public DbSet<BlindPrompt> BlindPrompts => Set<BlindPrompt>();
     public DbSet<MediaItem> MediaItems { get; set; }
+    public DbSet<MansafCounter> MansafCounters { get; set; }
 }
 
 class Link {
@@ -567,4 +600,13 @@ public class MediaItem
     public string Status { get; set; } = "backlog"; 
     public string AddedBy { get; set; }
     public DateTime DateAdded { get; set; } = DateTime.UtcNow;
+}
+
+class MansafCounter {
+    [JsonPropertyName("id")] public int Id { get; set; }
+    [JsonPropertyName("count")] public int Count { get; set; }
+}
+
+public class MansafUpdateRequest {
+    [JsonPropertyName("count")] public int Count { get; set; }
 }

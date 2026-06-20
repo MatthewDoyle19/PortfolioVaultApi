@@ -801,53 +801,71 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(fetchSystemState, 10000);
 
     // ==========================================
-// 🥘 BULLETPROOF MANSAF COUNTER
+// 🥘 CLOUD-SYNCED MANSAF COUNTER (120fps)
 // ==========================================
+    document.addEventListener('DOMContentLoaded', () => {
+        const mansafCountDisplay = document.getElementById('mansaf-count');
 
-// 1. قراءة الرقم من الذاكرة بشكل آمن (وحمايته من أي أخطاء سابقة)
-    let savedMansaf = parseInt(localStorage.getItem('mansaf_count'));
-    let mansafCount = isNaN(savedMansaf) ? 0 : savedMansaf;
+        // سيبدأ مؤقتاً بصفر حتى يأتي الرقم الحقيقي من السيرفر في أجزاء من الثانية
+        let mansafCount = 0;
 
-// 2. دالة التحديث (تبحث عن الشاشة الحية لضمان عملها دائماً)
-    const updateMansafUI = () => {
-        const countDisplay = document.getElementById('mansaf-count');
-        localStorage.setItem('mansaf_count', mansafCount); // الحفظ الفوري
+        // 1. دالة تحديث الواجهة بنبض 120fps
+        const updateMansafUI = () => {
+            if (mansafCountDisplay) {
+                mansafCountDisplay.innerText = mansafCount;
 
-        if (countDisplay) {
-            countDisplay.innerText = mansafCount;
+                mansafCountDisplay.style.transform = 'scale(1.3)';
+                mansafCountDisplay.style.color = '#f472b6';
 
-            // تأثير النبض 120fps
-            countDisplay.style.transform = 'scale(1.3)';
-            countDisplay.style.color = '#f472b6';
-
-            setTimeout(() => {
-                countDisplay.style.transform = 'scale(1)';
-                countDisplay.style.color = '#ffffff';
-            }, 150);
-        }
-    };
-
-// 3. تأمين التشغيل المبدئي (نستدعيها مرتين لضمان ظهور الرقم حتى مع بطء التحميل)
-    updateMansafUI();
-    setTimeout(updateMansafUI, 500);
-
-// 4. 🚀 السحر هنا: Event Delegation (مراقبة نقرات الصفحة كلها)
-    document.addEventListener('click', (e) => {
-        // استخدمنا closest لضمان استجابة الزر حتى لو ضغطت على الأيقونة (SVG) بداخله
-        const addBtn = e.target.closest('#add-mansaf-btn');
-        const minusBtn = e.target.closest('#minus-mansaf-btn');
-
-        if (addBtn) {
-            mansafCount++;
-            updateMansafUI();
-        }
-
-        if (minusBtn) {
-            if (mansafCount > 0) {
-                mansafCount--;
-                updateMansafUI();
+                setTimeout(() => {
+                    mansafCountDisplay.style.transform = 'scale(1)';
+                    mansafCountDisplay.style.color = '#ffffff';
+                }, 150);
             }
-        }
+        };
+
+        // 2. جلب الرقم الحقيقي من قاعدة البيانات فور فتح الصفحة
+        fetch(`${API_BASE_URL}/api/mansaf`)
+            .then(res => res.json())
+            .then(data => {
+                if(data && data.count !== undefined) {
+                    mansafCount = data.count;
+                    if(mansafCountDisplay) mansafCountDisplay.innerText = mansafCount;
+                }
+            })
+            .catch(err => console.error("Error loading mansaf count:", err));
+
+        // 3. دالة إرسال التحديث للسيرفر (خلف الكواليس)
+        const syncMansafWithServer = async (newCount) => {
+            mansafCount = newCount;
+            updateMansafUI(); // Optimistic Update: تحديث الشاشة فوراً دون انتظار السيرفر
+
+            try {
+                await fetch(`${API_BASE_URL}/api/mansaf/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ count: mansafCount })
+                });
+            } catch (error) {
+                console.error("Sync error:", error);
+            }
+        };
+
+        // 4. مراقبة الضغطات
+        document.addEventListener('click', (e) => {
+            const addBtn = e.target.closest('#add-mansaf-btn');
+            const minusBtn = e.target.closest('#minus-mansaf-btn');
+
+            if (addBtn) {
+                syncMansafWithServer(mansafCount + 1); // سيزيد الرقم ويصلك إشعار تيليجرام!
+            }
+
+            if (minusBtn) {
+                if (mansafCount > 0) {
+                    syncMansafWithServer(mansafCount - 1); // سينقص الرقم بدون إرسال إشعار
+                }
+            }
+        });
     });
 
     // --- 🗺️ THE BUCKET LIST ---
