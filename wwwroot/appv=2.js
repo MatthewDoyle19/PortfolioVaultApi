@@ -859,14 +859,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 4. Global Event Listener for the buttons
         document.addEventListener('click', (e) => {
+            // ADD THIS LOG
+            console.log("Clicked element:", e.target);
+
             const addBtn = e.target.closest('#add-mansaf-btn');
             const minusBtn = e.target.closest('#minus-mansaf-btn');
 
             if (addBtn) {
+                console.log("Add button detected!"); // CHECK CONSOLE FOR THIS
                 syncMansafWithServer(mansafCount + 1);
             }
 
             if (minusBtn && mansafCount > 0) {
+                console.log("Minus button detected!"); // CHECK CONSOLE FOR THIS
                 syncMansafWithServer(mansafCount - 1);
             }
         });
