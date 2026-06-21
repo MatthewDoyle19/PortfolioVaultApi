@@ -90,10 +90,21 @@ app.MapGet("/api/commits", async (VaultDb db) =>
     await db.Commits.OrderByDescending(c => c.Date).ToListAsync());
 
 app.MapPost("/api/commits", async (Commit commit, VaultDb db) => {
+    // 1. الحفظ في قاعدة البيانات أولاً (الترتيب هنا صحيح لديك)
     db.Commits.Add(commit);
     await db.SaveChangesAsync();
 
-    await SendTelegramNotification($"📸 A new memory has been added!\n\nDescription: {commit.Message}");
+    // 2. حماية الكبسولة الزمنية (Data Encapsulation Logic)
+    // تحقق مما إذا كانت هذه الذكرى عبارة عن كبسولة زمنية (عدل 'UnlockDate' حسب ما تستخدمه في الكلاس)
+    bool isTimeCapsule = !string.IsNullOrEmpty(commit.UnlockDate); 
+
+    if (isTimeCapsule) {
+        // إذا كانت كبسولة: نرسل إشعاراً تشويقياً بدون كشف الرسالة
+        await SendTelegramNotification($"⏳ THE VAULT ALERT: A new Time Capsule has been buried!\n\n🔒 It contains a secret memory that will unlock on {commit.UnlockDate}. No peeking!");
+    } else {
+        // إذا كانت ذكرى عادية: نعرض الرسالة بشكل طبيعي
+        await SendTelegramNotification($"📸 THE VAULT ALERT: A new memory has been added!\n\n📝 \"{commit.Message}\"");
+    }
 
     return Results.Created($"/api/commits/{commit.Id}", commit);
 });
@@ -101,10 +112,20 @@ app.MapPost("/api/commits", async (Commit commit, VaultDb db) => {
 app.MapDelete("/api/commits/{id}", async (int id, VaultDb db) => {
     var commit = await db.Commits.FindAsync(id);
     if (commit is null) return Results.NotFound();
+
+    // التحقق مما إذا كانت الذاكرة المحذوفة كبسولة زمنية
+    bool isTimeCapsule = !string.IsNullOrEmpty(commit.UnlockDate);
+
+    // الحذف المباشر بدون أي قيود
     db.Commits.Remove(commit);
     await db.SaveChangesAsync();
 
-    await SendTelegramNotification($"🗑️ A memory was unfortunately deleted!\nLost description: {commit.Message}");
+    // إرسال إشعار التيليجرام بناءً على نوع الذاكرة المحذوفة
+    if (isTimeCapsule) {
+        await SendTelegramNotification($"🗑️ THE VAULT ALERT: A Time Capsule was destroyed before it even opened! The secret is lost forever. 🥀");
+    } else {
+        await SendTelegramNotification($"🗑️ THE VAULT ALERT: A memory was unfortunately deleted!\nLost description: {commit.Message}");
+    }
 
     return Results.Ok();
 });
