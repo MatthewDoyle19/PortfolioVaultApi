@@ -757,11 +757,11 @@
 </div>
 
 <!-- THE TELEPORTATION OVERLAY -->
-<div id="teleport-overlay" class="fixed inset-0 z-[9999] hidden flex-col items-center justify-center bg-dark/95 backdrop-blur-3xl transition-opacity duration-1000 opacity-0 pointer-events-none">
+<div id="teleport-overlay" class="fixed inset-0 z-[9999] hidden flex-col items-center justify-center bg-dark/95 backdrop-blur-3xl transition-opacity duration-1000 opacity-0 pointer-events-none overflow-hidden">
 
-    <div id="flight-path" class="w-full max-w-2xl px-4 relative mb-12 opacity-0 transition-all duration-1000 flex flex-col items-center scale-90">
+    <div class="absolute inset-0 bg-[url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg')] bg-no-repeat bg-cover bg-center opacity-10 filter invert brightness-50 scale-[1.5]" id="map-bg"></div>
 
-        <div class="absolute inset-0 bg-[url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg')] bg-no-repeat bg-center bg-contain opacity-10 filter invert brightness-50"></div>
+    <div id="flight-path" class="w-full max-w-2xl px-4 relative mb-12 opacity-0 transition-all duration-1000 flex flex-col items-center scale-90 z-10">
 
         <div class="flex justify-between w-full mb-6 px-12 z-10 relative mt-10">
             <div class="flex flex-col items-center transform transition-transform duration-500" id="node-start">
@@ -793,7 +793,7 @@
         </svg>
     </div>
 
-    <div id="passport-stamp" class="hidden flex-col items-center p-10 rounded-[2.5rem] bg-black/40 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] backdrop-blur-xl transform translate-y-12 opacity-0 transition-all duration-1000 ease-out">
+    <div id="passport-stamp" class="hidden flex-col items-center p-10 rounded-[2.5rem] bg-black/40 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] backdrop-blur-xl transform translate-y-12 opacity-0 transition-all duration-1000 ease-out z-20">
         <h3 class="text-xs text-slate-400 tracking-[0.4em] uppercase mb-5 flex items-center gap-3">
             <span class="text-emerald-400 animate-pulse">●</span> Secured Arrival
         </h3>
