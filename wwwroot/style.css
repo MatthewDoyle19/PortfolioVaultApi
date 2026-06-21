@@ -184,14 +184,14 @@ audio:hover {
     opacity: 1 !important;
 }
 
-/* حركة الطائرة المضيئة على خط SVG الجديد الكبير */
+/* حركة الطائرة المضيئة على خط SVG القصير والواقعي */
 .animate-spark-fly {
-    offset-path: path("M 30 80 Q 150 -40 270 80");
-    animation: flySpark 2s ease-in-out forwards;
+    offset-path: path("M 30 60 Q 100 -10 170 60");
+    animation: flySpark 2.5s ease-in-out forwards;
     opacity: 1 !important;
 }
 @keyframes flySpark {
     0% { offset-distance: 0%; transform: scale(1); }
-    50% { transform: scale(1.3); } /* الطائرة تكبر وهي في منتصف السماء */
+    50% { transform: scale(1.3); } /* الطائرة تكبر قليلاً وهي في الجو */
     100% { offset-distance: 100%; transform: scale(1); }
 }
