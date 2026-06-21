@@ -757,23 +757,27 @@
 </div>
 
 <!-- THE TELEPORTATION OVERLAY -->
-<div id="teleport-overlay" class="fixed inset-0 z-[9999] hidden flex-col items-center justify-center bg-dark/90 backdrop-blur-2xl transition-opacity duration-1000 opacity-0 pointer-events-none">
+<div id="teleport-overlay" class="fixed inset-0 z-[9999] hidden flex-col items-center justify-center bg-dark/95 backdrop-blur-3xl transition-opacity duration-1000 opacity-0 pointer-events-none">
 
-    <div id="flight-path" class="w-full max-w-sm px-8 relative mb-10 opacity-0 transition-opacity duration-700 flex flex-col items-center">
+    <div id="flight-path" class="w-full max-w-2xl px-4 relative mb-12 opacity-0 transition-all duration-1000 flex flex-col items-center scale-90">
 
-        <div class="flex justify-between w-full mb-2 px-6 z-10">
+        <div class="absolute inset-0 bg-[url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg')] bg-no-repeat bg-center bg-contain opacity-10 filter invert brightness-50"></div>
+
+        <div class="flex justify-between w-full mb-6 px-12 z-10 relative mt-10">
             <div class="flex flex-col items-center transform transition-transform duration-500" id="node-start">
-                <span id="route-start-flag" class="text-3xl drop-shadow-md mb-2">🇯🇴</span>
-                <span id="route-start-text" class="text-[10px] font-bold text-slate-300 tracking-widest uppercase bg-black/40 px-2 py-1 rounded-md border border-white/10">Jordan</span>
+                <span id="route-start-flag" class="text-4xl drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] mb-3">🇯🇴</span>
+                <span id="route-start-text" class="text-xs font-black text-white tracking-widest uppercase bg-black/60 px-4 py-1.5 rounded-lg border border-white/10 shadow-lg backdrop-blur-md">Jordan</span>
             </div>
             <div class="flex flex-col items-center transform transition-transform duration-500" id="node-end">
-                <span id="route-end-flag" class="text-3xl drop-shadow-md mb-2">🇵🇸</span>
-                <span id="route-end-text" class="text-[10px] font-bold text-slate-300 tracking-widest uppercase bg-black/40 px-2 py-1 rounded-md border border-white/10">Palestine</span>
+                <span id="route-end-flag" class="text-4xl drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] mb-3">🇵🇸</span>
+                <span id="route-end-text" class="text-xs font-black text-white tracking-widest uppercase bg-black/60 px-4 py-1.5 rounded-lg border border-white/10 shadow-lg backdrop-blur-md">Palestine</span>
             </div>
         </div>
 
-        <svg class="w-full h-20 overflow-visible -mt-6" viewBox="0 0 100 40">
-            <path id="flight-line" d="M 10 30 Q 50 -20 90 30" fill="none" stroke="url(#line-gradient)" stroke-width="2" stroke-dasharray="120" stroke-dashoffset="120" stroke-linecap="round" class="opacity-80 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
+        <svg class="w-full h-48 overflow-visible z-10 relative -mt-16" viewBox="0 0 300 100">
+            <path d="M 30 80 Q 150 -40 270 80" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="6" stroke-linecap="round" />
+
+            <path id="flight-line" d="M 30 80 Q 150 -40 270 80" fill="none" stroke="url(#line-gradient)" stroke-width="3" stroke-dasharray="350" stroke-dashoffset="350" stroke-linecap="round" class="opacity-90 drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]" />
 
             <defs>
                 <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -782,26 +786,22 @@
                 </linearGradient>
             </defs>
 
-            <circle id="flight-spark" cx="0" cy="0" r="2.5" fill="#ffffff" class="opacity-0 drop-shadow-[0_0_12px_rgba(255,255,255,1)]" />
+            <g id="flight-spark" class="opacity-0 drop-shadow-[0_0_15px_rgba(255,255,255,1)]">
+                <circle cx="0" cy="0" r="4" fill="#ffffff" />
+                <text x="-8" y="-10" font-size="14">✈️</text>
+            </g>
         </svg>
     </div>
 
-    <div id="passport-stamp" class="hidden flex-col items-center p-8 rounded-3xl bg-white/5 border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] transform translate-y-8 opacity-0 transition-all duration-1000 ease-out">
-        <h3 class="text-[10px] text-slate-400 tracking-[0.3em] uppercase mb-4 flex items-center gap-2">
+    <div id="passport-stamp" class="hidden flex-col items-center p-10 rounded-[2.5rem] bg-black/40 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] backdrop-blur-xl transform translate-y-12 opacity-0 transition-all duration-1000 ease-out">
+        <h3 class="text-xs text-slate-400 tracking-[0.4em] uppercase mb-5 flex items-center gap-3">
             <span class="text-emerald-400 animate-pulse">●</span> Secured Arrival
         </h3>
-        <h2 id="stamp-location" class="text-4xl font-extrabold tracking-tight text-white mb-2 drop-shadow-md">KAFR KANNA</h2>
-        <div class="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent my-4"></div>
-        <p id="stamp-note" class="text-xs font-medium text-slate-300 tracking-wide text-center leading-relaxed">Traveler: 7amodee<br><span class="text-[10px] text-slate-500 uppercase mt-1 block">To: ZoZo</span></p>
+        <h2 id="stamp-location" class="text-5xl font-black tracking-tight text-white mb-3 drop-shadow-xl">KAFR KANNA</h2>
+        <div class="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent my-5"></div>
+        <p id="stamp-note" class="text-sm font-medium text-slate-300 tracking-wider text-center leading-loose">Traveler: 7amodee<br><span class="text-[11px] text-slate-500 uppercase mt-2 block">To: ZoZo</span></p>
     </div>
 </div>
-
-<audio id="warp-audio" preload="auto">
-    <source src="https://assets.mixkit.co/active_storage/sfx/2972/2972-preview.mp3" type="audio/mpeg">
-</audio>
-<audio id="stamp-audio" preload="auto">
-    <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
-</audio>
 
 </body>
 </html>

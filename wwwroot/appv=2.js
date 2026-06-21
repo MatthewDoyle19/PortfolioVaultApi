@@ -1756,15 +1756,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 4. رسم الخط الطائر بين البلدين
             setTimeout(() => {
-                flightPath.classList.remove('opacity-0');
+                flightPath.classList.add('animate-map-reveal');
                 flightLine.classList.add('animate-draw-line');
                 flightSpark.classList.add('animate-spark-fly');
             }, 800);
 
-            await new Promise(resolve => setTimeout(resolve, 2500));
+            await new Promise(resolve => setTimeout(resolve, 3000));
 
             // 5. إخفاء المسار
-            flightPath.classList.add('opacity-0');
+            flightPath.classList.remove('animate-map-reveal');
             setTimeout(() => {
                 flightLine.classList.remove('animate-draw-line');
                 flightSpark.classList.remove('animate-spark-fly');
