@@ -195,3 +195,68 @@ audio:hover {
     50% { transform: scale(1.3); } /* الطائرة تكبر قليلاً وهي في الجو */
     100% { offset-distance: 100%; transform: scale(1); }
 }
+
+/* ==========================================
+/* 📱 RESPONSIVE PORTAL STYLES (DESKTOP & MOBILE)
+/* ========================================== */
+
+/* 1. الإعداد الافتراضي لشاشات الكمبيوتر واللابتوب */
+.portal-map {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg');
+    background-repeat: no-repeat;
+    background-size: 800% auto;
+    background-position: 58.7% 39.5%;
+}
+
+.flight-path-container {
+    top: 38%;
+    max-width: 280px;
+}
+
+.boarding-pass {
+    bottom: 48px;
+    width: auto;
+}
+
+/* 2. التعديل الخاص بشاشات الهواتف الذكية الطويلة وعالية الدقة */
+@media (max-width: 480px) {
+    .portal-map {
+        /* نتحكم بالتحجيم عمودياً (auto 1050%) لأن شاشات الهواتف ممتدة طولياً */
+        background-size: auto 1050%;
+        background-position: 59.2% 38.6%; /* إحداثيات مصقولة جغرافياً لتوسيط الشام في وضع الـ Portrait */
+    }
+
+    .flight-path-container {
+        top: 41%; /* دفع المسار قليلاً للأسفل ليتطابق مع نقطة الخريطة الجديدة للآيفون */
+        max-width: 240px; /* تصغير طفيف ليناسب عرض الهاتف المريح للعين */
+    }
+
+    .boarding-pass {
+        bottom: 8%; /* رفع البطاقة لتفادي شريط تصفح الآيفون السفلي السفلي (Home Indicator) */
+        width: 88%;
+        max-width: 320px;
+    }
+}
+
+/* أنيميشن حركة الطائرة الثابت */
+.animate-spark-fly {
+    offset-path: path("M 30 50 Q 100 -10 170 50");
+    animation: flySpark 2.5s ease-in-out forwards;
+    opacity: 1 !important;
+}
+@keyframes flySpark {
+    0% { offset-distance: 0%; transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { offset-distance: 100%; transform: scale(1); }
+}
+
+.animate-draw-line {
+    animation: drawLine 2.5s ease-in-out forwards;
+}
+@keyframes drawLine { to { stroke-dashoffset: 0; } }
+
+.stamp-elegant {
+    display: flex !important;
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+}
