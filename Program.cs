@@ -496,12 +496,11 @@ app.MapPost("/api/mansaf/action", async (MansafActionRequest req, VaultDb db) =>
 });
 
 // --- 🌀 THE QUANTUM PORTAL ---
-app.MapPost("/api/teleport", async (SosRequest req) => {
-    // نستخدم SosRequest لأن فيه حقل User الجاهز للاستخدام
+app.MapPost("/api/teleport", async (TeleportRequest req) => {
     string displayUser = req.User == "Mohammad" ? "7amodee 👨🏻‍💻" : "ZoZo 👸🏻";
-    string destination = req.User == "Mohammad" ? "Kafr Kanna 🇵🇸" : "Jordan 🇯🇴";
+    string displayDest = req.Destination == "Jordan" ? "Jordan 🇯🇴" : "Kafr Kanna 🇵🇸";
     
-    await SendTelegramNotification($"🌀 QUANTUM PORTAL ACTIVATED!\n\n{displayUser} just warped through space and time to arrive at {destination}! ✈️🤍");
+    await SendTelegramNotification($"🌀 QUANTUM PORTAL ACTIVATED!\n\n{displayUser} just warped through space and time to arrive at {displayDest}! ✈️🤍");
     
     return Results.Ok();
 });
@@ -648,4 +647,9 @@ class MansafLog {
 
 public class MansafActionRequest { 
     public int Change { get; set; } 
+}
+
+public class TeleportRequest {
+    [JsonPropertyName("user")] public string User { get; set; } = string.Empty;
+    [JsonPropertyName("destination")] public string Destination { get; set; } = string.Empty;
 }

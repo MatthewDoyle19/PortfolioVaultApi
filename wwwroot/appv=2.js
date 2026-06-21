@@ -1691,11 +1691,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
-// 🌀 THE QUANTUM TELEPORTER LOGIC
+// 🌀 THE QUANTUM TELEPORTER LOGIC (V2)
 // ==========================================
     const teleportBtn = document.getElementById('teleport-btn');
-    const teleportText = document.getElementById('teleport-text');
-    const teleportIcon = document.getElementById('teleport-icon');
+    const teleportWho = document.getElementById('teleport-who');
+    const teleportWhere = document.getElementById('teleport-where');
     const teleportOverlay = document.getElementById('teleport-overlay');
     const warpSpeed = document.getElementById('warp-speed');
     const warpFlash = document.getElementById('warp-flash');
@@ -1703,91 +1703,73 @@ document.addEventListener('DOMContentLoaded', () => {
     const stampLocation = document.getElementById('stamp-location');
     const stampNote = document.getElementById('stamp-note');
 
-// State: false = at Kafr Kanna, true = at Jordan
-    let isAtJordan = false;
-
     if (teleportBtn) {
         teleportBtn.addEventListener('click', async () => {
-            // 1. Lock the button so it can't be spammed
-            teleportBtn.disabled = true;
+            // قراءة الخيارات
+            const who = teleportWho.value;
+            const where = teleportWhere.value;
 
-            // 2. Open the black void
+            // منع الزر المؤقت
+            teleportBtn.disabled = true;
+            teleportBtn.innerHTML = '<span class="text-sm font-bold text-white">Charging... ⚡</span>';
+
+            // 1. فتح الشاشة وبدء القفزة
             teleportOverlay.classList.remove('hidden');
             setTimeout(() => teleportOverlay.classList.remove('opacity-0'), 50);
-
-            // 3. Initiate Warp Speed (Stars flying)
             setTimeout(() => {
                 warpSpeed.classList.remove('opacity-0');
                 warpSpeed.classList.add('opacity-100');
             }, 500);
 
-            // 4. Travel Time (2 seconds in hyperspace)
+            // إرسال البيانات للسيرفر في الخلفية
+            try {
+                await fetch(`${API_BASE_URL}/api/teleport`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user: who, destination: where })
+                });
+            } catch (e) { console.error("Teleport ping failed", e); }
+
+            // 2. زمن الرحلة (ثانيتان)
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            // 5. The Blinding Arrival Flash
+            // 3. وميض الوصول
             warpSpeed.classList.remove('opacity-100');
             warpSpeed.classList.add('opacity-0');
             warpFlash.classList.remove('opacity-0');
             warpFlash.classList.add('opacity-100');
 
-            // 6. Flip the Location State & Setup the Stamp
-            isAtJordan = !isAtJordan;
-
-            if (isAtJordan) {
-                // Arrived in Jordan
+            // 4. تجهيز ختم الجواز بناءً على الوجهة المطلوبة
+            if (where === 'Jordan') {
                 stampLocation.innerText = 'JORDAN 🇯🇴';
                 stampNote.innerText = 'Destination: 7amodee ❤️';
-
                 passportStamp.className = 'stamp-smash relative z-10 flex-col items-center justify-center border-4 border-emerald-500 text-emerald-500 p-6 rounded-2xl bg-black/60 backdrop-blur-md shadow-[0_0_60px_rgba(16,185,129,0.5)]';
                 passportStamp.querySelector('h1').className = 'text-3xl font-extrabold tracking-widest uppercase border-b-2 border-emerald-500 pb-2 mb-2';
                 passportStamp.querySelector('.absolute').className = 'absolute -inset-2 border-2 border-emerald-500/30 rounded-3xl animate-ping opacity-50';
-
-                // Update UI Button for the trip back
-                teleportText.innerText = 'Warp to Kafr Kanna';
-                teleportIcon.innerText = '🇯🇴';
             } else {
-                // Arrived in Kafr Kanna
                 stampLocation.innerText = 'KAFR KANNA 🇵🇸';
                 stampNote.innerText = 'Destination: ZoZo 👸🏻';
-
                 passportStamp.className = 'stamp-smash relative z-10 flex-col items-center justify-center border-4 border-pink-500 text-pink-500 p-6 rounded-2xl bg-black/60 backdrop-blur-md shadow-[0_0_60px_rgba(244,114,182,0.5)]';
                 passportStamp.querySelector('h1').className = 'text-3xl font-extrabold tracking-widest uppercase border-b-2 border-pink-500 pb-2 mb-2';
                 passportStamp.querySelector('.absolute').className = 'absolute -inset-2 border-2 border-pink-500/30 rounded-3xl animate-ping opacity-50';
-
-                // Update UI Button for the trip back
-                teleportText.innerText = 'Warp to Jordan';
-                teleportIcon.innerText = '🇵🇸';
             }
 
-            // تحديد من الذي ضغط الزر (وإلى أين وصل)
-            const travelerName = isAtJordan ? "Zainab" : "Mohammad";
-
-            // إرسال الإشارة للسيرفر بصمت في الخلفية
-            try {
-                await fetch(`${API_BASE_URL}/api/teleport`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user: travelerName })
-                });
-            } catch (e) {
-                console.error("Teleport ping failed", e);
-            }
-
-            // 7. Drop the Stamp and fade out the white flash
+            // 5. إظهار الختم وإخفاء الوميض
             setTimeout(() => {
                 warpFlash.classList.remove('opacity-100');
                 warpFlash.classList.add('opacity-0');
             }, 100);
 
-            // 8. Let the user read the stamp (3 seconds)
+            // 6. انتظار لقراءة الختم (3 ثوانٍ)
             await new Promise(resolve => setTimeout(resolve, 3000));
 
-            // 9. Fade everything out and clean up
+            // 7. التنظيف والإغلاق
             teleportOverlay.classList.add('opacity-0');
             setTimeout(() => {
                 teleportOverlay.classList.add('hidden');
                 passportStamp.classList.remove('stamp-smash');
                 teleportBtn.disabled = false;
+                teleportBtn.innerHTML = '<span class="text-sm font-bold text-white tracking-wide">Initiate Warp</span><span class="text-lg">🚀</span>';
             }, 700);
         });
     }

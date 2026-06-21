@@ -154,21 +154,39 @@
                 </div>
             </div>
 
-            <!-- THE QUANTUM PORTAL BUTTON -->
-            <div class="col-span-2 premium-glass p-1 rounded-[2rem] mt-4 relative overflow-hidden group border border-white/5 shadow-lg">
-                <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <button id="teleport-btn" class="relative w-full p-4 flex items-center justify-between z-10 active:scale-95 transition-transform duration-300">
-                    <div class="flex items-center gap-4">
-                        <div id="teleport-icon" class="text-3xl animate-pulse drop-shadow-md">🇵🇸</div>
-                        <div class="text-left">
-                            <h3 class="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-black mb-1">Quantum Portal 🌀</h3>
-                            <div id="teleport-text" class="text-sm font-bold text-white tracking-wide">Warp to Jordan</div>
+            <div class="col-span-2 premium-glass p-4 rounded-[2rem] mt-4 relative overflow-hidden border border-white/5 shadow-lg group">
+                <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                <div class="relative z-10 flex flex-col gap-3">
+                    <h3 class="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-black text-center flex items-center justify-center gap-2">
+                        <span>🌀</span> Quantum Portal
+                    </h3>
+
+                    <div class="flex gap-2">
+                        <div class="flex-grow">
+                            <label class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1 block pl-1">Traveler</label>
+                            <select id="teleport-who" class="w-full bg-black/60 border border-white/10 rounded-xl px-2 py-2.5 text-xs text-white focus:outline-none focus:border-purple-400 cursor-pointer appearance-none text-center">
+                                <option value="Zainab">ZoZo 👸🏻</option>
+                                <option value="Mohammad">7amodee 👨🏻‍💻</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end pb-2">
+                            <span class="text-slate-500 text-lg animate-pulse">➡️</span>
+                        </div>
+                        <div class="flex-grow">
+                            <label class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1 block pl-1">Destination</label>
+                            <select id="teleport-where" class="w-full bg-black/60 border border-white/10 rounded-xl px-2 py-2.5 text-xs text-white focus:outline-none focus:border-purple-400 cursor-pointer appearance-none text-center">
+                                <option value="Jordan">Jordan 🇯🇴</option>
+                                <option value="KafrKanna">Kafr Kanna 🇵🇸</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="bg-white/10 p-3 rounded-xl text-white backdrop-blur-md border border-white/10 shadow-inner">
-                        <svg class="w-5 h-5 animate-bounce" style="animation-duration: 2s;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
-                    </div>
-                </button>
+
+                    <button id="teleport-btn" class="w-full mt-2 p-3 flex items-center justify-center gap-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 active:scale-95 transition-all duration-300">
+                        <span class="text-sm font-bold text-white tracking-wide">Initiate Warp</span>
+                        <span class="text-lg">🚀</span>
+                    </button>
+                </div>
             </div>
         </section>
 
