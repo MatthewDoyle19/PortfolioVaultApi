@@ -225,13 +225,15 @@ audio:hover {
         background-image: url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg');
         background-repeat: no-repeat;
         background-size: 800% auto;
-        /* سحبنا الخريطة لليسار (60.2%) وللأسفل (37.5%) */
-        background-position: 60.2% 37.5%;
+        background-position: 58.7% 37.1%;
     }
 
     .flight-path-container {
-        top: 41%; /* دفع المسار قليلاً للأسفل ليتطابق مع نقطة الخريطة الجديدة للآيفون */
-        max-width: 240px; /* تصغير طفيف ليناسب عرض الهاتف المريح للعين */
+        top: 35%;
+        /* 🔴 ضع عرض المسار النهائي هنا */
+        max-width: 95px;
+        /* 🔴 ضع درجة الدوران النهائية هنا */
+        transform: translateX(-50%) rotate(-15deg);
     }
 
     .boarding-pass {
