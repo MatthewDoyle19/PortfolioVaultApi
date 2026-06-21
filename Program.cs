@@ -292,12 +292,16 @@ app.MapDelete("/api/visit/dates/{id}", async (int id, VaultDb db) => {
 
 // --- 🚨 LIVE SOS PROTOCOL ---
 app.MapPost("/api/sos", async (SosRequest req, VaultDb db) => {
+    // 🇯🇴 جلب توقيت الأردن
+    var jordanTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman"));
+    string timeString = jordanTime.ToString("hh:mm tt");
+
     var existingMood = await db.Moods.FirstOrDefaultAsync(m => m.User == req.User);
     if (existingMood != null) {
         existingMood.Status = "SOS";
-        existingMood.UpdatedAt = DateTime.Now.ToString("hh:mm tt");
+        existingMood.UpdatedAt = timeString;
     } else {
-        db.Moods.Add(new Mood { User = req.User, Status = "SOS", UpdatedAt = DateTime.Now.ToString("hh:mm tt") });
+        db.Moods.Add(new Mood { User = req.User, Status = "SOS", UpdatedAt = timeString });
     }
     await db.SaveChangesAsync();
 
@@ -352,7 +356,7 @@ var deepQuestions = new List<string> {
 };
 
 app.MapPost("/api/prompts/generate", async (VaultDb db) => {
-    // 🧹 1. تنظيف عميق: مسح أي أسئلة سابقة لم يتم الإجابة عليها لتجنب التراكم
+    // تنظيف الأسئلة القديمة
     var unfinished = await db.BlindPrompts
         .Where(p => p.MohammadAnswer == null || p.ZainabAnswer == null)
         .ToListAsync();
@@ -361,12 +365,14 @@ app.MapPost("/api/prompts/generate", async (VaultDb db) => {
         db.BlindPrompts.RemoveRange(unfinished);
     }
 
-    // 2. توليد السؤال الجديد النظيف
+    // 🇯🇴 جلب توقيت الأردن الحقيقي
+    var jordanTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman"));
+
     var q = deepQuestions[new Random().Next(deepQuestions.Count)];
-    var prompt = new BlindPrompt { Question = q, DateAdded = DateTime.Now.ToString("dd MMM yyyy") };
+    var prompt = new BlindPrompt { Question = q, DateAdded = jordanTime.ToString("dd MMM yyyy") };
     db.BlindPrompts.Add(prompt);
 
-    await db.SaveChangesAsync(); // نحفظ التغييرات (الحذف والإضافة) بضربة واحدة
+    await db.SaveChangesAsync();
 
     await SendTelegramNotification($"💭 A new Blind Prompt has dropped in The Vault!\nGo answer it before the other does! 🔒");
     return Results.Ok(prompt);
@@ -376,15 +382,15 @@ app.MapPut("/api/prompts/{id}/answer", async (int id, AnswerRequest req, VaultDb
     var prompt = await db.BlindPrompts.FindAsync(id);
     if (prompt == null) return Results.NotFound();
 
-    // تسجيل إجابة الطرف الحالي
     if (req.User == "Mohammad") prompt.MohammadAnswer = req.Answer;
     else if (req.User == "Zainab") prompt.ZainabAnswer = req.Answer;
 
     // فحص القفل المزدوج
     if (!string.IsNullOrEmpty(prompt.MohammadAnswer) && !string.IsNullOrEmpty(prompt.ZainabAnswer)) {
-
-        // 🕒 اللمسة الجديدة: توثيق تاريخ ووقت كسر القفل (اللحظة التي تكتمل فيها الذكرى)
-        prompt.DateAdded = DateTime.Now.ToString("dd MMM yyyy, hh:mm tt");
+        
+        // 🇯🇴 جلب توقيت الأردن لتوثيق اللحظة بالضبط
+        var jordanTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman"));
+        prompt.DateAdded = jordanTime.ToString("dd MMM yyyy, hh:mm tt");
 
         await SendTelegramNotification($"🔓 THE DUAL-LOCK IS BROKEN!\nBoth of you have answered the Blind Prompt. Go check the Vault to read the answers! ✨");
     } else {
@@ -393,9 +399,7 @@ app.MapPut("/api/prompts/{id}/answer", async (int id, AnswerRequest req, VaultDb
         await SendTelegramNotification($"🔒 {displayUser} has locked their answer in the Blind Prompt! Waiting for {target} to answer...");
     }
 
-    // حفظ جميع التغييرات (الإجابة + الوقت الجديد) في قاعدة البيانات
     await db.SaveChangesAsync();
-
     return Results.Ok(prompt);
 });
 
