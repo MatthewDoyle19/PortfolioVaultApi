@@ -186,7 +186,7 @@ audio:hover {
 
 /* حركة الطائرة المضيئة على خط SVG القصير والواقعي */
 .animate-spark-fly {
-    offset-path: path("M 30 60 Q 100 -10 170 60");
+    offset-path: path("M 30 50 Q 100 -10 170 50");
     animation: flySpark 2.5s ease-in-out forwards;
     opacity: 1 !important;
 }
