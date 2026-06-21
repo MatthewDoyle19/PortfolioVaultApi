@@ -1621,17 +1621,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 🛑 السحر هنا: إضافة تأخير وهمي (ثانيتين) لترى رسالة التحميل بوضوح!
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
-                // await fetch(`${API_BASE_URL}/api/commits`, {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({
-                //         date: new Date().toISOString().split('T')[0],
-                //         message: `[V2.0.0 SYSTEM UPGRADE UNLOCKED] ❤️ ZoZo's Answer: "${answerInput}"`,
-                //         imageUrl: null,
-                //         audioUrl: null
-                //     })
-                // });
-
+                 await fetch(`${API_BASE_URL}/api/commits`, {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/json' },
+                     body: JSON.stringify({
+                         date: new Date().toISOString().split('T')[0],
+                         message: `[V2.0.0 SYSTEM UPGRADE UNLOCKED] ❤️ ZoZo's Answer: "${answerInput}"`,
+                         imageUrl: null,
+                         audioUrl: null
+                     })
+                 });
+                 
                 // 2. تسجيل الإنجاز في المتصفح
                 localStorage.setItem('v2_unlocked', 'true');
 
