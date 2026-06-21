@@ -138,3 +138,27 @@ audio:hover {
     backface-visibility: hidden;
     perspective: 1000px;
 }
+
+/* 1. سرعة الضوء (Hyperspace Warp) */
+.hyperspace-bg {
+    background-image:
+            radial-gradient(circle at center, transparent 0%, #000 100%),
+            repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(255,255,255,0.15) 10px, rgba(255,255,255,0.15) 20px);
+    background-size: 100% 100%, 100% 200%;
+    animation: warpSpeed 0.2s linear infinite;
+}
+@keyframes warpSpeed {
+    0% { background-position: center, 0 0; }
+    100% { background-position: center, 0 100%; }
+}
+
+/* 2. ضربة ختم الجواز (Smash Animation) */
+.stamp-smash {
+    display: flex !important;
+    animation: stampSmash 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes stampSmash {
+    0% { transform: scale(4) rotate(25deg); opacity: 0; filter: blur(15px); }
+    50% { opacity: 1; filter: blur(0); }
+    100% { transform: scale(1) rotate(-5deg); opacity: 1; }
+}

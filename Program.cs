@@ -495,6 +495,17 @@ app.MapPost("/api/mansaf/action", async (MansafActionRequest req, VaultDb db) =>
     }
 });
 
+// --- 🌀 THE QUANTUM PORTAL ---
+app.MapPost("/api/teleport", async (SosRequest req) => {
+    // نستخدم SosRequest لأن فيه حقل User الجاهز للاستخدام
+    string displayUser = req.User == "Mohammad" ? "7amodee 👨🏻‍💻" : "ZoZo 👸🏻";
+    string destination = req.User == "Mohammad" ? "Kafr Kanna 🇵🇸" : "Jordan 🇯🇴";
+    
+    await SendTelegramNotification($"🌀 QUANTUM PORTAL ACTIVATED!\n\n{displayUser} just warped through space and time to arrive at {destination}! ✈️🤍");
+    
+    return Results.Ok();
+});
+
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<VaultDb>();

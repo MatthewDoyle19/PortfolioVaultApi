@@ -153,6 +153,23 @@
                     </button>
                 </div>
             </div>
+
+            <!-- THE QUANTUM PORTAL BUTTON -->
+            <div class="col-span-2 premium-glass p-1 rounded-[2rem] mt-4 relative overflow-hidden group border border-white/5 shadow-lg">
+                <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <button id="teleport-btn" class="relative w-full p-4 flex items-center justify-between z-10 active:scale-95 transition-transform duration-300">
+                    <div class="flex items-center gap-4">
+                        <div id="teleport-icon" class="text-3xl animate-pulse drop-shadow-md">🇵🇸</div>
+                        <div class="text-left">
+                            <h3 class="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-black mb-1">Quantum Portal 🌀</h3>
+                            <div id="teleport-text" class="text-sm font-bold text-white tracking-wide">Warp to Jordan</div>
+                        </div>
+                    </div>
+                    <div class="bg-white/10 p-3 rounded-xl text-white backdrop-blur-md border border-white/10 shadow-inner">
+                        <svg class="w-5 h-5 animate-bounce" style="animation-duration: 2s;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+                    </div>
+                </button>
+            </div>
         </section>
 
         <section class="mb-12 fade-in" style="animation-delay: 0.4s;">
@@ -718,6 +735,24 @@
         <div class="particle text-xl drop-shadow-md" style="left: 5%; animation-delay: 9s; animation-duration: 16s;">🤍</div>
         <div class="particle text-3xl drop-shadow-md" style="left: 95%; animation-delay: 2s; animation-duration: 14s;">🤍</div>
         <div class="particle text-2xl drop-shadow-md" style="left: 45%; animation-delay: 10s; animation-duration: 13.5s;">🤍</div>
+    </div>
+</div>
+
+<!-- THE TELEPORTATION OVERLAY -->
+<div id="teleport-overlay" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black transition-opacity duration-700 opacity-0 overflow-hidden pointer-events-none">
+
+    <!-- Hyperspace Lines (Warp Speed) -->
+    <div class="absolute inset-0 hyperspace-bg opacity-0 transition-opacity duration-1000" id="warp-speed"></div>
+
+    <!-- The Blinding White Flash -->
+    <div id="warp-flash" class="absolute inset-0 bg-white opacity-0 transition-opacity duration-300"></div>
+
+    <!-- The Passport Stamp -->
+    <div id="passport-stamp" class="hidden relative z-10 scale-[3] opacity-0 flex-col items-center justify-center border-4 p-6 rounded-2xl bg-black/60 backdrop-blur-md">
+        <h1 class="text-3xl font-extrabold tracking-widest uppercase border-b-2 pb-2 mb-2">Arrival</h1>
+        <h2 id="stamp-location" class="text-5xl font-black tracking-tight mb-2">JORDAN</h2>
+        <p id="stamp-note" class="text-[10px] font-bold tracking-widest uppercase mt-2">Destination: 7amodee ❤️</p>
+        <div class="absolute -inset-2 border-2 rounded-3xl animate-ping opacity-50"></div>
     </div>
 </div>
 
