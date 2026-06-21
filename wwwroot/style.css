@@ -205,12 +205,12 @@ audio:hover {
     background-image: url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg');
     background-repeat: no-repeat;
     background-size: 800% auto;
-    background-position: 58.7% 39.5%;
+    background-position: 58.7% 37.1%;
 }
 
 .flight-path-container {
-    top: 38%;
-    max-width: 280px;
+    top: 35%;
+    max-width: 95px;
 }
 
 .boarding-pass {
