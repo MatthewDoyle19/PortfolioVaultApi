@@ -246,16 +246,24 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isLocked) {
                 const timerId = `timer-commit-${commit.id}`;
                 item.innerHTML = `
-            <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
-                <span class="text-4xl mb-2 animate-bounce">⏳</span>
-                <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
-                <div id="${timerId}" class="w-full min-h-[30px]"></div>
-            </div>
-            <div class="opacity-10 blur-sm">
-                <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
-                <div class="h-32 bg-white/5 rounded-lg"></div>
-            </div>
-        `;
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
+            
+            <button onclick="deleteCommit(${commit.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-all p-1 active:scale-90 z-20">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+
+            <span class="text-4xl mb-2 animate-bounce">⏳</span>
+            <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
+            <div id="${timerId}" class="w-full min-h-[30px]"></div>
+        </div>
+        
+        <div class="opacity-10 blur-sm">
+            <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
+            <div class="h-32 bg-white/5 rounded-lg"></div>
+        </div>
+    `;
                 commitTimeline.appendChild(item);
                 startCountdown(commit.unlockDate, timerId);
 
@@ -1613,16 +1621,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 🛑 السحر هنا: إضافة تأخير وهمي (ثانيتين) لترى رسالة التحميل بوضوح!
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
-                await fetch(`${API_BASE_URL}/api/commits`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        date: new Date().toISOString().split('T')[0],
-                        message: `[V2.0.0 SYSTEM UPGRADE UNLOCKED] ❤️ ZoZo's Answer: "${answerInput}"`,
-                        imageUrl: null,
-                        audioUrl: null
-                    })
-                });
+                // await fetch(`${API_BASE_URL}/api/commits`, {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({
+                //         date: new Date().toISOString().split('T')[0],
+                //         message: `[V2.0.0 SYSTEM UPGRADE UNLOCKED] ❤️ ZoZo's Answer: "${answerInput}"`,
+                //         imageUrl: null,
+                //         audioUrl: null
+                //     })
+                // });
 
                 // 2. تسجيل الإنجاز في المتصفح
                 localStorage.setItem('v2_unlocked', 'true');
