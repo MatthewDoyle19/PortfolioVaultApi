@@ -757,25 +757,30 @@
 </div>
 
 <!-- THE TELEPORTATION OVERLAY -->
-<div id="teleport-overlay" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black transition-opacity duration-700 opacity-0 overflow-hidden pointer-events-none perspective-[1000px]">
+<div id="teleport-overlay" class="fixed inset-0 z-[9999] hidden flex-col items-center justify-center bg-dark/85 backdrop-blur-2xl transition-opacity duration-1000 opacity-0 pointer-events-none">
 
-    <canvas id="warp-canvas" class="absolute inset-0 w-full h-full opacity-0 transition-opacity duration-1000"></canvas>
+    <div id="flight-path" class="w-64 h-32 relative mb-6 opacity-0 transition-opacity duration-700">
+        <svg class="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 100 50">
+            <path id="flight-line" d="M 10 40 Q 50 -10 90 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="120" stroke-dashoffset="120" stroke-linecap="round" class="text-white opacity-50 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+            <circle cx="10" cy="40" r="2.5" class="fill-white drop-shadow-[0_0_5px_rgba(255,255,255,1)]" />
+            <circle cx="90" cy="40" r="2.5" class="fill-white drop-shadow-[0_0_5px_rgba(255,255,255,1)]" />
+            <text id="flight-spark" x="0" y="0" font-size="6" class="opacity-0 transition-opacity duration-300">✨</text>
+        </svg>
+    </div>
 
-    <div id="warp-flash" class="absolute inset-0 bg-white opacity-0 transition-opacity duration-200 mix-blend-overlay"></div>
-
-    <div id="passport-stamp" class="hidden relative z-10 flex-col items-center justify-center p-6 rounded-lg bg-black/20 backdrop-blur-sm">
-        <h1 class="text-3xl font-extrabold tracking-widest uppercase border-b-4 pb-2 mb-2 opacity-90">Arrival</h1>
-        <h2 id="stamp-location" class="text-5xl font-black tracking-tighter mb-2 opacity-100">JORDAN</h2>
-        <p id="stamp-note" class="text-[10px] font-bold tracking-widest uppercase mt-2 opacity-80">Destination: 7amodee ❤️</p>
-        <div class="absolute inset-0 border-[6px] rounded-xl opacity-80 mix-blend-screen mask-stamp"></div>
+    <div id="passport-stamp" class="hidden flex-col items-center p-8 rounded-3xl bg-white/5 border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] transform translate-y-8 opacity-0 transition-all duration-1000 ease-out">
+        <h3 class="text-[10px] text-slate-400 tracking-[0.3em] uppercase mb-4">Secured Arrival</h3>
+        <h2 id="stamp-location" class="text-4xl font-extrabold tracking-tight text-white mb-2 drop-shadow-md">JORDAN</h2>
+        <div class="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent my-3"></div>
+        <p id="stamp-note" class="text-xs font-medium text-slate-300 tracking-wide">Traveler: 7amodee ➔ To: ZoZo</p>
     </div>
 </div>
 
 <audio id="warp-audio" preload="auto">
-    <source src="https://www.myinstants.com/media/sounds/teleport.mp3" type="audio/mpeg">
+    <source src="https://assets.mixkit.co/active_storage/sfx/2972/2972-preview.mp3" type="audio/mpeg">
 </audio>
 <audio id="stamp-audio" preload="auto">
-    <source src="https://www.myinstants.com/media/sounds/vine-boom.mp3" type="audio/mpeg">
+    <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
 </audio>
 
 </body>
