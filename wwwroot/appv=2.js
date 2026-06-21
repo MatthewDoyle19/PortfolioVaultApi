@@ -1691,7 +1691,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
-// 🌀 THE QUANTUM TELEPORTER LOGIC (V2)
+// 🌀 THE QUANTUM TELEPORTER LOGIC (V2 WITH SOUNDS)
 // ==========================================
     const teleportBtn = document.getElementById('teleport-btn');
     const teleportWho = document.getElementById('teleport-who');
@@ -1703,17 +1703,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const stampLocation = document.getElementById('stamp-location');
     const stampNote = document.getElementById('stamp-note');
 
+// 🔊 1. تعريف المؤثرات الصوتية (تستطيع استبدال الروابط لاحقاً بروابط من Cloudinary الخاص بك)
+    const warpSound = new Audio('https://www.myinstants.com/media/sounds/teleport.mp3');
+    const stampSound = new Audio('https://www.myinstants.com/media/sounds/vine-boom.mp3');
+
     if (teleportBtn) {
         teleportBtn.addEventListener('click', async () => {
-            // قراءة الخيارات
             const who = teleportWho.value;
             const where = teleportWhere.value;
 
-            // منع الزر المؤقت
             teleportBtn.disabled = true;
             teleportBtn.innerHTML = '<span class="text-sm font-bold text-white">Charging... ⚡</span>';
 
-            // 1. فتح الشاشة وبدء القفزة
+            // 🔊 2. تشغيل صوت الانطلاق (Warp)
+            warpSound.volume = 0.5;
+            warpSound.currentTime = 0;
+            warpSound.play().catch(e => console.log("Audio play blocked", e));
+
             teleportOverlay.classList.remove('hidden');
             setTimeout(() => teleportOverlay.classList.remove('opacity-0'), 50);
             setTimeout(() => {
@@ -1721,7 +1727,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 warpSpeed.classList.add('opacity-100');
             }, 500);
 
-            // إرسال البيانات للسيرفر في الخلفية
             try {
                 await fetch(`${API_BASE_URL}/api/teleport`, {
                     method: 'POST',
@@ -1730,16 +1735,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             } catch (e) { console.error("Teleport ping failed", e); }
 
-            // 2. زمن الرحلة (ثانيتان)
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            // 3. وميض الوصول
             warpSpeed.classList.remove('opacity-100');
             warpSpeed.classList.add('opacity-0');
             warpFlash.classList.remove('opacity-0');
             warpFlash.classList.add('opacity-100');
 
-            // 4. تجهيز ختم الجواز بناءً على الوجهة المطلوبة
             if (where === 'Jordan') {
                 stampLocation.innerText = 'JORDAN 🇯🇴';
                 stampNote.innerText = 'Destination: 7amodee ❤️';
@@ -1754,16 +1756,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 passportStamp.querySelector('.absolute').className = 'absolute -inset-2 border-2 border-pink-500/30 rounded-3xl animate-ping opacity-50';
             }
 
-            // 5. إظهار الختم وإخفاء الوميض
             setTimeout(() => {
                 warpFlash.classList.remove('opacity-100');
                 warpFlash.classList.add('opacity-0');
+
+                // 🔊 3. تشغيل صوت ضربة الختم (Stamp) مع ظهور الختم
+                stampSound.volume = 0.8;
+                stampSound.currentTime = 0;
+                stampSound.play().catch(e => console.log("Audio play blocked", e));
+
             }, 100);
 
-            // 6. انتظار لقراءة الختم (3 ثوانٍ)
             await new Promise(resolve => setTimeout(resolve, 3000));
 
-            // 7. التنظيف والإغلاق
             teleportOverlay.classList.add('opacity-0');
             setTimeout(() => {
                 teleportOverlay.classList.add('hidden');
