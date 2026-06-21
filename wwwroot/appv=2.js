@@ -1691,7 +1691,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
-// 🌀 THE QUANTUM TELEPORTER LOGIC (V2 WITH SOUNDS)
+// 🌀 THE QUANTUM TELEPORTER LOGIC (V3 - Bulletproof Audio)
 // ==========================================
     const teleportBtn = document.getElementById('teleport-btn');
     const teleportWho = document.getElementById('teleport-who');
@@ -1703,9 +1703,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const stampLocation = document.getElementById('stamp-location');
     const stampNote = document.getElementById('stamp-note');
 
-// 🔊 1. تعريف المؤثرات الصوتية (تستطيع استبدال الروابط لاحقاً بروابط من Cloudinary الخاص بك)
-    const warpSound = new Audio('https://www.myinstants.com/media/sounds/teleport.mp3');
-    const stampSound = new Audio('https://www.myinstants.com/media/sounds/vine-boom.mp3');
+// جلب الأصوات من الـ HTML
+    const warpAudio = document.getElementById('warp-audio');
+    const stampAudio = document.getElementById('stamp-audio');
 
     if (teleportBtn) {
         teleportBtn.addEventListener('click', async () => {
@@ -1715,11 +1715,19 @@ document.addEventListener('DOMContentLoaded', () => {
             teleportBtn.disabled = true;
             teleportBtn.innerHTML = '<span class="text-sm font-bold text-white">Charging... ⚡</span>';
 
-            // 🔊 2. تشغيل صوت الانطلاق (Warp)
-            warpSound.volume = 0.5;
-            warpSound.currentTime = 0;
-            warpSound.play().catch(e => console.log("Audio play blocked", e));
+            // 🔊 فك قفل الأصوات للهواتف (Silent Play Hack) ثم تشغيل صوت القفزة
+            if (stampAudio) {
+                stampAudio.volume = 0;
+                stampAudio.play().then(() => { stampAudio.pause(); stampAudio.currentTime = 0; stampAudio.volume = 1; }).catch(e => {});
+            }
 
+            if (warpAudio) {
+                warpAudio.currentTime = 0;
+                warpAudio.volume = 0.8;
+                warpAudio.play().catch(e => console.log("Warp Audio blocked:", e));
+            }
+
+            // بدء الأنيميشن
             teleportOverlay.classList.remove('hidden');
             setTimeout(() => teleportOverlay.classList.remove('opacity-0'), 50);
             setTimeout(() => {
@@ -1735,8 +1743,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             } catch (e) { console.error("Teleport ping failed", e); }
 
+            // الانتظار أثناء القفزة (ثانيتان)
             await new Promise(resolve => setTimeout(resolve, 2000));
 
+            // الوميض والوصول
             warpSpeed.classList.remove('opacity-100');
             warpSpeed.classList.add('opacity-0');
             warpFlash.classList.remove('opacity-0');
@@ -1760,15 +1770,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 warpFlash.classList.remove('opacity-100');
                 warpFlash.classList.add('opacity-0');
 
-                // 🔊 3. تشغيل صوت ضربة الختم (Stamp) مع ظهور الختم
-                stampSound.volume = 0.8;
-                stampSound.currentTime = 0;
-                stampSound.play().catch(e => console.log("Audio play blocked", e));
+                // 🔊 تشغيل صوت الختم بقوة الآن
+                if (stampAudio) {
+                    stampAudio.currentTime = 0;
+                    stampAudio.play().catch(e => console.log("Stamp Audio blocked:", e));
+                }
 
             }, 100);
 
             await new Promise(resolve => setTimeout(resolve, 3000));
 
+            // إغلاق الواجهة
             teleportOverlay.classList.add('opacity-0');
             setTimeout(() => {
                 teleportOverlay.classList.add('hidden');

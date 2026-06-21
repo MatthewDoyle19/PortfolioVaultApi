@@ -500,7 +500,7 @@ app.MapPost("/api/teleport", async (TeleportRequest req) => {
     string displayUser = req.User == "Mohammad" ? "7amodee 👨🏻‍💻" : "ZoZo 👸🏻";
     string displayDest = req.Destination == "Jordan" ? "Jordan 🇯🇴" : "Kafr Kanna 🇵🇸";
     
-    await SendTelegramNotification($"🌀 QUANTUM PORTAL ACTIVATED!\n\n{displayUser} just warped through space and time to arrive at {displayDest}! ✈️🤍");
+    await SendTelegramNotification($"{displayUser} just warped through space and time to arrive at {displayDest}! ✈️🤍");
     
     return Results.Ok();
 });
