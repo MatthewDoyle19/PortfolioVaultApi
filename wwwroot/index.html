@@ -757,22 +757,26 @@
 </div>
 
 <!-- THE TELEPORTATION OVERLAY -->
-<div id="teleport-overlay" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black transition-opacity duration-700 opacity-0 overflow-hidden pointer-events-none">
+<div id="teleport-overlay" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black transition-opacity duration-700 opacity-0 overflow-hidden pointer-events-none perspective-[1000px]">
 
-    <!-- Hyperspace Lines (Warp Speed) -->
-    <div class="absolute inset-0 hyperspace-bg opacity-0 transition-opacity duration-1000" id="warp-speed"></div>
+    <canvas id="warp-canvas" class="absolute inset-0 w-full h-full opacity-0 transition-opacity duration-1000"></canvas>
 
-    <!-- The Blinding White Flash -->
-    <div id="warp-flash" class="absolute inset-0 bg-white opacity-0 transition-opacity duration-300"></div>
+    <div id="warp-flash" class="absolute inset-0 bg-white opacity-0 transition-opacity duration-200 mix-blend-overlay"></div>
 
-    <!-- The Passport Stamp -->
-    <div id="passport-stamp" class="hidden relative z-10 scale-[3] opacity-0 flex-col items-center justify-center border-4 p-6 rounded-2xl bg-black/60 backdrop-blur-md">
-        <h1 class="text-3xl font-extrabold tracking-widest uppercase border-b-2 pb-2 mb-2">Arrival</h1>
-        <h2 id="stamp-location" class="text-5xl font-black tracking-tight mb-2">JORDAN</h2>
-        <p id="stamp-note" class="text-[10px] font-bold tracking-widest uppercase mt-2">Destination: 7amodee ❤️</p>
-        <div class="absolute -inset-2 border-2 rounded-3xl animate-ping opacity-50"></div>
+    <div id="passport-stamp" class="hidden relative z-10 flex-col items-center justify-center p-6 rounded-lg bg-black/20 backdrop-blur-sm">
+        <h1 class="text-3xl font-extrabold tracking-widest uppercase border-b-4 pb-2 mb-2 opacity-90">Arrival</h1>
+        <h2 id="stamp-location" class="text-5xl font-black tracking-tighter mb-2 opacity-100">JORDAN</h2>
+        <p id="stamp-note" class="text-[10px] font-bold tracking-widest uppercase mt-2 opacity-80">Destination: 7amodee ❤️</p>
+        <div class="absolute inset-0 border-[6px] rounded-xl opacity-80 mix-blend-screen mask-stamp"></div>
     </div>
 </div>
+
+<audio id="warp-audio" preload="auto">
+    <source src="https://www.myinstants.com/media/sounds/teleport.mp3" type="audio/mpeg">
+</audio>
+<audio id="stamp-audio" preload="auto">
+    <source src="https://www.myinstants.com/media/sounds/vine-boom.mp3" type="audio/mpeg">
+</audio>
 
 </body>
 </html>

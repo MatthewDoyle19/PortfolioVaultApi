@@ -1691,22 +1691,89 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
-// 🌀 THE QUANTUM TELEPORTER LOGIC (V3 - Bulletproof Audio)
+// 🌀 THE QUANTUM TELEPORTER LOGIC (ULTIMATE MASTER VERSION)
 // ==========================================
     const teleportBtn = document.getElementById('teleport-btn');
     const teleportWho = document.getElementById('teleport-who');
     const teleportWhere = document.getElementById('teleport-where');
     const teleportOverlay = document.getElementById('teleport-overlay');
-    const warpSpeed = document.getElementById('warp-speed');
+    const warpCanvas = document.getElementById('warp-canvas'); // 👈 نستخدم Canvas الآن
     const warpFlash = document.getElementById('warp-flash');
     const passportStamp = document.getElementById('passport-stamp');
     const stampLocation = document.getElementById('stamp-location');
     const stampNote = document.getElementById('stamp-note');
 
-// جلب الأصوات من الـ HTML
     const warpAudio = document.getElementById('warp-audio');
     const stampAudio = document.getElementById('stamp-audio');
 
+// --- 🌌 3D STARFIELD ENGINE ---
+    const ctx = warpCanvas ? warpCanvas.getContext('2d') : null;
+    let stars = [];
+    let warpSpeedParam = 0.5;
+    let isWarping = false;
+    let animFrame;
+
+    const initStars = () => {
+        if (!warpCanvas) return;
+        warpCanvas.width = window.innerWidth;
+        warpCanvas.height = window.innerHeight;
+        stars = [];
+        for(let i = 0; i < 600; i++) {
+            stars.push({
+                x: Math.random() * warpCanvas.width - warpCanvas.width/2,
+                y: Math.random() * warpCanvas.height - warpCanvas.height/2,
+                z: Math.random() * 2000,
+                pz: Math.random() * 2000
+            });
+        }
+    };
+
+    const drawStars = () => {
+        if (!ctx) return;
+        ctx.fillStyle = isWarping ? 'rgba(0, 0, 0, 0.15)' : 'rgba(0, 0, 0, 0.8)';
+        ctx.fillRect(0, 0, warpCanvas.width, warpCanvas.height);
+
+        let cx = warpCanvas.width / 2;
+        let cy = warpCanvas.height / 2;
+
+        stars.forEach(star => {
+            star.z -= warpSpeedParam;
+            if(star.z < 1) {
+                star.x = Math.random() * warpCanvas.width - cx;
+                star.y = Math.random() * warpCanvas.height - cy;
+                star.z = 2000;
+                star.pz = 2000;
+            }
+            let sx = (star.x / star.z) * warpCanvas.width + cx;
+            let sy = (star.y / star.z) * warpCanvas.height + cy;
+            let px = (star.x / star.pz) * warpCanvas.width + cx;
+            let py = (star.y / star.pz) * warpCanvas.height + cy;
+
+            star.pz = star.z;
+
+            ctx.beginPath();
+            ctx.moveTo(px, py);
+            ctx.lineTo(sx, sy);
+            ctx.lineWidth = (1 - star.z/2000) * (isWarping ? 5 : 2);
+
+            if (isWarping) {
+                let r = Math.random() > 0.5 ? 255 : 100;
+                let b = Math.random() > 0.5 ? 255 : 200;
+                ctx.strokeStyle = `rgba(${r}, 100, ${b}, 1)`;
+            } else {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+            }
+            ctx.stroke();
+        });
+        animFrame = requestAnimationFrame(drawStars);
+    };
+
+    if (warpCanvas) {
+        window.addEventListener('resize', initStars);
+        initStars();
+    }
+
+// --- 🚀 TELEPORTATION SEQUENCE ---
     if (teleportBtn) {
         teleportBtn.addEventListener('click', async () => {
             const who = teleportWho.value;
@@ -1715,76 +1782,76 @@ document.addEventListener('DOMContentLoaded', () => {
             teleportBtn.disabled = true;
             teleportBtn.innerHTML = '<span class="text-sm font-bold text-white">Charging... ⚡</span>';
 
-            // 🔊 فك قفل الأصوات للهواتف (Silent Play Hack) ثم تشغيل صوت القفزة
-            if (stampAudio) {
-                stampAudio.volume = 0;
-                stampAudio.play().then(() => { stampAudio.pause(); stampAudio.currentTime = 0; stampAudio.volume = 1; }).catch(e => {});
-            }
+            // 🔊 فك قفل الأصوات
+            if (stampAudio) { stampAudio.volume = 0; stampAudio.play().then(() => { stampAudio.pause(); stampAudio.currentTime = 0; stampAudio.volume = 1; }).catch(e => {}); }
+            if (warpAudio) { warpAudio.currentTime = 0; warpAudio.volume = 0.8; warpAudio.play().catch(e => console.log(e)); }
 
-            if (warpAudio) {
-                warpAudio.currentTime = 0;
-                warpAudio.volume = 0.8;
-                warpAudio.play().catch(e => console.log("Warp Audio blocked:", e));
-            }
-
-            // بدء الأنيميشن
             teleportOverlay.classList.remove('hidden');
+            warpCanvas.classList.remove('opacity-0');
             setTimeout(() => teleportOverlay.classList.remove('opacity-0'), 50);
+
+            drawStars();
+
+            // 1. التسارع للقفزة
             setTimeout(() => {
-                warpSpeed.classList.remove('opacity-0');
-                warpSpeed.classList.add('opacity-100');
+                isWarping = true;
+                warpSpeedParam = 60;
             }, 500);
 
             try {
-                await fetch(`${API_BASE_URL}/api/teleport`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user: who, destination: where })
-                });
-            } catch (e) { console.error("Teleport ping failed", e); }
+                await fetch(`${API_BASE_URL}/api/teleport`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user: who, destination: where }) });
+            } catch (e) { console.error(e); }
 
-            // الانتظار أثناء القفزة (ثانيتان)
+            // 2. الرحلة
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            // الوميض والوصول
-            warpSpeed.classList.remove('opacity-100');
-            warpSpeed.classList.add('opacity-0');
+            // 3. التوقف وتجهيز الختم
+            cancelAnimationFrame(animFrame);
+            warpSpeedParam = 0.5;
+            isWarping = false;
+
+            warpCanvas.classList.add('opacity-0');
             warpFlash.classList.remove('opacity-0');
             warpFlash.classList.add('opacity-100');
 
-            if (where === 'Jordan') {
-                stampLocation.innerText = 'JORDAN 🇯🇴';
-                stampNote.innerText = 'Destination: 7amodee ❤️';
-                passportStamp.className = 'stamp-smash relative z-10 flex-col items-center justify-center border-4 border-emerald-500 text-emerald-500 p-6 rounded-2xl bg-black/60 backdrop-blur-md shadow-[0_0_60px_rgba(16,185,129,0.5)]';
-                passportStamp.querySelector('h1').className = 'text-3xl font-extrabold tracking-widest uppercase border-b-2 border-emerald-500 pb-2 mb-2';
-                passportStamp.querySelector('.absolute').className = 'absolute -inset-2 border-2 border-emerald-500/30 rounded-3xl animate-ping opacity-50';
-            } else {
-                stampLocation.innerText = 'KAFR KANNA 🇵🇸';
-                stampNote.innerText = 'Destination: ZoZo 👸🏻';
-                passportStamp.className = 'stamp-smash relative z-10 flex-col items-center justify-center border-4 border-pink-500 text-pink-500 p-6 rounded-2xl bg-black/60 backdrop-blur-md shadow-[0_0_60px_rgba(244,114,182,0.5)]';
-                passportStamp.querySelector('h1').className = 'text-3xl font-extrabold tracking-widest uppercase border-b-2 border-pink-500 pb-2 mb-2';
-                passportStamp.querySelector('.absolute').className = 'absolute -inset-2 border-2 border-pink-500/30 rounded-3xl animate-ping opacity-50';
+            let themeColor = where === 'Jordan' ? 'rgba(16,185,129,1)' : 'rgba(244,114,182,1)';
+            stampLocation.innerText = where === 'Jordan' ? 'JORDAN 🇯🇴' : 'KAFR KANNA 🇵🇸';
+
+            if (who === 'Mohammad' && where === 'KafrKanna') {
+                stampNote.innerText = 'Traveler: 7amodee 👨🏻‍💻 ➔ To: ZoZo 👸🏻';
+            } else if (who === 'Zainab' && where === 'Jordan') {
+                stampNote.innerText = 'Traveler: ZoZo 👸🏻 ➔ To: 7amodee 👨🏻‍💻';
+            } else if (who === 'Mohammad' && where === 'Jordan') {
+                stampNote.innerText = 'Returning Base: 7amodee 👨🏻‍💻';
+            } else if (who === 'Zainab' && where === 'KafrKanna') {
+                stampNote.innerText = 'Returning Base: ZoZo 👸🏻';
             }
 
+            passportStamp.className = 'stamp-realistic relative z-10 flex-col items-center justify-center border-4 p-6 rounded-2xl bg-black/50 backdrop-blur-md';
+            passportStamp.style.borderColor = themeColor;
+            passportStamp.style.color = themeColor;
+            passportStamp.style.boxShadow = `0 0 80px ${themeColor.replace('1)', '0.4)')}`;
+            passportStamp.querySelector('h1').style.borderBottomColor = themeColor;
+            passportStamp.querySelector('.absolute').style.borderColor = themeColor;
+
+            // 4. الاصطدام (اهتزاز + صوت)
             setTimeout(() => {
                 warpFlash.classList.remove('opacity-100');
                 warpFlash.classList.add('opacity-0');
 
-                // 🔊 تشغيل صوت الختم بقوة الآن
-                if (stampAudio) {
-                    stampAudio.currentTime = 0;
-                    stampAudio.play().catch(e => console.log("Stamp Audio blocked:", e));
-                }
+                teleportOverlay.classList.add('camera-shake'); // تفعيل اهتزاز الشاشة
 
-            }, 100);
+                if (stampAudio) { stampAudio.currentTime = 0; stampAudio.play().catch(e => console.log(e)); }
+            }, 150);
 
             await new Promise(resolve => setTimeout(resolve, 3000));
 
-            // إغلاق الواجهة
+            // 5. الإغلاق
+            teleportOverlay.classList.remove('camera-shake');
             teleportOverlay.classList.add('opacity-0');
             setTimeout(() => {
                 teleportOverlay.classList.add('hidden');
-                passportStamp.classList.remove('stamp-smash');
+                passportStamp.classList.remove('stamp-realistic');
                 teleportBtn.disabled = false;
                 teleportBtn.innerHTML = '<span class="text-sm font-bold text-white tracking-wide">Initiate Warp</span><span class="text-lg">🚀</span>';
             }, 700);

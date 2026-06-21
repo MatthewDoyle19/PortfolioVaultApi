@@ -162,3 +162,31 @@ audio:hover {
     50% { opacity: 1; filter: blur(0); }
     100% { transform: scale(1) rotate(-5deg); opacity: 1; }
 }
+
+/* 1. السقوط الفيزيائي الواقعي للختم (وزن ثقيل + اصطدام) */
+.stamp-realistic {
+    display: flex !important;
+    animation: stampDrop 0.3s cubic-bezier(0.5, 0, 0.8, 0.2) forwards;
+    transform-origin: center center;
+}
+@keyframes stampDrop {
+    0% { transform: translateZ(800px) scale(6) rotate(30deg); opacity: 0; filter: blur(20px); }
+    80% { filter: blur(2px); }
+    100% { transform: translateZ(0px) scale(1) rotate(-4deg); opacity: 1; filter: blur(0px); }
+}
+
+/* 2. اهتزاز الكاميرا العنيف عند الوصول */
+.camera-shake {
+    animation: screenShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+@keyframes screenShake {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    10%, 30%, 50%, 70%, 90% { transform: translate3d(-15px, 8px, 0) rotate(-1deg); }
+    20%, 40%, 60%, 80% { transform: translate3d(15px, -8px, 0) rotate(1deg); }
+}
+
+/* 3. تأثير حبر الختم المتقطع */
+.mask-stamp {
+    mask-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="white" stroke="black" stroke-dasharray="4 2 10 3" stroke-width="2"/></svg>');
+    -webkit-mask-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="white" stroke="black" stroke-dasharray="4 2 10 3" stroke-width="2"/></svg>');
+}
