@@ -1691,7 +1691,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
-// 🌀 THE QUANTUM TELEPORTER (ELEGANT VERSION)
+// 🌀 THE QUANTUM TELEPORTER (JORDAN ↔ PALESTINE ROUTE)
 // ==========================================
     const teleportBtn = document.getElementById('teleport-btn');
     const teleportWho = document.getElementById('teleport-who');
@@ -1704,6 +1704,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const stampLocation = document.getElementById('stamp-location');
     const stampNote = document.getElementById('stamp-note');
 
+    const routeStartFlag = document.getElementById('route-start-flag');
+    const routeStartText = document.getElementById('route-start-text');
+    const routeEndFlag = document.getElementById('route-end-flag');
+    const routeEndText = document.getElementById('route-end-text');
+    const gradStart = document.getElementById('grad-start');
+    const gradEnd = document.getElementById('grad-end');
+
     const warpAudio = document.getElementById('warp-audio');
     const stampAudio = document.getElementById('stamp-audio');
 
@@ -1713,66 +1720,80 @@ document.addEventListener('DOMContentLoaded', () => {
             const where = teleportWhere.value;
 
             teleportBtn.disabled = true;
-            teleportBtn.innerHTML = '<span class="text-sm font-bold text-white tracking-widest">Routing... ✨</span>';
+            teleportBtn.innerHTML = '<span class="text-sm font-bold text-white tracking-widest">Routing Flight... ✈️</span>';
 
-            // 1. Silent audio unlock for mobile
+            // 1. إعداد مسار الرحلة الديناميكي (الأعلام والأسماء)
+            if (where === 'KafrKanna') {
+                // الانطلاق من الأردن إلى فلسطين
+                routeStartFlag.innerText = '🇯🇴';
+                routeStartText.innerText = 'Jordan';
+                routeEndFlag.innerText = '🇵🇸';
+                routeEndText.innerText = 'Palestine';
+                gradStart.setAttribute('stop-color', '#34d399'); // أخضر للأردن
+                gradEnd.setAttribute('stop-color', '#f472b6');   // زهري لفلسطين
+            } else {
+                // الانطلاق من فلسطين إلى الأردن
+                routeStartFlag.innerText = '🇵🇸';
+                routeStartText.innerText = 'Palestine';
+                routeEndFlag.innerText = '🇯🇴';
+                routeEndText.innerText = 'Jordan';
+                gradStart.setAttribute('stop-color', '#f472b6'); // زهري لفلسطين
+                gradEnd.setAttribute('stop-color', '#34d399');   // أخضر للأردن
+            }
+
+            // 2. فك قفل الصوت وتجهيز الشاشة
             if (stampAudio) { stampAudio.volume = 0; stampAudio.play().then(() => { stampAudio.pause(); stampAudio.currentTime = 0; stampAudio.volume = 1; }).catch(e => {}); }
 
-            // 2. Open the frosted glass overlay softly
             teleportOverlay.classList.remove('hidden');
             setTimeout(() => teleportOverlay.classList.remove('opacity-0'), 50);
 
-            // Notify server silently
             try {
                 await fetch(`${API_BASE_URL}/api/teleport`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user: who, destination: where }) });
             } catch (e) { console.error(e); }
 
-            // 3. Play soft wind/swoosh sound
+            // 3. تشغيل صوت الرحلة الهادئ
             if (warpAudio) { warpAudio.currentTime = 0; warpAudio.volume = 0.5; warpAudio.play().catch(e => {}); }
 
-            // 4. Reveal the flight path and start drawing the line
+            // 4. رسم الخط الطائر بين البلدين
             setTimeout(() => {
                 flightPath.classList.remove('opacity-0');
                 flightLine.classList.add('animate-draw-line');
                 flightSpark.classList.add('animate-spark-fly');
             }, 800);
 
-            // 5. Wait for the line to finish drawing
             await new Promise(resolve => setTimeout(resolve, 2500));
 
-            // 6. Fade out the path
+            // 5. إخفاء المسار
             flightPath.classList.add('opacity-0');
             setTimeout(() => {
                 flightLine.classList.remove('animate-draw-line');
                 flightSpark.classList.remove('animate-spark-fly');
             }, 700);
 
-            // 7. Setup the elegant pass
+            // 6. تجهيز بطاقة الوصول (Boarding Pass)
             stampLocation.innerText = where === 'Jordan' ? 'JORDAN 🇯🇴' : 'KAFR KANNA 🇵🇸';
-
             let themeColor = where === 'Jordan' ? 'text-emerald-400' : 'text-pink-400';
             stampLocation.className = `text-4xl font-extrabold tracking-tight mb-2 drop-shadow-md ${themeColor}`;
 
             if (who === 'Mohammad' && where === 'KafrKanna') {
-                stampNote.innerHTML = 'Traveler: <span class="text-white font-bold">7amodee</span> ➔ To: <span class="text-white font-bold">ZoZo</span>';
+                stampNote.innerHTML = 'Traveler: <span class="text-white font-bold">7amodee 👨🏻‍💻</span><br><span class="text-[10px] text-slate-500 uppercase mt-1 block">To: ZoZo 👸🏻</span>';
             } else if (who === 'Zainab' && where === 'Jordan') {
-                stampNote.innerHTML = 'Traveler: <span class="text-white font-bold">ZoZo</span> ➔ To: <span class="text-white font-bold">7amodee</span>';
+                stampNote.innerHTML = 'Traveler: <span class="text-white font-bold">ZoZo 👸🏻</span><br><span class="text-[10px] text-slate-500 uppercase mt-1 block">To: 7amodee 👨🏻‍💻</span>';
             } else if (who === 'Mohammad' && where === 'Jordan') {
-                stampNote.innerHTML = 'Returning Base: <span class="text-white font-bold">7amodee</span>';
+                stampNote.innerHTML = 'Returning Base: <span class="text-white font-bold">7amodee 👨🏻‍💻</span>';
             } else if (who === 'Zainab' && where === 'KafrKanna') {
-                stampNote.innerHTML = 'Returning Base: <span class="text-white font-bold">ZoZo</span>';
+                stampNote.innerHTML = 'Returning Base: <span class="text-white font-bold">ZoZo 👸🏻</span>';
             }
 
-            // 8. Softly reveal the pass & play the gentle chime
+            // 7. إظهار بطاقة الوصول بصوت هادئ
             setTimeout(() => {
                 passportStamp.classList.add('stamp-elegant');
                 if (stampAudio) { stampAudio.currentTime = 0; stampAudio.volume = 0.6; stampAudio.play().catch(e => {}); }
             }, 500);
 
-            // 9. Let them read it
             await new Promise(resolve => setTimeout(resolve, 3500));
 
-            // 10. Smooth exit
+            // 8. إغلاق البوابة
             teleportOverlay.classList.add('opacity-0');
             setTimeout(() => {
                 teleportOverlay.classList.add('hidden');

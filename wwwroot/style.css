@@ -163,7 +163,7 @@ audio:hover {
     100% { transform: scale(1) rotate(-5deg); opacity: 1; }
 }
 
-/* Smooth Line Drawing Animation */
+/* رسم مسار الرحلة بنعومة */
 .animate-draw-line {
     animation: drawLine 1.5s ease-in-out forwards;
 }
@@ -171,20 +171,21 @@ audio:hover {
     to { stroke-dashoffset: 0; }
 }
 
-/* Elegant Reveal for the Pass */
+/* ظهور بطاقة الوصول بشكل راقي */
 .stamp-elegant {
     display: flex !important;
     transform: translateY(0) !important;
     opacity: 1 !important;
 }
 
-/* Spark moving along the path */
+/* حركة الشرارة المضيئة على خط SVG */
 .animate-spark-fly {
-    offset-path: path("M 10 40 Q 50 -10 90 40");
+    offset-path: path("M 10 30 Q 50 -20 90 30");
     animation: flySpark 1.5s ease-in-out forwards;
     opacity: 1 !important;
 }
 @keyframes flySpark {
-    0% { offset-distance: 0%; }
-    100% { offset-distance: 100%; }
+    0% { offset-distance: 0%; transform: scale(1); }
+    50% { transform: scale(1.5); } /* تكبر في المنتصف */
+    100% { offset-distance: 100%; transform: scale(1); }
 }

@@ -757,22 +757,42 @@
 </div>
 
 <!-- THE TELEPORTATION OVERLAY -->
-<div id="teleport-overlay" class="fixed inset-0 z-[9999] hidden flex-col items-center justify-center bg-dark/85 backdrop-blur-2xl transition-opacity duration-1000 opacity-0 pointer-events-none">
+<div id="teleport-overlay" class="fixed inset-0 z-[9999] hidden flex-col items-center justify-center bg-dark/90 backdrop-blur-2xl transition-opacity duration-1000 opacity-0 pointer-events-none">
 
-    <div id="flight-path" class="w-64 h-32 relative mb-6 opacity-0 transition-opacity duration-700">
-        <svg class="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 100 50">
-            <path id="flight-line" d="M 10 40 Q 50 -10 90 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="120" stroke-dashoffset="120" stroke-linecap="round" class="text-white opacity-50 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
-            <circle cx="10" cy="40" r="2.5" class="fill-white drop-shadow-[0_0_5px_rgba(255,255,255,1)]" />
-            <circle cx="90" cy="40" r="2.5" class="fill-white drop-shadow-[0_0_5px_rgba(255,255,255,1)]" />
-            <text id="flight-spark" x="0" y="0" font-size="6" class="opacity-0 transition-opacity duration-300">✨</text>
+    <div id="flight-path" class="w-full max-w-sm px-8 relative mb-10 opacity-0 transition-opacity duration-700 flex flex-col items-center">
+
+        <div class="flex justify-between w-full mb-2 px-6 z-10">
+            <div class="flex flex-col items-center transform transition-transform duration-500" id="node-start">
+                <span id="route-start-flag" class="text-3xl drop-shadow-md mb-2">🇯🇴</span>
+                <span id="route-start-text" class="text-[10px] font-bold text-slate-300 tracking-widest uppercase bg-black/40 px-2 py-1 rounded-md border border-white/10">Jordan</span>
+            </div>
+            <div class="flex flex-col items-center transform transition-transform duration-500" id="node-end">
+                <span id="route-end-flag" class="text-3xl drop-shadow-md mb-2">🇵🇸</span>
+                <span id="route-end-text" class="text-[10px] font-bold text-slate-300 tracking-widest uppercase bg-black/40 px-2 py-1 rounded-md border border-white/10">Palestine</span>
+            </div>
+        </div>
+
+        <svg class="w-full h-20 overflow-visible -mt-6" viewBox="0 0 100 40">
+            <path id="flight-line" d="M 10 30 Q 50 -20 90 30" fill="none" stroke="url(#line-gradient)" stroke-width="2" stroke-dasharray="120" stroke-dashoffset="120" stroke-linecap="round" class="opacity-80 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
+
+            <defs>
+                <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop id="grad-start" offset="0%" stop-color="#34d399" />
+                    <stop id="grad-end" offset="100%" stop-color="#f472b6" />
+                </linearGradient>
+            </defs>
+
+            <circle id="flight-spark" cx="0" cy="0" r="2.5" fill="#ffffff" class="opacity-0 drop-shadow-[0_0_12px_rgba(255,255,255,1)]" />
         </svg>
     </div>
 
     <div id="passport-stamp" class="hidden flex-col items-center p-8 rounded-3xl bg-white/5 border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] transform translate-y-8 opacity-0 transition-all duration-1000 ease-out">
-        <h3 class="text-[10px] text-slate-400 tracking-[0.3em] uppercase mb-4">Secured Arrival</h3>
-        <h2 id="stamp-location" class="text-4xl font-extrabold tracking-tight text-white mb-2 drop-shadow-md">JORDAN</h2>
-        <div class="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent my-3"></div>
-        <p id="stamp-note" class="text-xs font-medium text-slate-300 tracking-wide">Traveler: 7amodee ➔ To: ZoZo</p>
+        <h3 class="text-[10px] text-slate-400 tracking-[0.3em] uppercase mb-4 flex items-center gap-2">
+            <span class="text-emerald-400 animate-pulse">●</span> Secured Arrival
+        </h3>
+        <h2 id="stamp-location" class="text-4xl font-extrabold tracking-tight text-white mb-2 drop-shadow-md">KAFR KANNA</h2>
+        <div class="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent my-4"></div>
+        <p id="stamp-note" class="text-xs font-medium text-slate-300 tracking-wide text-center leading-relaxed">Traveler: 7amodee<br><span class="text-[10px] text-slate-500 uppercase mt-1 block">To: ZoZo</span></p>
     </div>
 </div>
 
