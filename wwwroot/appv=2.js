@@ -1702,36 +1702,39 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = v2PromptForm.querySelector('button');
             const answerInput = document.getElementById('v2-answer').value;
 
+            // النص الثابت للسؤال لتوثيقه مع الإجابة
+            const questionText = "لو رجعنا بالزمن ليوم 25/3، يوم أن حُذفت كل الحواجز وبدأنا نصبح مقربين.. شو الكلام اللي كنتِ رح تحكيه لمحمد لو كنتِ بتعرفي إننا رح نوصل لهون؟";
+
             // 1. عرض حالة التحميل
             btn.disabled = true;
             btn.innerHTML = 'Encrypting & Saving to Vault... ⏳';
 
             try {
-                // 🛑 السحر هنا: إضافة تأخير وهمي (ثانيتين) لترى رسالة التحميل بوضوح!
+                // إضافة تأخير وهمي (ثانيتين) لترى رسالة التحميل بوضوح
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
-                 // await fetch(`${API_BASE_URL}/api/commits`, {
-                 //     method: 'POST',
-                 //     headers: { 'Content-Type': 'application/json' },
-                 //     body: JSON.stringify({
-                 //         date: new Date().toISOString().split('T')[0],
-                 //         message: `[V2.0.0 SYSTEM UPGRADE UNLOCKED] ❤️ ZoZo's Answer: "${answerInput}"`,
-                 //         imageUrl: null,
-                 //         audioUrl: null
-                 //     })
-                 // });
-                 
+                // await fetch(`${API_BASE_URL}/api/commits`, {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({
+                //         date: new Date().toISOString().split('T')[0],
+                //         // 🎯 دمج السؤال مع الإجابة بتنسيق يظهر بشكل رائع في الـ Timeline
+                //         message: `[V2.0.0 SYSTEM UPGRADE UNLOCKED] ✨\n\n💭 السؤال:\n"${questionText}"\n\n❤️ إجابة زوزو:\n"${answerInput}"`,
+                //         imageUrl: null,
+                //         audioUrl: null
+                //     })
+                // });
+
                 // 2. تسجيل الإنجاز في المتصفح
                 localStorage.setItem('v2_unlocked', 'true');
 
-                // التحديث الفوري للإصدار في الخلفية (قمنا بإزالة animate-pulse ليكون طبيعياً)
+                // التحديث الفوري للإصدار في الخلفية
                 if (versionTrigger) {
                     versionTrigger.innerText = 'v2.0.0';
                     versionTrigger.classList.add('text-pink-400', 'font-bold');
                 }
 
-                // 3. التحول للأخضر الزمردي
-                // 3. التحول للأخضر الزمردي المطلق (تدمير الكلاسات القديمة والـ hover)
+                // 3. التحول للأخضر الزمردي المطلق
                 btn.innerHTML = 'System Upgraded & Saved ✨';
                 btn.className = 'w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-[0_10px_20px_rgba(16,185,129,0.3)] tracking-wide pointer-events-none';
                 btn.classList.replace('from-indigo-500', 'from-emerald-500');
@@ -1751,10 +1754,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (textContent) textContent.classList.add('hidden');
 
                         if (gallery) {
-                            // 🚀 التعديل الجديد: إرجاع السحب للأعلى فوراً قبل ظهور الصور
+                            // إرجاع السحب للأعلى فوراً قبل ظهور الصور
                             const scrollContainer = gallery.closest('.overflow-y-auto');
                             if (scrollContainer) {
-                                // إعادة السحب لنقطة الصفر (أعلى الشاشة)
                                 scrollContainer.scrollTop = 0;
                             }
 
