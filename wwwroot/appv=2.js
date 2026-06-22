@@ -1713,17 +1713,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 // إضافة تأخير وهمي (ثانيتين) لترى رسالة التحميل بوضوح
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
-                // await fetch(`${API_BASE_URL}/api/commits`, {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({
-                //         date: new Date().toISOString().split('T')[0],
-                //         // 🎯 دمج السؤال مع الإجابة بتنسيق يظهر بشكل رائع في الـ Timeline
-                //         message: `[V2.0.0 SYSTEM UPGRADE UNLOCKED] ✨\n\n💭 السؤال:\n"${questionText}"\n\n❤️ إجابة زوزو:\n"${answerInput}"`,
-                //         imageUrl: null,
-                //         audioUrl: null
-                //     })
-                // });
+                await fetch(`${API_BASE_URL}/api/commits`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date: new Date().toISOString().split('T')[0],
+                        // 🎯 دمج السؤال مع الإجابة بتنسيق يظهر بشكل رائع في الـ Timeline
+                        message: `[V2.0.0 SYSTEM UPGRADE UNLOCKED] ✨\n\n💭 السؤال:\n"${questionText}"\n\n❤️ إجابة زوزو:\n"${answerInput}"`,
+                        imageUrl: null,
+                        audioUrl: null
+                    })
+                });
 
                 // 2. تسجيل الإنجاز في المتصفح
                 localStorage.setItem('v2_unlocked', 'true');
