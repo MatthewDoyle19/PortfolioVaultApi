@@ -180,21 +180,30 @@ app.MapPost("/api/moods", async (Mood newMood, VaultDb db) => {
     return Results.Ok(newMood);
 });
 
-// --- EVENTS (CALENDAR) ---
+// --- 📅 EVENTS (CALENDAR) ROUTES ---
 app.MapGet("/api/events", async (VaultDb db) => 
     await db.Events.OrderBy(e => e.Date).ToListAsync());
 
 app.MapPost("/api/events", async (Event ev, VaultDb db) => {
     db.Events.Add(ev);
     await db.SaveChangesAsync();
+
+    // 🚀 إشعار إضافة حدث جديد
+    await SendTelegramNotification($"📅 New Event Added to the Calendar!\n\n📌 Title: {ev.Title}\n🗓️ Date: {ev.Date}");
+
     return Results.Created($"/api/events/{ev.Id}", ev);
 });
 
 app.MapDelete("/api/events/{id}", async (int id, VaultDb db) => {
     var ev = await db.Events.FindAsync(id);
     if (ev is null) return Results.NotFound();
+    
     db.Events.Remove(ev);
     await db.SaveChangesAsync();
+
+    // 🚀 إشعار حذف الحدث
+    await SendTelegramNotification($"🗑️ An event was removed from the Calendar!\n\n📌 Title: {ev.Title}");
+
     return Results.Ok();
 });
 
