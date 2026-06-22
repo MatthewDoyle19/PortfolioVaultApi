@@ -7,42 +7,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMsg = document.getElementById('error-msg');
 
     const API_BASE_URL = '';
-    
-    // --- 1. Authentication ---
+
+    // --- 1. Authentication (التعديل النهائي والآمن) ---
     const handleLogin = async () => {
         const key = authKey.value;
 
-        // 🎓 السحر هنا: الباب السري لدفعة 2027
+        // الباب السري
         if (key === '2027') {
             triggerTawjihiEasterEgg();
-            return; // نوقف الدالة هنا حتى لا تذهب للسيرفر
+            return;
         }
 
-        // --- مسار الدخول الطبيعي ---
+        // الدخول الطبيعي
         try {
             const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ key: key })
             });
+
             const result = await response.json();
+
             if (response.ok && result.success) {
                 loginScreen.classList.add('fade-out');
                 setTimeout(() => {
                     loginScreen.classList.add('hidden');
                     dashboard.classList.remove('hidden');
                     dashboard.classList.add('fade-in');
-                    document.getElementById('bottom-nav').classList.remove('hidden');
-
-                    const sosBtn = document.getElementById('sos-btn');
-                    if (sosBtn) sosBtn.classList.remove('hidden');
-
+                    // تحديث الـ UI
+                    if(document.getElementById('bottom-nav')) document.getElementById('bottom-nav').classList.remove('hidden');
+                    if(document.getElementById('sos-btn')) document.getElementById('sos-btn').classList.remove('hidden');
                     window.scrollTo(0, 0);
                 }, 500);
             } else {
-                throw new Error(result.message);
+                throw new Error(result.message || "Invalid Key");
             }
         } catch (error) {
+            console.error("Login Failed:", error); // هذا سيظهر لك السبب في الـ Console
             errorMsg.style.opacity = '1';
             authKey.value = '';
             authKey.focus();
