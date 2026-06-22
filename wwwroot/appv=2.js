@@ -73,6 +73,15 @@ document.addEventListener('DOMContentLoaded', () => {
             p.style.animationDelay = `${Math.random() * 3}s`;
             confettiContainer.appendChild(p);
         }
+        
+        // 🎵 إضافة السحر الصوتي هنا:
+        const audio = document.getElementById('tawjihi-audio');
+        audio.volume = 0.6; // نجعل الصوت 60% ليكون هادئاً ومريحاً
+        audio.currentTime = 0; // لضمان بدء الأغنية من البداية دائماً
+        audio.play().catch(e => console.log("Audio play blocked by browser:", e));
+
+        // 2. إظهار الشاشة
+        overlay.classList.remove('hidden');
 
         // 2. إظهار الشاشة
         overlay.classList.remove('hidden');
@@ -90,15 +99,28 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.innerHTML = 'Opening The Vault... ⏳';
             btn.disabled = true;
 
-            // تأثير الخروج (إعادة الشفافية)
+            // تأثير الخروج (إعادة الشفافية للواجهة)
             overlay.classList.add('opacity-0');
             card.classList.remove('scale-100');
             card.classList.add('scale-95');
 
+            // 🎵 السحر الصوتي: إيقاف الأغنية بنعومة تامة (Fade Out)
+            const audio = document.getElementById('tawjihi-audio');
+            if (audio) {
+                let fadeAudio = setInterval(() => {
+                    if (audio.volume > 0.1) {
+                        audio.volume -= 0.1;
+                    } else {
+                        audio.pause();
+                        clearInterval(fadeAudio);
+                    }
+                }, 80); // 80 ملي ثانية لتتلاشى بسرعة تتناسب مع حركة الشاشة
+            }
+
             setTimeout(() => {
                 overlay.classList.add('hidden');
 
-                // 🛠️ التعديل الثاني: استدعاء الدالة مباشرة للدخول الآمن والسريع
+                // 🛠️ استدعاء الدالة مباشرة للدخول الآمن والسريع
                 authKey.value = '2503';
                 handleLogin();
 
