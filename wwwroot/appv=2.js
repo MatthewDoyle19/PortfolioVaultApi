@@ -1798,6 +1798,31 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- [2] دالة السحر: تفتح الشاشة وتشغل الموسيقى ---
     const openEasterEgg = () => {
         if (easterEggOverlay) {
+
+            // 🎯 NEW LOGIC: Check if V2 is already unlocked
+            const isUnlocked = localStorage.getItem('v2_unlocked') === 'true';
+            const textContent = document.getElementById('easter-egg-content'); // The Form/Question
+            const gallery = document.getElementById('easter-egg-gallery');     // The Photos
+
+            if (isUnlocked) {
+                // Skip the form and go straight to the gallery
+                if (textContent) {
+                    textContent.classList.add('hidden', 'opacity-0');
+                }
+                if (gallery) {
+                    gallery.classList.remove('hidden', 'opacity-0', 'translate-y-10');
+                }
+            } else {
+                // Ensure the form is visible if not answered yet (Fallback)
+                if (textContent) {
+                    textContent.classList.remove('hidden', 'opacity-0', 'scale-95');
+                }
+                if (gallery) {
+                    gallery.classList.add('hidden', 'opacity-0', 'translate-y-10');
+                }
+            }
+
+            // Reveal the Overlay
             easterEggOverlay.classList.remove('hidden');
             if (easterEggAudio) {
                 easterEggAudio.volume = 0.5;
