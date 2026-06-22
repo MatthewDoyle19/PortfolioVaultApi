@@ -1474,11 +1474,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const newStatus = currentStatus === 'watched' ? 'backlog' : 'watched';
 
         try {
-            await fetch(`${API_BASE_URL}/api/media/${id}`, {
-                method: 'PUT', // تأكد أن السيرفر يقبل PUT أو PATCH لتحديث البيانات
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus })
+            // 🎯 التعديل الهندسي هنا: 
+            // 1. أضفنا /status للرابط ليطابق مسار الـ C#
+            // 2. أرسلنا newStatus كـ Query Parameter ليقرأه السيرفر بنجاح
+            await fetch(`${API_BASE_URL}/api/media/${id}/status?newStatus=${newStatus}`, {
+                method: 'PUT'
+                // لم نعد بحاجة لإرسال Body أو Headers لأن السيرفر يقرأ من الرابط مباشرة!
             });
+
             fetchMedia(); // إعادة رسم القائمة لتظهر علامة الصح
         } catch (e) {
             console.error("Toggle status error:", e);
