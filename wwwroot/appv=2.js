@@ -1503,31 +1503,32 @@ document.addEventListener('DOMContentLoaded', () => {
 // 🧠 نظام التبديل الذكي (Profile Switcher Logic)
 // ---------------------------------------------------------
     window.switchUser = (username) => {
-        // 1. الحفظ في ذاكرة المتصفح
         localStorage.setItem('vault_user', username);
 
-        // 2. جلب العناصر من الواجهة
         const btn7amodee = document.getElementById('btn-7amodee');
         const btnZozo = document.getElementById('btn-zozo');
         const submitBtn = document.querySelector('#add-media-form button[type="submit"]');
 
         if (!btn7amodee || !btnZozo) return;
 
+        // كلاسات الزر المطفي (واضح، مقروء، بدون شفافية مفرطة)
+        const inactiveClasses = 'px-6 py-2 text-sm md:text-base rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-slate-300 hover:bg-white/10 hover:text-white scale-95 cursor-pointer';
+
         if (username === 'Mohammad') {
-            // --- تفعيل ستايل حمودي (أزرق) ---
-            btn7amodee.className = 'px-5 py-2 rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-blue-400 bg-blue-500/20 border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.3)] scale-105';
-            btnZozo.className = 'px-5 py-2 rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-slate-500 bg-black/30 border border-white/5 hover:bg-pink-500/10 hover:text-pink-400 opacity-60 scale-95 cursor-pointer';
+            // --- تفعيل ستايل حمودي (أزرق متدرج وواضح) ---
+            btn7amodee.className = 'px-6 py-2 text-sm md:text-base rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-white bg-gradient-to-r from-blue-600 to-blue-400 border border-blue-400/50 shadow-[0_0_20px_rgba(59,130,246,0.4)] scale-100 z-10 relative';
+            btnZozo.className = inactiveClasses;
 
             // تلوين زر الفورم بالأزرق
-            if (submitBtn) submitBtn.className = 'bg-blue-500/20 text-blue-400 border border-blue-500/30 font-bold py-3.5 px-6 rounded-xl transition-all hover:bg-blue-500 hover:text-white active:scale-95 shadow-lg';
+            if (submitBtn) submitBtn.className = 'bg-blue-500/20 text-blue-300 border border-blue-500/50 font-bold py-3.5 px-6 rounded-xl transition-all hover:bg-blue-500 hover:text-white active:scale-95 shadow-lg';
 
         } else {
-            // --- تفعيل ستايل زوزو (زهري) ---
-            btnZozo.className = 'px-5 py-2 rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-pink-400 bg-pink-500/20 border border-pink-500/50 shadow-[0_0_15px_rgba(244,114,182,0.3)] scale-105';
-            btn7amodee.className = 'px-5 py-2 rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-slate-500 bg-black/30 border border-white/5 hover:bg-blue-500/10 hover:text-blue-400 opacity-60 scale-95 cursor-pointer';
+            // --- تفعيل ستايل زوزو (زهري متدرج وواضح) ---
+            btnZozo.className = 'px-6 py-2 text-sm md:text-base rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-white bg-gradient-to-r from-pink-600 to-pink-400 border border-pink-400/50 shadow-[0_0_20px_rgba(244,114,182,0.4)] scale-100 z-10 relative';
+            btn7amodee.className = inactiveClasses;
 
             // تلوين زر الفورم بالزهري
-            if (submitBtn) submitBtn.className = 'bg-pink-500/20 text-pink-400 border border-pink-500/30 font-bold py-3.5 px-6 rounded-xl transition-all hover:bg-pink-500 hover:text-white active:scale-95 shadow-lg';
+            if (submitBtn) submitBtn.className = 'bg-pink-500/20 text-pink-300 border border-pink-500/50 font-bold py-3.5 px-6 rounded-xl transition-all hover:bg-pink-500 hover:text-white active:scale-95 shadow-lg';
         }
     };
 
