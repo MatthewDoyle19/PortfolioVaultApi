@@ -148,34 +148,48 @@ audio:hover {
     perspective: 1000px;
 }
 
-/* تحديث الأنيميشن لضمان ظهوره في المقدمة وبوضوح */
+/* 1. الخلفية والطبقة الأساسية */
+.tawjihi-overlay {
+    background-color: #050505 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 99999 !important;
+    display: none !important; /* مخفي افتراضياً */
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+/* نظهره فقط عندما نزيل كلاس hidden */
+.tawjihi-overlay:not(.hidden) {
+    display: flex !important;
+    pointer-events: auto;
+}
+
+/* 2. القبعات (الجسيمات) */
 .particle-fall {
     position: absolute;
+    top: -10%;
     z-index: 10000;
     pointer-events: none;
     font-size: 2rem;
     filter: drop-shadow(0 0 5px rgba(255,255,255,0.8));
+    /* تعريف الحركة */
+    animation-name: falling;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
 }
 
-#tawjihi-overlay {
-    background-color: #050505 !important; /* إجبار الخلفية على السواد الحالك */
-    display: none !important; /* مخفية تماماً حتى يتم تفعيلها */
-    pointer-events: none; /* لا تحجب اللمس عن الحقول الخلفية */
+/* 3. تعريف الحركة (هذا هو الجزء المفقود الذي كان يمنع ظهورها!) */
+@keyframes falling {
+    0% { transform: translateY(0vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
 }
 
-/* التنسيق عند التفعيل */
-#tawjihi-overlay:not(.hidden) {
-    display: flex !important;
-    pointer-events: auto;
-    opacity: 1 !important;
-}
-
-#tawjihi-overlay.visible {
-    pointer-events: auto;
-    opacity: 1;
-}
-
-#confetti-container {
+.confetti-container {
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
