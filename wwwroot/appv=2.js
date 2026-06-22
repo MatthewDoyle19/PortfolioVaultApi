@@ -7,10 +7,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMsg = document.getElementById('error-msg');
 
     const API_BASE_URL = '';
-
+    
     // --- 1. Authentication ---
     const handleLogin = async () => {
         const key = authKey.value;
+
+        // 🎓 السحر هنا: الباب السري لدفعة 2027
+        if (key === '2027') {
+            triggerTawjihiEasterEgg();
+            return; // نوقف الدالة هنا حتى لا تذهب للسيرفر
+        }
+
+        // --- مسار الدخول الطبيعي ---
         try {
             const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
                 method: 'POST',
@@ -44,6 +52,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loginBtn.addEventListener('click', handleLogin);
     authKey.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+
+    // --- 🎓 1.5 Tawjihi Easter Egg Logic ---
+    const triggerTawjihiEasterEgg = () => {
+        const overlay = document.getElementById('tawjihi-overlay');
+        const card = document.getElementById('tawjihi-card');
+        const confettiContainer = document.getElementById('confetti-container');
+
+        // مسح أي قبعات قديمة وتوليد 40 قبعة وشرارة جديدة
+        confettiContainer.innerHTML = '';
+        const particles = ['🎓', '✨', '🎉', '🤍'];
+        for(let i=0; i < 40; i++) {
+            const p = document.createElement('div');
+            p.innerText = particles[Math.floor(Math.random() * particles.length)];
+            p.className = 'absolute text-2xl particle-fall';
+            p.style.left = `${Math.random() * 100}%`;
+            p.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            p.style.animationDelay = `${Math.random() * 2}s`;
+            confettiContainer.appendChild(p);
+        }
+
+        // إظهار الواجهة بنعومة
+        overlay.classList.remove('hidden');
+        setTimeout(() => {
+            overlay.classList.remove('opacity-0');
+            card.classList.remove('scale-95');
+            card.classList.add('scale-100');
+        }, 50);
+
+        // إغلاق الواجهة والعودة لشاشة الدخول الطبيعية
+        document.getElementById('close-tawjihi-btn').onclick = () => {
+            overlay.classList.add('opacity-0');
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                authKey.value = ''; // تفريغ الحقل لتكتب الباسوورد الأصلي براحة
+                authKey.focus();
+            }, 700);
+        };
+    };
 
     // --- 2. Uptime Counter ---
     const uptimeDisplay = document.getElementById('uptime-counter');
