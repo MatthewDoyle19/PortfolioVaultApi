@@ -728,7 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const deletePenalty = async (id) => {
+    window.deletePenalty = async (id) => {
         if (!confirm("Are you sure you want to delete this verdict?")) return;
         try {
             await fetch(`${API_BASE_URL}/api/penalties/${id}`, { method: 'DELETE' });
