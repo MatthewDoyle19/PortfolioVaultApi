@@ -408,56 +408,68 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { console.error("Failed to fetch events", error); }
     };
 
+    // مصفوفة عالمية لمسح العدادات ومنع بطء المتصفح
+    window.eventTimers = window.eventTimers || [];
+
     const renderEvents = (events) => {
+        // 🧹 تنظيف العدادات القديمة
+        window.eventTimers.forEach(clearInterval);
+        window.eventTimers = [];
+
         eventsGrid.innerHTML = '';
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
 
         events.forEach((ev) => {
-            const [year, month, day] = ev.date.split('-');
-            const eventDate = new Date(year, month - 1, day);
-            eventDate.setHours(0, 0, 0, 0);
-
-            const timeDiff = eventDate.getTime() - today.getTime();
-            const daysDiff = Math.round(timeDiff / (1000 * 3600 * 24));
-
-            let countdownText = "";
-            let colorClass = "text-purple-400";
-            let bgClass = "premium-glass border-white/5";
-
-            if (daysDiff === 0) {
-                countdownText = "Today! 🎉";
-                colorClass = "text-emerald-400";
-                bgClass = "premium-glass border-emerald-500/30";
-            } else if (daysDiff > 0) {
-                countdownText = `${daysDiff} Days Left`;
-            } else {
-                countdownText = "Passed ✔️";
-                colorClass = "text-slate-500";
-                bgClass = "premium-glass border-white/5 opacity-60";
-            }
-
             const card = document.createElement('div');
-            card.className = `flex items-center justify-between p-4 rounded-[1.5rem] transition-all group ${bgClass}`;
+            card.className = `flex items-center justify-between p-4 rounded-[1.5rem] transition-all group premium-glass border-white/5 mb-3`;
+
+            const timerId = `live-timer-${ev.id}`;
 
             card.innerHTML = `
-            <div class="flex items-center gap-4">
-                <div class="${colorClass} bg-black/40 p-3 rounded-xl shadow-inner">
-                    <span class="text-xl">${ev.type === 'Meeting' ? '✈️' : ev.type === 'Task' ? '📌' : '🤍'}</span>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold text-sm tracking-wide">${ev.title}</h4>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="text-[10px] uppercase font-black ${colorClass} tracking-wider bg-black/30 px-2 py-0.5 rounded-md">${countdownText}</span>
-                        <span class="text-xs text-slate-400">${ev.date}</span>
-                    </div>
-                </div>
+        <div class="flex items-center gap-4">
+            <div class="bg-black/40 p-3 rounded-xl shadow-inner text-xl">
+                ${ev.type === 'Meeting' ? '✈️' : ev.type === 'Task' ? '📌' : '🤍'}
             </div>
-            <button onclick="deleteEvent(${ev.id})" class="text-slate-600 hover:text-rose-400 p-2 transition-colors opacity-0 group-hover:opacity-100 active:scale-90">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+            <div>
+                <h4 class="text-white font-bold text-sm tracking-wide">${ev.title}</h4>
+                <div id="${timerId}" class="flex gap-2 mt-1 text-[10px] font-mono font-bold uppercase tracking-widest text-pink-400">
+                    </div>
+            </div>
+        </div>
+        <button onclick="deleteEvent(${ev.id})" class="text-slate-600 hover:text-rose-400 p-2 transition-colors opacity-0 group-hover:opacity-100 active:scale-90">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
         `;
             eventsGrid.appendChild(card);
+
+            // ⚙️ محرك العداد (توقيت الأردن: UTC + 3)
+            const updateTimer = () => {
+                // الحصول على وقت الأردن الحالي
+                const now = new Date();
+                const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                const ammanTime = new Date(utc + (3600000 * 3));
+
+                // تحويل تاريخ الحدث لـ Amman Time
+                const targetDate = new Date(ev.date + 'T00:00:00+03:00');
+
+                const distance = targetDate - ammanTime;
+                const timerEl = document.getElementById(timerId);
+
+                if (distance < 0) {
+                    timerEl.innerHTML = `<span class="text-emerald-400">PASSED ✔️</span>`;
+                    return;
+                }
+
+                const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((distance % (1000 * 60)) / 1000);
+
+                timerEl.innerHTML = `<span>${d}d ${h}h ${m}m ${s}s</span>`;
+            };
+
+            updateTimer();
+            const intervalId = setInterval(updateTimer, 1000);
+            window.eventTimers.push(intervalId);
         });
     };
 
