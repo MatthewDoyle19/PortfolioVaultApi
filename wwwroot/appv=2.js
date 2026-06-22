@@ -59,6 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.getElementById('tawjihi-card');
         const confettiContainer = document.getElementById('confetti-container');
 
+        // 1. إزالة الـ hidden وإجبار الشاشة على الظهور
+        overlay.style.display = 'flex';
+        overlay.classList.remove('hidden');
+
+        // 2. تحديث الـ opacity بعد جزء من الثانية
+        setTimeout(() => {
+            overlay.classList.remove('opacity-0');
+        }, 50);
+
         // داخل دالة triggerTawjihiEasterEgg
         confettiContainer.innerHTML = '';
         const particles = ['🎓', '✨', '🎉', '🤍'];
