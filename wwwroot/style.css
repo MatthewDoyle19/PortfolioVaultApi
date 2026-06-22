@@ -30,9 +30,13 @@
 .animation-delay-2000 { animation-delay: 2s; }
 .animation-delay-4000 { animation-delay: 4s; }
 
-/* Safe Area padding for iPhone */
-.pt-safe { padding-top: env(safe-area-inset-top); }
-.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+/* Safe Area padding for iPhone & Android Fallback */
+.pt-safe {
+    padding-top: calc(1rem + env(safe-area-inset-top)) !important;
+}
+.pb-safe {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom)) !important;
+}
 
 /* iOS Date Picker Fix - Softened */
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -48,6 +52,11 @@ input[type="date"]:focus::-webkit-calendar-picker-indicator {
 /* Invisible, Elegant Scrollbar for a Native App Feel */
 ::-webkit-scrollbar { width: 0px; background: transparent; }
 html { scroll-behavior: smooth; }
+
+/* 📱 منع الـ Navigator من تغطية المحتوى السفلي */
+body {
+    padding-bottom: 110px !important;
+}
 
 /* Ultra-Premium Glass Effect (The Dashboard) */
 .premium-glass {
