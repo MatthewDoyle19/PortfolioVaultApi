@@ -1426,7 +1426,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         listContainer.innerHTML = '';
 
-        // Show empty state if there are no movies
         if (mediaItems.length === 0) {
             listContainer.innerHTML = `<div class="text-center text-slate-500 text-sm py-4 font-medium">The list is empty. Add something to watch!</div>`;
             return;
@@ -1434,21 +1433,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
         mediaItems.forEach(item => {
             const card = document.createElement('div');
-            card.className = 'bg-black/40 p-3 rounded-xl border border-white/5 flex justify-between items-center group transition-all hover:bg-black/60 hover:border-blue-500/30 shadow-sm';
+            // 🚨 إصلاح محتمل لمشكلة الحذف: التأكد من جلب الـ ID سواء كان id أو Id
+            const itemId = item.id || item.Id;
+            const isWatched = item.status === 'watched';
 
+            // تنسيقات ديناميكية بناءً على حالة الفيلم (تمت مشاهدته أم لا)
+            const textStyle = isWatched ? 'line-through text-slate-500' : 'text-slate-200';
+            const cardStyle = isWatched ? 'bg-black/20 border-white/5' : 'bg-black/40 border-white/10 hover:bg-black/60 hover:border-blue-500/30';
+
+            // رسم أيقونة الصح (دائرة فارغة إذا لم يشاهد، وصح أخضر إذا شوهد)
+            const checkIcon = isWatched
+                ? `<svg class="w-5 h-5 text-emerald-500 drop-shadow-md" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`
+                : `<div class="w-4 h-4 border-2 border-slate-500 rounded-full group-hover:border-blue-400 transition-colors"></div>`;
+
+            card.className = `p-3 rounded-xl border flex justify-between items-center group transition-all duration-300 shadow-sm ${cardStyle} mb-2`;
+
+            // 🎯 اللمسة الهندسية: دمجنا زر الصح، والنص، وزر الحذف
             card.innerHTML = `
+        <div class="flex items-center gap-3">
+            <button onclick="toggleMediaStatus(${itemId}, '${item.status}')" class="p-1 active:scale-75 transition-transform shrink-0 flex items-center justify-center">
+                ${checkIcon}
+            </button>
             <div class="flex flex-col">
-                <span class="text-sm font-bold text-slate-200 leading-tight">${item.title}</span>
+                <span class="text-sm font-bold ${textStyle} leading-tight transition-all duration-300">${item.title}</span>
                 <span class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-1">
-                    Added by ${item.addedBy === 'Mohammad' ? '7amodee' : (item.addedBy === 'Zainab' ? 'ZoZo' : item.addedBy)}
+                    Added by <span class="${item.addedBy === 'Mohammad' ? 'text-blue-400' : (item.addedBy === 'Zainab' ? 'text-pink-400' : 'text-slate-400')}">${item.addedBy === 'Mohammad' ? '7amodee' : (item.addedBy === 'Zainab' ? 'ZoZo' : item.addedBy)}</span>
                 </span>
             </div>
-            <button onclick="deleteMedia(${item.id})" class="text-rose-400/50 hover:text-rose-400 transition-colors p-2 font-bold active:scale-90 bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        `;
+        </div>
+        <button onclick="deleteMedia(${itemId})" class="text-rose-400/50 hover:text-rose-400 transition-colors p-2 font-bold active:scale-90 bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+    `;
             listContainer.appendChild(card);
         });
+    };
+
+    window.toggleMediaStatus = async (id, currentStatus) => {
+        // نعكس الحالة: إذا كان backlog يصبح watched والعكس
+        const newStatus = currentStatus === 'watched' ? 'backlog' : 'watched';
+
+        try {
+            await fetch(`${API_BASE_URL}/api/media/${id}`, {
+                method: 'PUT', // تأكد أن السيرفر يقبل PUT أو PATCH لتحديث البيانات
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+            fetchMedia(); // إعادة رسم القائمة لتظهر علامة الصح
+        } catch (e) {
+            console.error("Toggle status error:", e);
+        }
     };
 
     // 🚨 Critical fix: Attached to window so your HTML button can actually find it
@@ -1461,6 +1495,45 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Delete media error:", e);
         }
     };
+
+    // ---------------------------------------------------------
+// 🧠 نظام التبديل الذكي (Profile Switcher Logic)
+// ---------------------------------------------------------
+    window.switchUser = (username) => {
+        // 1. الحفظ في ذاكرة المتصفح
+        localStorage.setItem('vault_user', username);
+
+        // 2. جلب العناصر من الواجهة
+        const btn7amodee = document.getElementById('btn-7amodee');
+        const btnZozo = document.getElementById('btn-zozo');
+        const submitBtn = document.querySelector('#add-media-form button[type="submit"]');
+
+        if (!btn7amodee || !btnZozo) return;
+
+        if (username === 'Mohammad') {
+            // --- تفعيل ستايل حمودي (أزرق) ---
+            btn7amodee.className = 'px-5 py-2 rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-blue-400 bg-blue-500/20 border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.3)] scale-105';
+            btnZozo.className = 'px-5 py-2 rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-slate-500 bg-black/30 border border-white/5 hover:bg-pink-500/10 hover:text-pink-400 opacity-60 scale-95 cursor-pointer';
+
+            // تلوين زر الفورم بالأزرق
+            if (submitBtn) submitBtn.className = 'bg-blue-500/20 text-blue-400 border border-blue-500/30 font-bold py-3.5 px-6 rounded-xl transition-all hover:bg-blue-500 hover:text-white active:scale-95 shadow-lg';
+
+        } else {
+            // --- تفعيل ستايل زوزو (زهري) ---
+            btnZozo.className = 'px-5 py-2 rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-pink-400 bg-pink-500/20 border border-pink-500/50 shadow-[0_0_15px_rgba(244,114,182,0.3)] scale-105';
+            btn7amodee.className = 'px-5 py-2 rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-slate-500 bg-black/30 border border-white/5 hover:bg-blue-500/10 hover:text-blue-400 opacity-60 scale-95 cursor-pointer';
+
+            // تلوين زر الفورم بالزهري
+            if (submitBtn) submitBtn.className = 'bg-pink-500/20 text-pink-400 border border-pink-500/30 font-bold py-3.5 px-6 rounded-xl transition-all hover:bg-pink-500 hover:text-white active:scale-95 shadow-lg';
+        }
+    };
+
+// 3. تهيئة النظام عند فتح الصفحة (Initialization)
+    document.addEventListener('DOMContentLoaded', () => {
+        // جلب المستخدم الحالي، وإذا لم يكن موجوداً نجعله "Mohammad" افتراضياً
+        const currentUser = localStorage.getItem('vault_user') || 'Mohammad';
+        switchUser(currentUser);
+    });
 
     const addMediaForm = document.getElementById('add-media-form');
 
