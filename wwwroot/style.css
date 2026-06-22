@@ -148,16 +148,26 @@ audio:hover {
     perspective: 1000px;
 }
 
-/* هذا هو السطر الذهبي الذي يمنع التداخل مع حقل الباسوورد */
+/* 1. الخلفية والطبقة الأساسية */
 #tawjihi-overlay {
-    display: none !important; /* يختفي تماماً ولا يحجز مساحة */
-    pointer-events: none !important; /* لا يستقبل أي ضغطات */
+    background-color: #050505 !important;
+    position: fixed !important; /* 🛠️ هذا كان مفقوداً */
+    top: 0 !important;          /* 🛠️ هذا كان مفقوداً */
+    left: 0 !important;         /* 🛠️ هذا كان مفقوداً */
+    width: 100vw !important;    /* 🛠️ هذا كان مفقوداً */
+    height: 100vh !important;   /* 🛠️ هذا كان مفقوداً */
+    z-index: 99999 !important;  /* 🛠️ هذا كان مفقوداً */
+    align-items: center;        /* 🛠️ هذا كان مفقوداً لضمان التوسيط */
+    justify-content: center;    /* 🛠️ هذا كان مفقوداً لضمان التوسيط */
+
+    display: none !important;
+    pointer-events: none !important;
 }
 
 /* عندما نقوم بإزالة كلاس hidden بواسطة الجافاسكريبت، يتفعل الكود هنا */
 #tawjihi-overlay:not(.hidden) {
     display: flex !important;
-    pointer-events: auto; /* يستقبل الضغطات فقط عندما يظهر */
+    pointer-events: auto;
 }
 
 /* القبعات */
@@ -175,7 +185,7 @@ audio:hover {
     100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
 }
 
-/* 4. الحاوية (استخدمنا # بدلاً من .) */
+/* 4. الحاوية */
 #confetti-container {
     position: absolute !important;
     top: 0 !important;

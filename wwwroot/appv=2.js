@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.getElementById('tawjihi-card');
         const confettiContainer = document.getElementById('confetti-container');
 
-        // 1. توليد القبعات (بشكل نظيف)
+        // 1. توليد القبعات
         confettiContainer.innerHTML = '';
         const particles = ['🎓', '✨', '🎉', '🤍'];
         for(let i = 0; i < 50; i++) {
@@ -74,33 +74,33 @@ document.addEventListener('DOMContentLoaded', () => {
             confettiContainer.appendChild(p);
         }
 
-        // 2. إظهار الشاشة (نعتمد على الكلاسات التي في الـ CSS)
-        overlay.classList.remove('hidden'); // يزيل display: none
+        // 2. إظهار الشاشة
+        overlay.classList.remove('hidden');
 
-        // ننتظر قليلاً ليعمل الأنيميشن بسلاسة
+        // 🛠️ التعديل الأول: إزالة الشفافية لكي تظهر الشاشة والقبعات!
         setTimeout(() => {
+            overlay.classList.remove('opacity-0');
             card.classList.remove('scale-95');
             card.classList.add('scale-100');
         }, 50);
 
-        // 3. زر الإغلاق (مع السحر الهندسي)
+        // 3. زر الإغلاق
         document.getElementById('close-tawjihi-btn').onclick = () => {
             const btn = document.getElementById('close-tawjihi-btn');
             btn.innerHTML = 'Opening The Vault... ⏳';
             btn.disabled = true;
 
-            // تأثير الخروج
+            // تأثير الخروج (إعادة الشفافية)
             overlay.classList.add('opacity-0');
             card.classList.remove('scale-100');
             card.classList.add('scale-95');
 
             setTimeout(() => {
-                overlay.classList.add('hidden'); // يعيد display: none
-                overlay.classList.remove('opacity-0'); // نعيدها للحالة الطبيعية للمرة القادمة
+                overlay.classList.add('hidden');
 
-                // المفتاح السحري: حقن الباسوورد والدخول
+                // 🛠️ التعديل الثاني: استدعاء الدالة مباشرة للدخول الآمن والسريع
                 authKey.value = '2503';
-                document.getElementById('login-btn').click();
+                handleLogin();
 
                 // إعادة الزر لحالته
                 btn.innerHTML = 'Start The Journey ✨';

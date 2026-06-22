@@ -825,11 +825,8 @@
 <!--    </div>-->
 <!--</div>-->
 
-<!-- 🎓 TAWJIHI 2027 EASTER EGG OVERLAY -->
-<!-- تم إضافة flex لضمان التوسيط في منتصف الشاشة تماماً -->
-<div id="tawjihi-overlay" class="hidden fixed inset-0 z-[9999] flex flex-col items-center justify-center backdrop-blur-3xl transition-opacity duration-1000 opacity-0 overflow-hidden w-full h-full">
-    
-    <!-- تأكد أن الحاوية تملك z-index عالٍ أيضاً -->
+<div id="tawjihi-overlay" class="hidden fixed inset-0 z-[9999] bg-black/95 flex-col items-center justify-center backdrop-blur-3xl transition-opacity duration-1000 opacity-0 overflow-hidden w-full h-full">
+
     <div id="confetti-container" class="absolute inset-0 z-[10000] w-full h-full pointer-events-none"></div>
 
     <div class="premium-glass p-8 md:p-10 rounded-[2.5rem] max-w-sm w-[90%] text-center relative z-10 transform scale-95 transition-transform duration-700 shadow-[0_30px_60px_rgba(16,185,129,0.15)]" id="tawjihi-card">
@@ -837,10 +834,10 @@
         <h2 class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 mb-2 tracking-tight">Class of 2027</h2>
         <p class="text-[10px] md:text-xs text-emerald-300 font-bold tracking-widest uppercase mb-8 bg-emerald-500/10 py-1.5 px-4 rounded-full inline-block border border-emerald-500/20">Welcome to Your Last Summer</p>
 
-        <!-- تم إضافة dir="rtl" وتكبير الخط ليناسب شاشة الآيفون -->
-        <div dir="rtl" class="text-base md:text-lg text-slate-200 leading-loose font-medium bg-black/40 p-6 rounded-2xl border border-white/5 shadow-inner text-right font-poetic mb-8">ألف مبروك التخرج يا أميرة 👸🏻.<br><br>
-            فخور فيكي وبكل جهد بذلتيه. السنة الجاية هي الأهم والأخيرة، وبدي إياكي تدخليها وأنتِ مطمنة وعارفة إنك مش لحالك..<br><br>أنا بظهرك،
-            والـ Vault تبعنا هو مساحتك اللي رح تهربي إلها من أي ضغط. رح ننجزها سوا.
+        <div dir="rtl" class="text-base md:text-lg text-slate-200 leading-loose font-medium bg-black/40 p-6 rounded-2xl border border-white/5 shadow-inner text-right font-poetic mb-8">
+            ألف مبروك التخرج يا أميرة 👸🏻.<br><br>
+            فخور فيكي وبكل جهد بذلتيه. السنة الجاية هي الأهم والأخيرة، وبدي إياكي تدخليها وأنتِ مطمنة وعارفة إنك مش لحالك..<br><br>
+            أنا بظهرك، والـ Vault تبعنا هو مساحتك اللي رح تهربي إلها من أي ضغط. رح ننجزها سوا.
         </div>
 
         <button id="close-tawjihi-btn" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold py-4 md:py-5 text-lg rounded-xl transition-all active:scale-95 shadow-[0_0_20px_rgba(52,211,153,0.3)] tracking-wide">
