@@ -69,23 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { console.error(error); }
     };
 
-    // 🧠 1. الذكاء الاصطناعي المصغر لتحليل الروابط (Link Analyzer)
-    const getBrandData = (url) => {
-        if (!url) return { bg: 'from-slate-800 to-slate-900', text: 'text-slate-300', icon: '🔗', glow: 'group-hover:shadow-slate-500/20', border: 'group-hover:border-slate-500' };
-
-        const lowerUrl = url.toLowerCase();
-
-        if (lowerUrl.includes('spotify.com')) return { bg: 'from-green-900/30 to-slate-900', text: 'text-green-400', icon: '🎵', glow: 'group-hover:shadow-[0_0_20px_rgba(74,222,128,0.15)]', border: 'group-hover:border-green-500/50' };
-        if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) return { bg: 'from-red-900/30 to-slate-900', text: 'text-red-400', icon: '▶️', glow: 'group-hover:shadow-[0_0_20px_rgba(248,113,113,0.15)]', border: 'group-hover:border-red-500/50' };
-        if (lowerUrl.includes('instagram.com')) return { bg: 'from-pink-900/30 to-purple-900/30', text: 'text-pink-400', icon: '📸', glow: 'group-hover:shadow-[0_0_20px_rgba(244,114,182,0.15)]', border: 'group-hover:border-pink-500/50' };
-        if (lowerUrl.includes('tiktok.com')) return { bg: 'from-slate-800 to-slate-900', text: 'text-cyan-400', icon: '📱', glow: 'group-hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]', border: 'group-hover:border-cyan-500/50' };
-        if (lowerUrl.includes('github.com')) return { bg: 'from-slate-700/40 to-slate-900', text: 'text-white', icon: '💻', glow: 'group-hover:shadow-[0_0_20px_rgba(148,163,184,0.15)]', border: 'group-hover:border-slate-400/50' };
-
-        // Default Style
-        return { bg: 'from-indigo-900/20 to-slate-900', text: 'text-indigo-400', icon: '🔗', glow: 'group-hover:shadow-[0_0_20px_rgba(99,102,241,0.15)]', border: 'group-hover:border-indigo-500/50' };
-    };
-
-// 🎨 2. دالة الرسم المطورة (The Upgraded Render)
     const renderLinks = (links) => {
         const linkGrid = document.getElementById('link-grid');
         if (!linkGrid) return;
@@ -93,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         links.forEach((link) => {
             const card = document.createElement('div');
+            card.className = 'flex items-center justify-between bg-dark p-3 rounded-xl border border-slate-700 hover:border-accent hover:bg-slate-800 transition-all group relative overflow-hidden';
 
             let isLocked = false;
             if (link.unlockDate) {
@@ -103,57 +87,48 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (isLocked) {
-                // 🔒 تصميم التذكرة المقفلة (Time Capsule Ticket)
-                card.className = 'flex items-center justify-between p-4 rounded-2xl border border-indigo-500/30 bg-black/40 backdrop-blur-md relative overflow-hidden group shadow-[0_4px_20px_rgba(99,102,241,0.05)] transition-all mb-3';
+                // Create a unique identifier for this specific link's countdown
                 const timerId = `timer-link-${link.id}`;
 
                 card.innerHTML = `
-            <div class="flex items-center gap-4 flex-grow overflow-hidden cursor-not-allowed select-none" title="This is a time capsule!">
-                <div class="bg-indigo-500/10 p-3 rounded-xl border border-indigo-500/20 text-indigo-400 shadow-sm text-xl animate-pulse">🔒</div>
-                <div class="flex flex-col w-full pr-2">
-                    <span class="text-xs font-bold text-indigo-300/70 tracking-widest uppercase mb-1">Encrypted Link</span>
-                    <div id="${timerId}" class="text-slate-300 font-mono text-sm"></div>
+                <div class="flex items-center gap-3 flex-grow overflow-hidden cursor-not-allowed select-none" title="This is a time capsule!">
+                    <div class="bg-card p-2 rounded-lg text-indigo-400 shadow-sm text-lg animate-pulse">🔒</div>
+                    <div class="flex flex-col w-full pr-2">
+                        <span class="text-sm font-medium text-slate-400 truncate mb-1">Hidden Surprise</span>
+                        
+                        <!-- The countdown will be injected right here -->
+                        <div id="${timerId}"></div>
+                    </div>
                 </div>
-            </div>
-            <button onclick="deleteLink(${link.id})" class="text-slate-600 hover:text-rose-400 p-2 transition-colors z-10 relative bg-white/5 rounded-full hover:bg-rose-500/10 active:scale-95">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        `;
+                <button onclick="deleteLink(${link.id})" class="text-slate-500 hover:text-red-400 p-2 transition-colors z-10 relative">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            `;
                 linkGrid.appendChild(card);
+
+                // 🔥 IGNITE THE COUNTDOWN
                 startCountdown(link.unlockDate, timerId);
 
             } else {
-                // 🎟️ تصميم البطاقات الذكية (Smart Platform Cards)
-                const brand = getBrandData(link.url);
-
-                // الكلاسات الديناميكية للبطاقة المفتوحة
-                card.className = `flex items-center justify-between p-4 rounded-2xl border border-white/5 bg-gradient-to-r ${brand.bg} relative overflow-hidden group transition-all duration-300 hover:-translate-y-1 ${brand.glow} ${brand.border} mb-3 cursor-pointer`;
-
                 card.innerHTML = `
-            <a href="${link.url}" target="_blank" class="flex items-center gap-4 flex-grow overflow-hidden z-10">
-                <div class="bg-black/20 p-3 rounded-xl ${brand.text} border border-white/5 backdrop-blur-sm group-hover:scale-110 transition-transform duration-300 shadow-inner text-xl">
-                    ${brand.icon}
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-base font-bold text-slate-200 group-hover:text-white truncate pr-2 transition-colors">${link.title}</span>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="text-[10px] ${brand.text} font-medium tracking-wider uppercase opacity-70 group-hover:opacity-100 transition-opacity">Open Link</span>
-                        ${link.unlockDate ? `<span class="text-[9px] text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded font-bold uppercase tracking-wide border border-emerald-400/20">Unlocked ✨</span>` : ''}
+                <a href="${link.url}" target="_blank" class="flex items-center gap-3 flex-grow overflow-hidden">
+                    <div class="bg-card p-2 rounded-lg text-accent group-hover:text-white transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                     </div>
-                </div>
-            </a>
-            
-            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full duration-[1500ms] ease-in-out z-0 pointer-events-none"></div>
-
-            <button onclick="deleteLink(${link.id})" class="text-slate-500 hover:text-rose-400 p-2 transition-colors z-10 relative bg-black/20 rounded-full hover:bg-rose-500/10 opacity-0 group-hover:opacity-100 active:scale-95">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        `;
+                    <div class="flex flex-col">
+                        <span class="text-sm font-medium text-slate-300 group-hover:text-white truncate pr-2">${link.title}</span>
+                        ${link.unlockDate ? `<span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wide">Unlocked ✨</span>` : ''}
+                    </div>
+                </a>
+                <button onclick="deleteLink(${link.id})" class="text-slate-500 hover:text-red-400 p-2 transition-colors z-10 relative">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            `;
                 linkGrid.appendChild(card);
             }
         });
     };
-    
+
     const addLinkForm = document.getElementById('add-link-form');
 
     if (addLinkForm) {
@@ -255,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         commits.forEach((commit) => {
             const item = document.createElement('div');
-            // تركنا الكلاسات الأساسية كما هي
             item.className = 'polaroid-card group fade-in relative overflow-hidden flex flex-col';
 
             const dateObj = new Date(commit.date);
@@ -269,81 +243,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // ---------------------------------------------------------
-            // ⏳ حالة الكبسولة الزمنية (لم تتغير)
-            // ---------------------------------------------------------
             if (isLocked) {
                 const timerId = `timer-commit-${commit.id}`;
                 item.innerHTML = `
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
-        <button onclick="deleteCommit(${commit.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-all p-1 active:scale-90 z-20">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </button>
-        <span class="text-4xl mb-2 animate-bounce">⏳</span>
-        <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
-        <div id="${timerId}" class="w-full min-h-[30px]"></div>
-    </div>
-    <div class="opacity-10 blur-sm">
-        <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
-        <div class="h-32 bg-white/5 rounded-lg"></div>
-    </div>
-`;
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
+            
+            <button onclick="deleteCommit(${commit.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-all p-1 active:scale-90 z-20">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+
+            <span class="text-4xl mb-2 animate-bounce">⏳</span>
+            <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
+            <div id="${timerId}" class="w-full min-h-[30px]"></div>
+        </div>
+        
+        <div class="opacity-10 blur-sm">
+            <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
+            <div class="h-32 bg-white/5 rounded-lg"></div>
+        </div>
+    `;
                 commitTimeline.appendChild(item);
                 startCountdown(commit.unlockDate, timerId);
 
-            }
-                // ---------------------------------------------------------
-                // 📸📝 حالة الذكريات العادية (هنا السحر الجديد)
-            // ---------------------------------------------------------
-            else {
+            } else {
+                // 🛡️ درع الحماية: التأكد من وجود نص
                 const safeMessage = commit.message || '';
-                const isArabic = /[\u0600-\u06FF]/.test(safeMessage);
-                const dirAttr = isArabic ? 'rtl' : 'ltr';
-                const displayMessage = isArabic ? `${safeMessage}&#x200F;` : safeMessage;
 
+                // 🧠 الذكاء الاصطناعي لاكتشاف اللغة
+                const isArabic = /[\u0600-\u06FF]/.test(safeMessage);
+
+                // 🎯 السحر هنا: فصل التنسيق بالكامل بين اللغتين!
+                // إذا عربي: خط أميري، حجم كبير، مسافات واسعة، يمين
+                // إذا إنجليزي: نفس تنسيق موقعك الأصلي بالضبط (حجم صغير text-sm)، يسار
                 const textFormatClasses = isArabic
                     ? 'font-poetic text-base md:text-lg leading-loose text-right'
                     : 'text-sm leading-relaxed text-left';
 
-                // 🌟 إذا كانت الذكرى تحتوي على صورة (تصميم سينمائي)
-                if (commit.imageUrl) {
-                    // نضبط ارتفاع البطاقة لتكون كالمجلة
-                    item.classList.add('h-[450px]', 'md:h-[550px]');
+                const dirAttr = isArabic ? 'rtl' : 'ltr';
+                const displayMessage = isArabic ? `${safeMessage}&#x200F;` : safeMessage;
 
-                    item.innerHTML = `
-    <img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-105 z-0">
-    
-    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-90 pointer-events-none z-0"></div>
-    
-    <div class="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
-        <span class="text-[10px] text-white/90 font-extrabold tracking-widest uppercase bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-sm">${formattedDate}</span>
-        <button onclick="deleteCommit(${commit.id})" class="text-white/50 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1.5 active:scale-90 bg-black/40 rounded-full backdrop-blur-md">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-    </div>
-
-    <div class="absolute bottom-0 left-0 w-full p-5 z-10 flex flex-col justify-end">
-        ${safeMessage ? `<p dir="${dirAttr}" class="${textFormatClasses} text-white/95 drop-shadow-md mb-2 line-clamp-3 hover:line-clamp-none transition-all duration-300 cursor-pointer">${displayMessage}</p>` : ''}
-        ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full mt-3 h-8 opacity-70 hover:opacity-100 transition-opacity rounded-full"></audio>` : ''}
-    </div>
-`;
-                }
-                // 🌟 إذا كانت الذكرى نصية أو صوتية فقط (التصميم الكلاسيكي)
-                else {
-                    item.innerHTML = `
-    <div class="flex justify-between items-start mb-4 relative z-10">
-        <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
-        <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-    </div>
-    
-    ${safeMessage ? `<p dir="${dirAttr}" class="${textFormatClasses} whitespace-pre-wrap text-slate-200 font-medium tracking-wide relative z-10 ${commit.audioUrl ? 'mb-4' : 'mb-0'}">${displayMessage}</p>` : ''}
-    
-    ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full relative z-10"></audio>` : ''}
-`;
-                }
-
+                item.innerHTML = `
+        <div class="flex justify-between items-start mb-4">
+            <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
+            <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        </div>
+        
+        ${safeMessage ? `<p dir="${dirAttr}" class="${textFormatClasses} whitespace-pre-wrap text-slate-200 font-medium tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${displayMessage}</p>` : ''}
+        
+        ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
+        
+        ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
+    `;
                 commitTimeline.appendChild(item);
             }
         });
