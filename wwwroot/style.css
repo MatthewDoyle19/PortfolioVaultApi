@@ -148,6 +148,19 @@ audio:hover {
     perspective: 1000px;
 }
 
+/* تحديث الأنيميشن لضمان ظهوره في المقدمة وبوضوح */
+.particle-fall {
+    position: absolute;
+    top: -10%; /* البداية من فوق الشاشة */
+    z-index: 10000; /* إجبارها على أن تكون في أعلى طبقة في التطبيق */
+    pointer-events: none; /* لمنعها من حجب اللمس عن الأزرار */
+    animation-name: falling;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    font-size: 2rem; /* تكبير حجم القبعات لتكون واضحة */
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); /* إضافة توهج للقبعة لتبرز في الخلفية السوداء */
+}
+
 /*!* 1. سرعة الضوء (Hyperspace Warp) *!*/
 /*.hyperspace-bg {*/
 /*    background-image:*/

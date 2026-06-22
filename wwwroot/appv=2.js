@@ -59,17 +59,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.getElementById('tawjihi-card');
         const confettiContainer = document.getElementById('confetti-container');
 
-        // مسح أي قبعات قديمة وتوليد 40 قبعة وشرارة جديدة
+        // داخل دالة triggerTawjihiEasterEgg
         confettiContainer.innerHTML = '';
         const particles = ['🎓', '✨', '🎉', '🤍'];
-        for(let i=0; i < 40; i++) {
+
+        for(let i=0; i < 50; i++) { // زيادة العدد لـ 50
             const p = document.createElement('div');
             p.innerText = particles[Math.floor(Math.random() * particles.length)];
-            p.className = 'absolute text-2xl particle-fall';
+            p.className = 'absolute particle-fall'; // استخدم الكلاس المحدث
             p.style.left = `${Math.random() * 100}%`;
-            p.style.top = `-10%`; // 🛠️ الحل الهندسي لمنع تكدس القبعات
-            p.style.animationDuration = `${Math.random() * 3 + 2}s`;
-            p.style.animationDelay = `${Math.random() * 2}s`;
+            p.style.top = `-10%`;
+            p.style.animationDuration = `${Math.random() * 4 + 3}s`; // إبطاء الحركة لتراها عينها
+            p.style.animationDelay = `${Math.random() * 3}s`;
             confettiContainer.appendChild(p);
         }
 
@@ -82,14 +83,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 50);
 
         // إغلاق الواجهة والعودة لشاشة الدخول الطبيعية
+        // إغلاق الواجهة والدخول السحري المباشر للـ Vault
         document.getElementById('close-tawjihi-btn').onclick = () => {
+            const btn = document.getElementById('close-tawjihi-btn');
+
+            // تغيير النص لإعطاء إحساس سينمائي بفتح القبو
+            btn.innerHTML = 'Opening The Vault... ⏳';
+            btn.disabled = true;
+
+            // إخفاء البطاقة بنعومة
             overlay.classList.add('opacity-0');
             card.classList.remove('scale-100');
             card.classList.add('scale-95');
+
             setTimeout(() => {
                 overlay.classList.add('hidden');
-                authKey.value = ''; // تفريغ الحقل لتكتب الباسوورد الأصلي براحة
-                authKey.focus();
+
+                // 🚀 السحر الهندسي: حقن الباسوورد الأصلي والضغط على زر الدخول برمجياً!
+                // هذا سيفعل دالة handleLogin الطبيعية ويدخلها للقبو ويرسل لك إشعار التيليجرام
+                authKey.value = '2503';
+                document.getElementById('login-btn').click();
+
+                // إعادة الزر لحالته الأصلية في الخلفية (في حال تسجيل الخروج لاحقاً)
+                setTimeout(() => {
+                    btn.innerHTML = 'Start The Journey ✨';
+                    btn.disabled = false;
+                }, 1000);
+
             }, 700);
         };
     };

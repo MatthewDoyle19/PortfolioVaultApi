@@ -828,9 +828,9 @@
 <!-- 🎓 TAWJIHI 2027 EASTER EGG OVERLAY -->
 <!-- تم إضافة flex لضمان التوسيط في منتصف الشاشة تماماً -->
 <div id="tawjihi-overlay" class="hidden fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-dark/95 backdrop-blur-3xl transition-opacity duration-1000 opacity-0 overflow-hidden w-full h-full">
-
-    <!-- حاوية قبعات التخرج المتساقطة -->
-    <div class="absolute inset-0 pointer-events-none w-full h-full" id="confetti-container"></div>
+    
+    <!-- تأكد أن الحاوية تملك z-index عالٍ أيضاً -->
+    <div id="confetti-container" class="absolute inset-0 z-[10000] w-full h-full pointer-events-none"></div>
 
     <div class="premium-glass p-8 md:p-10 rounded-[2.5rem] max-w-sm w-[90%] text-center relative z-10 transform scale-95 transition-transform duration-700 shadow-[0_30px_60px_rgba(16,185,129,0.15)]" id="tawjihi-card">
         <div class="text-6xl md:text-7xl mb-4 animate-bounce" style="animation-duration: 2s;">🎓</div>
