@@ -361,28 +361,41 @@ app.MapGet("/api/prompts/current", async (VaultDb db) => {
 });
 
 var deepQuestions = new List<string> {
-    "What is a memory of us you secretly replay in your mind? ✨",
-    "What was the exact moment you realized we were going to be close? 🦋",
-    "Which of our inside jokes is your absolute favorite? 😂",
-    "If you could relive one single day we spent together, which one would it be? ⏪",
-    "What is something small I did this week that made you smile? 🤍",
-    "When did you feel the most loved by me recently? 🥰",
-    "What is a personality trait of mine that you admire the most? 🌟",
-    "What is the most comforting thing I do when you are stressed or tired? 🔋",
-    "When was the last time I made you feel truly proud? 🦅",
-    "What is a weird habit of mine that you actually like? 🫣",
-    "What is a fear or insecurity you have that you think I can help you overcome? 🛡️",
-    "How do you think you have changed for the better since we started talking? 🌱",
-    "What is something you’ve always wanted to tell me but haven't found the right moment? 🗝️",
-    "If you could read my mind for one minute, what do you think you would hear? 🧠",
-    "What does 'feeling safe' mean to you in our relationship? 🏰",
-    "Where do you see us in exactly one year from today? 🎯",
-    "What is a new hobby or skill you want us to learn together? 🎨",
-    "How can I be a better support system for you in this current season of your life? 🤝",
-    "If we had an unlimited budget for one weekend, what is the first trip we would take? ✈️",
-    "If I came with a warning label, what exactly would it say? ⚠️",
-    "What movie or TV show dynamic reminds you the most of us? 🍿",
-    "If we had to survive a zombie apocalypse together, what would be our roles? 🧟‍♂️"
+    // --- 🕰️ Nostalgia & The Spark (الذاكرة المشتركة) ---
+    "شو هو أول تفصيل لساته عالق ببالك بوضوح عن أول مرة حكينا فيها سوا؟ 🕰️",
+    "لو كانت علاقتنا وفكرتنا عن بعض فيلم سينمائي، شو رح يكون تصنيفه وليه؟ 🎬",
+    "شو هي أكثر رسالة انبعثت مني، ودايماً بترجعلها أو بتقرأها بالسر؟ 📱",
+    "متى كانت اللحظة بالظبط اللي استوعبت فيها إنو علاقتنا بطلت مجرد معرفة عادية؟ ⚡",
+    "أي ذكرى مشتركة بيناتنا قادرة تعدل المزاج فوراً بيوم سيء أو متعب؟ 🌅",
+
+    // --- 🛡️ The Safe Haven (الاحتواء وتخفيف الضغط) ---
+    "لما يبلش ضغط الأيام يصير ثقيل، شو أكتر تصرف مني بيقدر يخفف هاد الضغط فعلياً؟ 🎈",
+    "شو هي الفكرة المريحة والمطمئنة عنّا (أنا وإنت) اللي بتلجأ إلها أوقات التوتر؟ 🫂",
+    "لو في خوف أو قلق واحد ببالك هسا بقدر أطمنك منه وأشيله عنك، شو رح يكون؟ 🌊",
+    "شو في خط أحمر أو مساحة صامتة دايماً بحترمها بدون ما تنطلب؟ 🤫",
+    "كيف بالعادة بتخفي التوتر والضغط، وكيف بقدر ألاحظ هاد الاشي أسرع وأكون جنبك؟ 🕵🏻‍♂️",
+    "بيوم سيء ومضغوط على الآخر، شو بيكون المطلوب مني: أقدم حلول، ولا ألطف الجو، ولا بس أسمع؟ 🎧",
+
+    // --- 🎭 Unspoken Depth & Vulnerability (العمق والارتباط) ---
+    "شو هو الشيء اللي دايماً كان ببالك تسألني عنه بس لسا ما سألته؟ 🗝️",
+    "لو قدرنا نقدم الزمن فجأة ليوم عشوائي بعد 3 سنين من هسا، شو بنتمنى نكون بنعمل سوا؟ 🔭",
+    "شو هو الجزء من شخصيتك اللي بتلاقي أمان مطلق إنك تظهره وتكون فيه على طبيعتك بس وإحنا سوا؟ 🎭",
+    "لو قعدنا بساعة صمت كاملة وبدون ولا كلمة، شو الشيء اللي رح يخلي هاد الصمت مريح ومش غريب؟ 🛋️",
+    "شو هو أكتر شيء مقلق بالمستقبل، بس وجودنا سوا بيعطي طمأنينة لمواجهته؟ ⚔️",
+    "كيف بتشوف إنو تأثيرنا على بعض غيّر نظرتنا للأمور والتفاصيل من حولنا؟ 🌘",
+
+    // --- 🗺️ Hypothetical & Soul-Searching (استكشاف العقل) ---
+    "لو انطلب وصف شخصيتي لغريب بفقرة قصيرة، شو أكتر صفة رح يتم التركيز عليها؟ ✍️",
+    "لو محادثاتنا ومكالماتنا بآخر الليل تنشرت بكتاب، شو ببالك يكون عنوانه؟ 📖",
+    "شو هو الشيء البسيط والعادي جداً اللي بيصدر مني، بس فعلياً بيعني للقلب الدنيا كلها؟ 🌎",
+    "لو طلعنا برحلة بالسيارة لمدة 24 ساعة بدون إنترنت ولا تلفونات، شو هي الثلاث أشياء اللي أكيد رح نحكي فيها؟ 🚙",
+    "شو هو السؤال اللي دايماً بتتردد تسألني إياه؟ (الفرصة إجت هسا) 🎲",
+
+    // --- 🎈 Fun, Quirky & Affectionate (مرح وعفوية) ---
+    "شو هي القوة الخارقة التافهة أو اللي مالها داعي اللي بتحسها بتلبقلي ومناسبة لشخصيتي؟ 🦸‍♂️",
+    "لو بدك تختار موسيقى أو أغنية تشتغل بالخلفية دايماً أول ما أدخل أي مكان، شو رح تكون؟ 🎺",
+    "شو هو النقاش أو الخلاف الصغير اللي صار بيناتنا وكان بالسر بفرّط ضحك ولطيف جداً؟ 🤭",
+    "لو كنا شخصيات بلعبة فيديو، شو رح تكون نقاط القوة الأساسية تبعتي (الذكاء، القوة، الكاريزما)؟ 🎮"
 };
 
 app.MapPost("/api/prompts/generate", async (VaultDb db) => {
