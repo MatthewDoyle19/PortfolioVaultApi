@@ -695,7 +695,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 1. دوال التحكم بالـ Checkbox والـ Delete ---
 
-    const togglePenalty = async (id, isChecked) => {
+    window.togglePenalty = async (id, isChecked) => {
         const textElement = document.getElementById(`penalty-text-${id}`);
 
         // 🎨 تحديث الواجهة فوراً (Optimistic UI Update) لسرعة الاستجابة
