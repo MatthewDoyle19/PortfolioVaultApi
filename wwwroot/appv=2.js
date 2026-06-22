@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             p.innerText = particles[Math.floor(Math.random() * particles.length)];
             p.className = 'absolute text-2xl particle-fall';
             p.style.left = `${Math.random() * 100}%`;
+            p.style.top = `-10%`; // 🛠️ الحل الهندسي لمنع تكدس القبعات
             p.style.animationDuration = `${Math.random() * 3 + 2}s`;
             p.style.animationDelay = `${Math.random() * 2}s`;
             confettiContainer.appendChild(p);
