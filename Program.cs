@@ -439,6 +439,7 @@ app.MapDelete("/api/prompts/current", async (VaultDb db) => {
     return Results.Ok();
 });
 
+// --- 🍿 THE WATCHLIST ROUTES ---
 app.MapGet("/api/media", async (VaultDb db) => {
     return await db.MediaItems.OrderByDescending(m => m.Id).ToListAsync();
 });
@@ -446,6 +447,11 @@ app.MapGet("/api/media", async (VaultDb db) => {
 app.MapPost("/api/media", async (MediaItem item, VaultDb db) => {
     db.MediaItems.Add(item);
     await db.SaveChangesAsync();
+
+    // 🚀 إشعار الإضافة
+    string displayUser = item.AddedBy == "Mohammad" ? "7amodee 👨🏻‍💻" : (item.AddedBy == "Zainab" ? "ZoZo 👸🏻" : item.AddedBy);
+    await SendTelegramNotification($"✨ A new movie was added to the Watchlist!\n\n🎬 Title: {item.Title}\n👤 Added by: {displayUser}");
+
     return Results.Created($"/api/media/{item.Id}", item);
 });
 
@@ -455,6 +461,11 @@ app.MapPut("/api/media/{id}/status", async (int id, string newStatus, VaultDb db
     
     item.Status = newStatus;
     await db.SaveChangesAsync();
+
+    // 🚀 إشعار التعديل (الصح)
+    string statusText = newStatus == "watched" ? "✅ Watched" : "⏳ Backlog (Reverted)";
+    await SendTelegramNotification($"🍿 Watchlist Update!\n\n🎬 Movie: {item.Title}\n📌 Status: {statusText}");
+
     return Results.Ok(item);
 });
 
@@ -463,6 +474,9 @@ app.MapDelete("/api/media/{id}", async (int id, VaultDb db) => {
     if (item != null) {
         db.MediaItems.Remove(item);
         await db.SaveChangesAsync();
+
+        // 🚀 إشعار الحذف
+        await SendTelegramNotification($"🗑️ A movie was deleted from the Watchlist!\n\n🎬 Title: {item.Title}");
     }
     return Results.Ok();
 });
