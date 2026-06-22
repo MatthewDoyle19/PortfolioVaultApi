@@ -322,8 +322,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
             let isLocked = false;
-            if (commit.unlockDate) {
-                const unlockDateObj = new Date(commit.unlockDate);
+
+            // 🛡️ متغير جديد لنحتفظ بالتاريخ الأصلي ونقوم بتعديله
+            let finalUnlockDate = commit.unlockDate;
+
+            if (finalUnlockDate) {
+                // 🛠️ السحر الهندسي: معالجة توقيت الأردن (+03:00) لتوافقية الـ iPhone
+                // 1. إزالة التوقيت العالمي 'Z' إذا كان موجوداً
+                finalUnlockDate = finalUnlockDate.replace('Z', '');
+
+                // 2. إذا كان التاريخ بصيغة يوم فقط (مثال: 2026-06-23)، نعطيه وقت منتصف الليل
+                if (finalUnlockDate.length === 10) {
+                    finalUnlockDate += 'T00:00:00';
+                }
+
+                // 3. الخطوة الحاسمة: إجبار المتصفح على اعتباره توقيت الأردن لخصم الـ 3 ساعات
+                if (!finalUnlockDate.includes('+')) {
+                    finalUnlockDate += '+03:00';
+                }
+
+                // الآن نختبر إذا كانت الكبسولة مغلقة بناءً على التاريخ الجديد المعدّل
+                const unlockDateObj = new Date(finalUnlockDate);
                 if (unlockDateObj > new Date()) {
                     isLocked = true;
                 }
@@ -332,37 +351,33 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isLocked) {
                 const timerId = `timer-commit-${commit.id}`;
                 item.innerHTML = `
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
-            
-            <button onclick="deleteCommit(${commit.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-all p-1 active:scale-90 z-20">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-
-            <span class="text-4xl mb-2 animate-bounce">⏳</span>
-            <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
-            <div id="${timerId}" class="w-full min-h-[30px]"></div>
-        </div>
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
         
-        <div class="opacity-10 blur-sm">
-            <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
-            <div class="h-32 bg-white/5 rounded-lg"></div>
-        </div>
-    `;
+        <button onclick="deleteCommit(${commit.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-all p-1 active:scale-90 z-20">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+
+        <span class="text-4xl mb-2 animate-bounce">⏳</span>
+        <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
+        <div id="${timerId}" class="w-full min-h-[30px]"></div>
+    </div>
+    
+    <div class="opacity-10 blur-sm">
+        <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
+        <div class="h-32 bg-white/5 rounded-lg"></div>
+    </div>
+`;
                 commitTimeline.appendChild(item);
-                startCountdown(commit.unlockDate, timerId);
+
+                // 🎯 نمرر التاريخ المعدّل (بتوقيت الأردن) لدالة العد التنازلي بدلاً من القديم
+                startCountdown(finalUnlockDate, timerId);
 
             } else {
-                // 🛡️ درع الحماية: التأكد من وجود نص
                 const safeMessage = commit.message || '';
-
-                // 🧠 الذكاء الاصطناعي لاكتشاف اللغة
                 const isArabic = /[\u0600-\u06FF]/.test(safeMessage);
 
-                // 🎯 السحر هنا: فصل التنسيق بالكامل بين اللغتين!
-                // إذا عربي: خط أميري، حجم كبير، مسافات واسعة، يمين
-                // إذا إنجليزي: نفس تنسيق موقعك الأصلي بالضبط (حجم صغير text-sm)، يسار
                 const textFormatClasses = isArabic
                     ? 'font-poetic text-base md:text-lg leading-loose text-right'
                     : 'text-sm leading-relaxed text-left';
@@ -371,17 +386,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const displayMessage = isArabic ? `${safeMessage}&#x200F;` : safeMessage;
 
                 item.innerHTML = `
-        <div class="flex justify-between items-start mb-4">
-            <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
-            <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-        </div>
-        
-        ${safeMessage ? `<p dir="${dirAttr}" class="${textFormatClasses} whitespace-pre-wrap text-slate-200 font-medium tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${displayMessage}</p>` : ''}
-        
-        ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
-        
-        ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
-    `;
+    <div class="flex justify-between items-start mb-4">
+        <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
+        <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+    </div>
+    
+    ${safeMessage ? `<p dir="${dirAttr}" class="${textFormatClasses} whitespace-pre-wrap text-slate-200 font-medium tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${displayMessage}</p>` : ''}
+    
+    ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
+    
+    ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
+`;
                 commitTimeline.appendChild(item);
             }
         });
@@ -678,31 +693,108 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { console.error("Save failed", error); }
     });
 
+    // --- 1. دوال التحكم بالـ Checkbox والـ Delete ---
+
+    const togglePenalty = async (id, isChecked) => {
+        const textElement = document.getElementById(`penalty-text-${id}`);
+
+        // 🎨 تحديث الواجهة فوراً (Optimistic UI Update) لسرعة الاستجابة
+        if (isChecked) {
+            textElement.classList.add('line-through', 'text-slate-500', 'opacity-70');
+            textElement.classList.remove('text-slate-200');
+        } else {
+            textElement.classList.remove('line-through', 'text-slate-500', 'opacity-70');
+            textElement.classList.add('text-slate-200');
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/penalties/${id}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isCompleted: isChecked })
+            });
+
+            if (!response.ok) throw new Error("Failed to update status");
+        } catch (error) {
+            console.error("Error updating penalty:", error);
+            // التراجع عن التأثير البصري إذا فشل الاتصال بالسيرفر
+            if (!isChecked) {
+                textElement.classList.add('line-through', 'text-slate-500', 'opacity-70');
+                textElement.classList.remove('text-slate-200');
+            } else {
+                textElement.classList.remove('line-through', 'text-slate-500', 'opacity-70');
+                textElement.classList.add('text-slate-200');
+            }
+        }
+    };
+
+    const deletePenalty = async (id) => {
+        if (!confirm("Are you sure you want to delete this verdict?")) return;
+        try {
+            await fetch(`${API_BASE_URL}/api/penalties/${id}`, { method: 'DELETE' });
+            fetchPenaltiesFromServer(); // إعادة رسم القائمة بعد الحذف
+        } catch (error) {
+            console.error("Delete failed", error);
+        }
+    };
+
+
+// --- 2. دالة جلب ورسم العقوبات المحدثة (Premium UI) ---
+
     const fetchPenaltiesFromServer = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/penalties`);
             const penalties = await response.json();
+
             ledgerTimeline.innerHTML = penalties.map(p => {
                 // UI Transform to protect DB integrity
                 const displayPunisher = p.punisher === 'Mohammad' ? '7amodee' : (p.punisher === 'Zainab' ? 'ZoZo' : p.punisher);
                 const displayPunished = p.punished === 'Mohammad' ? '7amodee' : (p.punished === 'Zainab' ? 'ZoZo' : p.punished);
 
+                const isDone = p.isCompleted;
+                const textStyleClasses = isDone ? 'line-through text-slate-500 opacity-70' : 'text-slate-200';
+
+                // دعم النصوص العربية والإنجليزية
+                const isArabic = /[\u0600-\u06FF]/.test(p.penaltyText);
+                const dirAttr = isArabic ? 'rtl' : 'ltr';
+                const fontClass = isArabic ? 'font-poetic text-base md:text-lg text-right' : 'text-sm text-left';
+
                 return `
-                <div class="bg-white/5 border border-white/5 p-4 rounded-2xl flex justify-between items-center fade-in">
-                    <div>
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-accent/20 text-accent uppercase">${displayPunisher} ⚖️</span>
-                            <span class="text-slate-500 text-[9px]">sentenced</span>
-                            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-white/10 text-white uppercase">${displayPunished}</span>
-                        </div>
-                        <p class="text-xs text-slate-200 font-medium">${p.penaltyText}</p>
+            <div class="bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col relative group transition-all duration-300 hover:bg-white/10 fade-in mb-3">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 uppercase tracking-widest">${displayPunisher} ⚖️</span>
+                        <span class="text-slate-500 text-[9px] uppercase tracking-widest">sentenced</span>
+                        <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 uppercase tracking-widest">${displayPunished}</span>
                     </div>
-                    <span class="text-[8px] text-slate-600">${p.date}</span>
+                    <div class="flex items-center gap-3">
+                        <span class="text-[9px] text-slate-500">${p.date}</span>
+                        <button onclick="deletePenalty(${p.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all active:scale-90 p-1 z-10">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
                 </div>
-            `}).join('');
+                
+                <div class="flex items-start gap-4 mt-2">
+                    <label class="relative flex items-start cursor-pointer mt-1 z-10">
+                        <input type="checkbox" class="peer hidden" onchange="togglePenalty(${p.id}, this.checked)" ${isDone ? 'checked' : ''}>
+                        <div class="w-5 h-5 rounded border-2 border-slate-600 peer-checked:bg-emerald-500 peer-checked:border-emerald-500 flex items-center justify-center transition-all duration-300 shadow-inner hover:border-emerald-400">
+                            <svg class="w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-all duration-300 transform scale-50 peer-checked:scale-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                    </label>
+                    
+                    <p id="penalty-text-${p.id}" dir="${dirAttr}" class="${fontClass} leading-relaxed transition-all duration-300 w-full ${textStyleClasses}">
+                        ${p.penaltyText}
+                    </p>
+                </div>
+            </div>
+        `}).join('');
         } catch (error) { console.error(error); }
     };
 
+// --- 3. إغلاق الـ Modal وتحديث الـ Listeners ---
     const closePenaltyModal = () => {
         penaltyModal.classList.add('opacity-0');
         penaltyModalContent.classList.remove('scale-100');
@@ -716,8 +808,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('close-modal-btn').addEventListener('click', closePenaltyModal);
 
-    fetchLinks();
-    fetchCommits();
+// استدعاء الدوال عند التحميل
+    if (typeof fetchLinks === "function") fetchLinks();
+    if (typeof fetchCommits === "function") fetchCommits();
     fetchPenaltiesFromServer();
 
     // --- 📡 Mood Radar & Live Notifications ---
@@ -1481,11 +1574,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const now = new Date().getTime();
             const distance = unlockDate - now;
 
-            // If the countdown is finished
+            // 🎯 عندما ينتهي العداد
             if (distance < 0) {
                 clearInterval(interval);
-                displayElement.innerHTML = `<span class="text-emerald-400 animate-pulse">🔓 It's time. You can open this now.</span>`;
-                // You can also trigger a function here to actually reveal the content!
+
+                // نعطيها رسالة تشويقية تومض
+                displayElement.innerHTML = `<span class="text-emerald-400 font-bold tracking-widest animate-pulse">🔓 Unlocking The Memory...</span>`;
+
+                // 🛠️ السحر هنا: إعادة تحميل الصفحة تلقائياً بعد ثانيتين لفك الـ Blur وإظهار البوست
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+
                 return;
             }
 
@@ -1497,13 +1597,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Render the ticking clock
             displayElement.innerHTML = `
-            <div class="flex gap-2 justify-center font-mono text-sm tracking-widest text-pink-400">
-                <div class="bg-black/30 px-2 py-1 rounded">${days}d</div>
-                <div class="bg-black/30 px-2 py-1 rounded">${hours}h</div>
-                <div class="bg-black/30 px-2 py-1 rounded">${minutes}m</div>
-                <div class="bg-black/30 px-2 py-1 rounded text-white">${seconds}s</div>
-            </div>
-        `;
+        <div class="flex gap-2 justify-center font-mono text-sm tracking-widest text-pink-400">
+            <div class="bg-black/30 px-2 py-1 rounded shadow-inner">${days}d</div>
+            <div class="bg-black/30 px-2 py-1 rounded shadow-inner">${hours}h</div>
+            <div class="bg-black/30 px-2 py-1 rounded shadow-inner">${minutes}m</div>
+            <div class="bg-black/30 px-2 py-1 rounded text-white shadow-inner">${seconds}s</div>
+        </div>
+    `;
         }, 1000);
     };
 
@@ -1709,24 +1809,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-// --- [3] التحقق من الموعد لفتحها تلقائياً لأول مرة ---
+// --- [3] التحقق من الموعد لفتحها تلقائياً (Live Cinematic Trigger) ---
     const checkMilestone = () => {
-        const startDate = new Date('2026-03-25T00:00:00');
-        const now = new Date();
-        const diff = now - startDate;
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        // 1. تحديد لحظة الصفر بدقة (إضافة +03:00 لضمان توقيت الأردن)
+        const targetDate = new Date('2026-06-23T00:00:00+03:00').getTime();
+        const now = new Date().getTime();
+        const distance = targetDate - now; // حساب الفرق بالملي ثانية
 
-        // تذكر إعادتها إلى 90 بعد التجربة
-        if (days >= 90 && localStorage.getItem('v2_unlocked') !== 'true') {
-            const loginCheckInterval = setInterval(() => {
-                const loginScreen = document.getElementById('login-screen');
-                if (loginScreen && loginScreen.classList.contains('hidden')) {
-                    clearInterval(loginCheckInterval);
-                    setTimeout(() => {
-                        openEasterEgg();
-                    }, 3000);
-                }
-            }, 500);
+        // دالة التشغيل الداخلية (لكي لا نكرر الكود)
+        const triggerNow = () => {
+            if (localStorage.getItem('v2_unlocked') !== 'true') {
+                const loginCheckInterval = setInterval(() => {
+                    const loginScreen = document.getElementById('login-screen');
+                    if (loginScreen && loginScreen.classList.contains('hidden')) {
+                        clearInterval(loginCheckInterval);
+                        setTimeout(() => {
+                            openEasterEgg();
+                        }, 3000);
+                    }
+                }, 500);
+            }
+        };
+
+        if (distance <= 0) {
+            // إذا فتحت الموقع بعد منتصف الليل، شغله فوراً (بشرط أن تكون سجلت الدخول)
+            triggerNow();
+        } else {
+            // 🎯 السحر: إذا فتحت الموقع قبل منتصف الليل، نضبط المؤقت ليعمل في اللحظة الحاسمة تماماً
+            // المتصفح سينتظر الـ (distance) المتبقية، وبمجرد أن تصل الساعة 12:00 سيفجر الشاشة أمامها!
+            setTimeout(() => {
+                triggerNow();
+            }, distance);
         }
     };
     checkMilestone();
