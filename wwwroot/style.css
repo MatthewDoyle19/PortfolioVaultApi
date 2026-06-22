@@ -167,7 +167,13 @@ audio:hover {
 /* عندما نقوم بإزالة كلاس hidden بواسطة الجافاسكريبت، يتفعل الكود هنا */
 #tawjihi-overlay:not(.hidden) {
     display: flex !important;
-    pointer-events: auto;
+    pointer-events: auto !important; /* ⬅️ السحر هنا: أضفنا !important لكسر القفل الأساسي */
+}
+
+/* 🛠️ هذه قاعدة جديدة نضيفها لنجبر البطاقة والزر على استقبال الضغطات */
+#tawjihi-card {
+    pointer-events: auto !important;
+    z-index: 999999 !important; /* لضمان أن البطاقة فوق القبعات وكل شيء آخر */
 }
 
 /* القبعات */
