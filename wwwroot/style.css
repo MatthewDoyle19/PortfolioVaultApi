@@ -148,43 +148,30 @@ audio:hover {
     perspective: 1000px;
 }
 
-/* 1. الخلفية والطبقة الأساسية (استخدمنا # بدلاً من .) */
+/* هذا هو السطر الذهبي الذي يمنع التداخل مع حقل الباسوورد */
 #tawjihi-overlay {
-    background-color: #050505 !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    z-index: 99999 !important;
-    display: none !important; /* مخفي افتراضياً */
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
+    display: none !important; /* يختفي تماماً ولا يحجز مساحة */
+    pointer-events: none !important; /* لا يستقبل أي ضغطات */
 }
 
-/* نظهره فقط عندما نزيل كلاس hidden */
+/* عندما نقوم بإزالة كلاس hidden بواسطة الجافاسكريبت، يتفعل الكود هنا */
 #tawjihi-overlay:not(.hidden) {
     display: flex !important;
-    pointer-events: auto;
+    pointer-events: auto; /* يستقبل الضغطات فقط عندما يظهر */
 }
 
-/* 2. القبعات (الجسيمات) */
+/* القبعات */
 .particle-fall {
     position: absolute;
-    top: -10%;
     z-index: 10000;
     pointer-events: none;
     font-size: 2rem;
     filter: drop-shadow(0 0 5px rgba(255,255,255,0.8));
-    animation-name: falling;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
+    animation: falling 4s linear infinite;
 }
 
-/* 3. تعريف الحركة */
 @keyframes falling {
-    0% { transform: translateY(0vh) rotate(0deg); opacity: 1; }
+    0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
     100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
 }
 
