@@ -138,13 +138,27 @@ app.MapPost("/api/penalties", async (Penalty penalty, VaultDb db) => {
     db.Penalties.Add(penalty);
     await db.SaveChangesAsync();
 
-    // UI Transform for Telegram
     string displayPunisher = penalty.Punisher == "Mohammad" ? "7amodee" : (penalty.Punisher == "Zainab" ? "ZoZo" : penalty.Punisher);
     string displayPunished = penalty.Punished == "Mohammad" ? "7amodee" : (penalty.Punished == "Zainab" ? "ZoZo" : penalty.Punished);
 
     await SendTelegramNotification($"⚖️ Digital Court: A new verdict has been issued!\n\nJudge: {displayPunisher}\nPunished: {displayPunished}\n\nVerdict:\n{penalty.PenaltyText}");
-
     return Results.Created($"/api/penalties/{penalty.Id}", penalty);
+});
+
+app.MapPut("/api/penalties/{id}/status", async (int id, StatusUpdateRequest request, VaultDb db) => {
+    var penalty = await db.Penalties.FindAsync(id);
+    if (penalty is null) return Results.NotFound();
+
+    penalty.IsCompleted = request.IsCompleted;
+    await db.SaveChangesAsync();
+
+    string displayPunisher = penalty.Punisher == "Mohammad" ? "7amodee" : (penalty.Punisher == "Zainab" ? "ZoZo" : penalty.Punisher);
+    string displayPunished = penalty.Punished == "Mohammad" ? "7amodee" : (penalty.Punished == "Zainab" ? "ZoZo" : penalty.Punished);
+    string statusText = request.IsCompleted ? "✅ COMPLETED!" : "🔄 RE-OPENED";
+    string notificationMsg = $"⚖️ Court Update:\n\n{displayPunished} has marked a penalty as {statusText}\n\nOriginal Verdict from {displayPunisher}:\n{penalty.PenaltyText}";
+
+    await SendTelegramNotification(notificationMsg);
+    return Results.Ok(penalty);
 });
 
 app.MapDelete("/api/penalties/{id}", async (int id, VaultDb db) => {
@@ -155,7 +169,6 @@ app.MapDelete("/api/penalties/{id}", async (int id, VaultDb db) => {
 
     string displayPunished = penalty.Punished == "Mohammad" ? "7amodee" : (penalty.Punished == "Zainab" ? "ZoZo" : penalty.Punished);
     await SendTelegramNotification($"🗑️ A verdict was deleted/canceled from the ledger!\nThe punished was: {displayPunished}");
-
     return Results.Ok();
 });
 
@@ -610,6 +623,11 @@ class Commit {
     [JsonPropertyName("imageUrl")] public string? ImageUrl { get; set; } 
     [JsonPropertyName("audioUrl")] public string? AudioUrl { get; set; }
     [JsonPropertyName("unlockDate")] public string? UnlockDate { get; set; }
+}
+
+public class StatusUpdateRequest {
+    [System.Text.Json.Serialization.JsonPropertyName("isCompleted")]
+    public bool IsCompleted { get; set; }
 }
 
 class Penalty {
