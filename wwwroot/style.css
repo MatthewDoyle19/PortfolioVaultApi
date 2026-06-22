@@ -151,26 +151,28 @@ audio:hover {
 /* تحديث الأنيميشن لضمان ظهوره في المقدمة وبوضوح */
 .particle-fall {
     position: absolute;
-    top: -10%; /* البداية من فوق الشاشة */
-    z-index: 10000; /* إجبارها على أن تكون في أعلى طبقة في التطبيق */
-    pointer-events: none; /* لمنعها من حجب اللمس عن الأزرار */
-    animation-name: falling;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    font-size: 2rem; /* تكبير حجم القبعات لتكون واضحة */
-    filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); /* إضافة توهج للقبعة لتبرز في الخلفية السوداء */
+    z-index: 10000;
+    pointer-events: none;
+    font-size: 2rem;
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.8));
 }
 
 #tawjihi-overlay {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    z-index: 99999 !important; /* أعلى قيمة ممكنة */
+    background-color: #050505 !important; /* إجبار الخلفية على السواد الحالك */
+    display: none !important; /* مخفية تماماً حتى يتم تفعيلها */
+    pointer-events: none; /* لا تحجب اللمس عن الحقول الخلفية */
+}
+
+/* التنسيق عند التفعيل */
+#tawjihi-overlay:not(.hidden) {
     display: flex !important;
-    align-items: center;
-    justify-content: center;
+    pointer-events: auto;
+    opacity: 1 !important;
+}
+
+#tawjihi-overlay.visible {
+    pointer-events: auto;
+    opacity: 1;
 }
 
 #confetti-container {

@@ -59,66 +59,51 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.getElementById('tawjihi-card');
         const confettiContainer = document.getElementById('confetti-container');
 
-        // 1. إزالة الـ hidden وإجبار الشاشة على الظهور
-        overlay.style.display = 'flex';
-        overlay.classList.remove('hidden');
-
-        // 2. تحديث الـ opacity بعد جزء من الثانية
-        setTimeout(() => {
-            overlay.classList.remove('opacity-0');
-        }, 50);
-
-        // داخل دالة triggerTawjihiEasterEgg
+        // 1. توليد القبعات (بشكل نظيف)
         confettiContainer.innerHTML = '';
         const particles = ['🎓', '✨', '🎉', '🤍'];
-
-        for(let i=0; i < 50; i++) { // زيادة العدد لـ 50
+        for(let i = 0; i < 50; i++) {
             const p = document.createElement('div');
             p.innerText = particles[Math.floor(Math.random() * particles.length)];
-            p.className = 'absolute particle-fall'; // استخدم الكلاس المحدث
+            p.className = 'absolute particle-fall';
             p.style.left = `${Math.random() * 100}%`;
             p.style.top = `-10%`;
-            p.style.animationDuration = `${Math.random() * 4 + 3}s`; // إبطاء الحركة لتراها عينها
+            p.style.animationDuration = `${Math.random() * 4 + 3}s`;
             p.style.animationDelay = `${Math.random() * 3}s`;
             confettiContainer.appendChild(p);
         }
 
-        // إظهار الواجهة بنعومة
-        overlay.classList.remove('hidden');
+        // 2. إظهار الشاشة (نعتمد على الكلاسات التي في الـ CSS)
+        overlay.classList.remove('hidden'); // يزيل display: none
+
+        // ننتظر قليلاً ليعمل الأنيميشن بسلاسة
         setTimeout(() => {
-            overlay.classList.remove('opacity-0');
             card.classList.remove('scale-95');
             card.classList.add('scale-100');
         }, 50);
 
-        // إغلاق الواجهة والعودة لشاشة الدخول الطبيعية
-        // إغلاق الواجهة والدخول السحري المباشر للـ Vault
+        // 3. زر الإغلاق (مع السحر الهندسي)
         document.getElementById('close-tawjihi-btn').onclick = () => {
             const btn = document.getElementById('close-tawjihi-btn');
-
-            // تغيير النص لإعطاء إحساس سينمائي بفتح القبو
             btn.innerHTML = 'Opening The Vault... ⏳';
             btn.disabled = true;
 
-            // إخفاء البطاقة بنعومة
+            // تأثير الخروج
             overlay.classList.add('opacity-0');
             card.classList.remove('scale-100');
             card.classList.add('scale-95');
 
             setTimeout(() => {
-                overlay.classList.add('hidden');
+                overlay.classList.add('hidden'); // يعيد display: none
+                overlay.classList.remove('opacity-0'); // نعيدها للحالة الطبيعية للمرة القادمة
 
-                // 🚀 السحر الهندسي: حقن الباسوورد الأصلي والضغط على زر الدخول برمجياً!
-                // هذا سيفعل دالة handleLogin الطبيعية ويدخلها للقبو ويرسل لك إشعار التيليجرام
+                // المفتاح السحري: حقن الباسوورد والدخول
                 authKey.value = '2503';
                 document.getElementById('login-btn').click();
 
-                // إعادة الزر لحالته الأصلية في الخلفية (في حال تسجيل الخروج لاحقاً)
-                setTimeout(() => {
-                    btn.innerHTML = 'Start The Journey ✨';
-                    btn.disabled = false;
-                }, 1000);
-
+                // إعادة الزر لحالته
+                btn.innerHTML = 'Start The Journey ✨';
+                btn.disabled = false;
             }, 700);
         };
     };
