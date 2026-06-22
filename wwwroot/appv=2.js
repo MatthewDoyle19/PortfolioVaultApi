@@ -1834,6 +1834,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // --- الانتقال من صفحة التوثيق إلى الألبوم السري ---
+    const proceedBtn = document.getElementById('proceed-to-gallery-btn');
+    if (proceedBtn) {
+        proceedBtn.addEventListener('click', () => {
+            const textContent = document.getElementById('easter-egg-content');
+            const gallery = document.getElementById('easter-egg-gallery');
+
+            if (textContent) textContent.classList.add('opacity-0', 'scale-95');
+
+            setTimeout(() => {
+                if (textContent) textContent.classList.add('hidden');
+                if (gallery) {
+                    // إرجاع السحب للأعلى فوراً قبل ظهور الصور
+                    const scrollContainer = gallery.closest('.overflow-y-auto');
+                    if (scrollContainer) scrollContainer.scrollTop = 0;
+
+                    gallery.classList.remove('hidden');
+                    setTimeout(() => gallery.classList.remove('opacity-0', 'translate-y-10'), 50);
+                }
+            }, 800); // ينتظر انتهاء تأثير التلاشي قبل إظهار الصور
+        });
+    }
+
 // --- [3] التحقق من الموعد لفتحها تلقائياً (Live Cinematic Trigger) ---
     const checkMilestone = () => {
         // 1. تحديد لحظة الصفر بدقة (إضافة +03:00 لضمان توقيت الأردن)
