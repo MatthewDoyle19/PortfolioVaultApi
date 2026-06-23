@@ -1092,38 +1092,45 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!bucketGrid) return;
         bucketGrid.innerHTML = '';
 
-        let completedCount = 0; // 🎯 تتبع عدد الأحلام المنجزة
+        let completedCount = 0;
 
-        items.forEach((item) => {
+        items.forEach((item, index) => {
             const isDone = item.isCompleted;
-            if (isDone) completedCount++; // زيادة العداد إذا كان الحلم مكتملاً
+            if (isDone) completedCount++;
 
-            // 🎨 تصميم الـ Compact: خلفية زجاجية أنيقة، مع تأثير لون وردي يظهر على اليسار عند الـ Hover
-            const bgClass = isDone
-                ? "bg-white/5 border-emerald-500/30 opacity-60"
-                : "bg-black/20 border-l-4 border-transparent hover:border-l-pink-500 hover:bg-white/5";
+            // 🎨 تصميم العقدة (النقطة على الخط) والبطاقة
+            const nodeStyle = isDone
+                ? "bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)] scale-110"
+                : "bg-black border-2 border-pink-500 hover:scale-125 hover:bg-pink-500/20";
 
-            const textClass = isDone ? "text-slate-400 line-through decoration-emerald-500/50" : "text-white";
-            const checkIcon = isDone ? "✅" : "⬜";
+            const cardBg = isDone
+                ? "bg-gradient-to-r from-emerald-500/10 to-transparent border-emerald-500/20 opacity-70"
+                : "bg-white/5 border-white/10 hover:border-pink-500/30 hover:bg-white/10 shadow-sm";
+
+            const textColor = isDone ? "text-slate-400 line-through decoration-emerald-500/50" : "text-white";
+
+            // تأثير دخول متسلسل (Cascading Animation)
+            const delay = index * 0.05;
 
             const card = document.createElement('div');
-            // 📏 تصميم أفقي نحيف (Compact) مع padding مريح
-            card.className = `flex items-center justify-between px-5 py-3.5 rounded-xl transition-all duration-300 shadow-sm group ${bgClass}`;
+            // pl-8 تبعد البطاقة عن الخط العمودي لتعطي مساحة للنقطة
+            card.className = `relative pl-8 md:pl-10 transition-all duration-500 ease-out group`;
+            card.style.animation = `fadeInUp 0.5s ease-out ${delay}s both`;
 
             card.innerHTML = `
-            <div class="flex items-center gap-4 flex-grow cursor-pointer" onclick="toggleBucketItem(${item.id})">
-                <div class="text-xl flex-shrink-0 transition-transform active:scale-75 select-none">${checkIcon}</div>
-                <h4 class="${textClass} font-medium text-sm md:text-base leading-snug flex-grow transition-all select-none">${item.title}</h4>
+            <div class="absolute -left-[9px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full transition-all duration-300 z-10 cursor-pointer ${nodeStyle}" onclick="toggleBucketItem(${item.id})"></div>
+
+            <div class="flex items-center justify-between p-4 rounded-2xl border backdrop-blur-sm transition-all duration-300 ${cardBg}">
+                <h4 class="${textColor} font-medium text-sm md:text-base leading-snug flex-grow cursor-pointer select-none" onclick="toggleBucketItem(${item.id})">${item.title}</h4>
+
+                <button onclick="deleteBucketItem(${item.id})" class="text-slate-500 hover:text-rose-400 p-2 transition-colors opacity-100 sm:opacity-0 group-hover:opacity-100 active:scale-90 flex-shrink-0 ml-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
-            
-            <button onclick="deleteBucketItem(${item.id})" class="text-slate-500 hover:text-rose-400 p-2 transition-colors opacity-100 sm:opacity-0 group-hover:opacity-100 active:scale-90 flex-shrink-0 ml-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
         `;
             bucketGrid.appendChild(card);
         });
 
-        // 🎯 استدعاء دالة تحديث الشريط بعد الانتهاء من رسم كل العناصر
         updateBucketProgress(items.length, completedCount);
     };
 
