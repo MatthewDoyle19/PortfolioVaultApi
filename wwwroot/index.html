@@ -263,19 +263,34 @@
         </section>
 
         <section class="mb-16 fade-in" style="animation-delay: 0.8s;">
-            <h3 class="text-xl font-bold text-white mb-5 flex items-center gap-3 px-2 tracking-tight">
-                <div class="p-2 bg-pink-500/20 rounded-xl">
-                    <svg class="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                The Bucket List 🗺️
-            </h3>
 
-            <form id="add-bucket-form" class="premium-glass p-5 rounded-[2rem] flex gap-3 mb-6">
-                <input type="text" id="bucket-title" placeholder="A place to go, a thing to do..." required class="flex-grow bg-black/40 border border-white/5 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-pink-400 shadow-inner shadow-black/50">
-                <button type="submit" class="bg-pink-500/20 text-pink-400 border border-pink-500/30 font-bold py-3.5 px-6 rounded-xl transition-all hover:bg-pink-500 hover:text-white active:scale-95 shadow-lg">Add Dream</button>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 px-2">
+                <h3 class="text-xl font-bold text-white flex items-center gap-3 tracking-tight">
+                    <div class="p-2 bg-pink-500/20 rounded-xl shadow-inner">
+                        <svg class="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    The Bucket List 🗺️
+                </h3>
+
+                <div class="w-full sm:w-1/3 bg-white/5 p-3 rounded-2xl border border-white/10 shadow-sm backdrop-blur-sm">
+                    <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-2 tracking-widest uppercase">
+                        <span>Dreams Achieved</span>
+                        <span id="bucket-progress-text" class="text-pink-400 drop-shadow-sm">0 / 0</span>
+                    </div>
+                    <div class="w-full bg-black/50 rounded-full h-1.5 border border-white/5 shadow-inner overflow-hidden">
+                        <div id="bucket-progress-bar" class="bg-gradient-to-r from-pink-500 to-rose-400 h-full rounded-full transition-all duration-1000 w-0 relative">
+                            <div class="absolute top-0 right-0 bottom-0 w-4 bg-white/30 blur-[2px]"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form id="add-bucket-form" class="premium-glass p-4 md:p-5 rounded-[2rem] flex flex-col md:flex-row gap-3 mb-8">
+                <input type="text" id="bucket-title" placeholder="A place to go, a thing to do..." required class="flex-grow bg-black/40 border border-white/5 rounded-xl px-5 py-3.5 text-sm text-white focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-500/50 transition-all shadow-inner shadow-black/50">
+                <button type="submit" class="bg-pink-500/10 text-pink-400 border border-pink-500/30 font-bold py-3.5 px-6 rounded-xl transition-all hover:bg-pink-500 hover:text-white hover:shadow-[0_0_20px_rgba(244,114,182,0.4)] active:scale-95 whitespace-nowrap">Add Dream ✨</button>
             </form>
 
-            <div id="bucket-grid" class="flex flex-col gap-3"></div>
+            <div id="bucket-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </section>
 
         <section class="mb-16 fade-in" style="animation-delay: 0.9s;">

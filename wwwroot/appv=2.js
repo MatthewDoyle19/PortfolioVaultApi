@@ -1055,6 +1055,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const bucketGrid = document.getElementById('bucket-grid');
     const addBucketForm = document.getElementById('add-bucket-form');
 
+// 🌟 دالة تحديث شريط التقدم (تعتمد على الأرقام الدقيقة)
+    const updateBucketProgress = (total, completed) => {
+        const progressText = document.getElementById('bucket-progress-text');
+        const progressBar = document.getElementById('bucket-progress-bar');
+
+        if (progressText && progressBar) {
+            progressText.innerText = `${completed} / ${total}`;
+
+            // حساب النسبة المئوية
+            const percentage = total === 0 ? 0 : (completed / total) * 100;
+            progressBar.style.width = `${percentage}%`;
+
+            // تحويل اللون للأخضر إذا اكتملت كل الأحلام
+            if (percentage === 100 && total > 0) {
+                progressBar.classList.replace('from-pink-500', 'from-emerald-400');
+                progressBar.classList.replace('to-rose-400', 'to-teal-400');
+                progressText.classList.replace('text-pink-400', 'text-emerald-400');
+            } else {
+                progressBar.classList.replace('from-emerald-400', 'from-pink-500');
+                progressBar.classList.replace('to-teal-400', 'to-rose-400');
+                progressText.classList.replace('text-emerald-400', 'text-pink-400');
+            }
+        }
+    };
+
     const fetchBucketList = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/bucketlist`);
@@ -1067,26 +1092,34 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!bucketGrid) return;
         bucketGrid.innerHTML = '';
 
+        let completedCount = 0; // 🎯 تتبع عدد الأحلام المنجزة
+
         items.forEach((item) => {
             const isDone = item.isCompleted;
+            if (isDone) completedCount++; // زيادة العداد إذا كان الحلم مكتملاً
+
             const bgClass = isDone ? "bg-white/5 border-emerald-500/30 opacity-60" : "premium-glass border-white/5 hover:border-pink-500/30";
             const textClass = isDone ? "text-slate-400 line-through decoration-emerald-500/50" : "text-white";
             const checkIcon = isDone ? "✅" : "⬜";
 
             const card = document.createElement('div');
+            // 🎯 استخدمنا هنا Flex لأن الحاوية الأم (bucketGrid) هي من نوع Grid الآن
             card.className = `flex items-center justify-between p-4 rounded-2xl transition-all group ${bgClass}`;
 
             card.innerHTML = `
-                <div class="flex items-center gap-4 flex-grow cursor-pointer" onclick="toggleBucketItem(${item.id})">
-                    <div class="text-xl transition-transform active:scale-75 select-none">${checkIcon}</div>
-                    <h4 class="${textClass} font-bold text-sm tracking-wide flex-grow transition-all select-none">${item.title}</h4>
-                </div>
-                <button onclick="deleteBucketItem(${item.id})" class="text-slate-600 hover:text-rose-400 p-2 transition-colors opacity-0 group-hover:opacity-100 active:scale-90 ml-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            `;
+            <div class="flex items-center gap-4 flex-grow cursor-pointer" onclick="toggleBucketItem(${item.id})">
+                <div class="text-xl transition-transform active:scale-75 select-none">${checkIcon}</div>
+                <h4 class="${textClass} font-bold text-sm tracking-wide flex-grow transition-all select-none">${item.title}</h4>
+            </div>
+            <button onclick="deleteBucketItem(${item.id})" class="text-slate-600 hover:text-rose-400 p-2 transition-colors opacity-0 group-hover:opacity-100 active:scale-90 ml-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        `;
             bucketGrid.appendChild(card);
         });
+
+        // 🎯 استدعاء دالة تحديث الشريط بعد الانتهاء من رسم كل العناصر
+        updateBucketProgress(items.length, completedCount);
     };
 
     if (addBucketForm) {
@@ -1110,7 +1143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) { console.error("Save failed", error); }
             finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Add Dream';
+                submitBtn.innerHTML = 'Add Dream ✨';
             }
         });
     }
@@ -1118,14 +1151,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.toggleBucketItem = async (id) => {
         try {
             await fetch(`${API_BASE_URL}/api/bucketlist/${id}`, { method: 'PUT' });
-            fetchBucketList();
+            fetchBucketList(); // 💡 التحديث سيشمل شريط التقدم تلقائياً
         } catch (error) { console.error("Update failed", error); }
     };
 
     window.deleteBucketItem = async (id) => {
         if(confirm('Delete this dream from the list?')) {
             await fetch(`${API_BASE_URL}/api/bucketlist/${id}`, { method: 'DELETE' });
-            fetchBucketList();
+            fetchBucketList(); // 💡 التحديث سيشمل شريط التقدم تلقائياً
         }
     };
 
