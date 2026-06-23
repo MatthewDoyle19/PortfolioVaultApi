@@ -1098,23 +1098,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const isDone = item.isCompleted;
             if (isDone) completedCount++; // زيادة العداد إذا كان الحلم مكتملاً
 
-            const bgClass = isDone ? "bg-white/5 border-emerald-500/30 opacity-60" : "premium-glass border-white/5 hover:border-pink-500/30";
+            // 🎨 تصميم الـ Compact: خلفية زجاجية أنيقة، مع تأثير لون وردي يظهر على اليسار عند الـ Hover
+            const bgClass = isDone
+                ? "bg-white/5 border-emerald-500/30 opacity-60"
+                : "bg-black/20 border-l-4 border-transparent hover:border-l-pink-500 hover:bg-white/5";
+
             const textClass = isDone ? "text-slate-400 line-through decoration-emerald-500/50" : "text-white";
             const checkIcon = isDone ? "✅" : "⬜";
 
             const card = document.createElement('div');
-            // تقليل الـ padding ليصبح px-4 py-3 بدلاً من p-4 لتوفير مساحة السكرول
-            card.className = `flex items-center justify-between px-4 py-3 rounded-xl transition-all group ${bgClass}`;
+            // 📏 تصميم أفقي نحيف (Compact) مع padding مريح
+            card.className = `flex items-center justify-between px-5 py-3.5 rounded-xl transition-all duration-300 shadow-sm group ${bgClass}`;
 
             card.innerHTML = `
-            <div class="flex items-center gap-3 flex-grow cursor-pointer" onclick="toggleBucketItem(${item.id})">
-                <div class="text-lg flex-shrink-0 transition-transform active:scale-75 select-none">${checkIcon}</div>
-                
-                <h4 class="${textClass} font-medium text-sm leading-tight flex-grow transition-all select-none">${item.title}</h4>
+            <div class="flex items-center gap-4 flex-grow cursor-pointer" onclick="toggleBucketItem(${item.id})">
+                <div class="text-xl flex-shrink-0 transition-transform active:scale-75 select-none">${checkIcon}</div>
+                <h4 class="${textClass} font-medium text-sm md:text-base leading-snug flex-grow transition-all select-none">${item.title}</h4>
             </div>
             
-            <button onclick="deleteBucketItem(${item.id})" class="text-slate-500 hover:text-rose-400 p-1.5 transition-colors opacity-100 sm:opacity-0 group-hover:opacity-100 active:scale-90 flex-shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <button onclick="deleteBucketItem(${item.id})" class="text-slate-500 hover:text-rose-400 p-2 transition-colors opacity-100 sm:opacity-0 group-hover:opacity-100 active:scale-90 flex-shrink-0 ml-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         `;
             bucketGrid.appendChild(card);
