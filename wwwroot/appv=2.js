@@ -1103,16 +1103,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const checkIcon = isDone ? "✅" : "⬜";
 
             const card = document.createElement('div');
-            // 🎯 استخدمنا هنا Flex لأن الحاوية الأم (bucketGrid) هي من نوع Grid الآن
-            card.className = `flex items-center justify-between p-4 rounded-2xl transition-all group ${bgClass}`;
+            // تقليل الـ padding ليصبح px-4 py-3 بدلاً من p-4 لتوفير مساحة السكرول
+            card.className = `flex items-center justify-between px-4 py-3 rounded-xl transition-all group ${bgClass}`;
 
             card.innerHTML = `
-            <div class="flex items-center gap-4 flex-grow cursor-pointer" onclick="toggleBucketItem(${item.id})">
-                <div class="text-xl transition-transform active:scale-75 select-none">${checkIcon}</div>
-                <h4 class="${textClass} font-bold text-sm tracking-wide flex-grow transition-all select-none">${item.title}</h4>
+            <div class="flex items-center gap-3 flex-grow cursor-pointer" onclick="toggleBucketItem(${item.id})">
+                <div class="text-lg flex-shrink-0 transition-transform active:scale-75 select-none">${checkIcon}</div>
+                
+                <h4 class="${textClass} font-medium text-sm leading-tight flex-grow transition-all select-none">${item.title}</h4>
             </div>
-            <button onclick="deleteBucketItem(${item.id})" class="text-slate-600 hover:text-rose-400 p-2 transition-colors opacity-0 group-hover:opacity-100 active:scale-90 ml-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            
+            <button onclick="deleteBucketItem(${item.id})" class="text-slate-500 hover:text-rose-400 p-1.5 transition-colors opacity-100 sm:opacity-0 group-hover:opacity-100 active:scale-90 flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         `;
             bucketGrid.appendChild(card);
