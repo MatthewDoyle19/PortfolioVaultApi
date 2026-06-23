@@ -1776,41 +1776,79 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchMedia();
 
-    // ==========================================
-// 🚀 V2.0.0 EASTER EGG & SECRET DOOR (CINEMATIC PEARL EDITION)
+    /* ==========================================
+   📦 THE TIME CAPSULE (LEGACY CODE - DO NOT UNCOMMENT)
+   هذا هو الكود التاريخي الذي تم استخدامه ليلة 23/6/2026 لتفجير المفاجأة.
+   متروك هنا للذكرى والتوثيق، لكي لا ننسى كيف تمت هندسة اللحظة.
+   ==========================================
+    const checkMilestone = () => {
+        const targetDate = new Date('2026-06-23T00:00:00+03:00').getTime();
+        const now = new Date().getTime();
+        const distance = targetDate - now; 
+        const triggerNow = () => {
+            if (localStorage.getItem('v2_unlocked') !== 'true') {
+                const loginCheckInterval = setInterval(() => {
+                    const loginScreen = document.getElementById('login-screen');
+                    if (loginScreen && loginScreen.classList.contains('hidden')) {
+                        clearInterval(loginCheckInterval);
+                        setTimeout(() => { openEasterEgg(); }, 3000);
+                    }
+                }, 500);
+            }
+        };
+        if (distance <= 0) { triggerNow(); } 
+        else { setTimeout(() => { triggerNow(); }, distance); }
+    };
+    checkMilestone();
+
+    if (v2PromptForm) {
+        v2PromptForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = v2PromptForm.querySelector('button');
+            const answerInput = document.getElementById('v2-answer').value;
+            const questionText = "لو رجعنا بالزمن ليوم 25/3...";
+            
+            btn.disabled = true;
+            btn.innerHTML = 'Encrypting & Saving to Vault... ⏳';
+
+            try {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                await fetch(`${API_BASE_URL}/api/commits`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date: new Date().toISOString().split('T')[0],
+                        message: `[V2.0.0 SYSTEM UPGRADE UNLOCKED] ✨\n\n💭 السؤال:\n"${questionText}"\n\n❤️ إجابة زوزو:\n"${answerInput}"`,
+                        imageUrl: null, audioUrl: null
+                    })
+                });
+                localStorage.setItem('v2_unlocked', 'true');
+                btn.innerHTML = 'System Upgraded & Saved ✨';
+                setTimeout(() => {
+                    // Animation logic...
+                }, 2500);
+            } catch (error) { console.error("Failed to execute V2 save:", error); }
+        });
+    }
+========================================== */
+
+// ==========================================
+// 🚀 V2.0.0 EASTER EGG & SECRET DOOR (STABLE EDITION - ACTIVE CODE)
 // ==========================================
     const easterEggOverlay = document.getElementById('easter-egg-overlay');
     const easterEggAudio = document.getElementById('easter-egg-audio');
-    const closeEasterEggBtn = document.getElementById('close-easter-egg');
-    const v2PromptForm = document.getElementById('v2-prompt-form');
-    const versionTrigger = document.getElementById('version-trigger'); // تأكد من إضافة id="version-trigger" لنص الإصدار في الـ HTML
+    const versionTrigger = document.getElementById('version-trigger');
 
-// --- [1] فحص حالة النظام وتحديث رقم الإصدار فور دخول الموقع ---
-    if (versionTrigger) {
-        if (localStorage.getItem('v2_unlocked') === 'true') {
-            versionTrigger.innerText = 'v2.0.0';
-            versionTrigger.classList.add('text-pink-400', 'font-bold', 'drop-shadow-md');
-        } else {
-            versionTrigger.innerText = 'v1.5.9';
-        }
-    }
-
-// --- [2] دالة السحر: تفتح الشاشة وتشغل الموسيقى ---
+// --- [1] دالة فتح الباب السري ---
     const openEasterEgg = () => {
         if (easterEggOverlay) {
-
             const textContent = document.getElementById('easter-egg-content');
             const gallery = document.getElementById('easter-egg-gallery');
 
-            // 🎯 التعديل هنا: دائماً أظهر الصفحة الأولى (النصب التذكاري) وأخفِ الألبوم عند أول دخول
-            if (textContent) {
-                textContent.classList.remove('hidden', 'opacity-0', 'scale-95');
-            }
-            if (gallery) {
-                gallery.classList.add('hidden', 'opacity-0', 'translate-y-10');
-            }
+            // دائماً أظهر الصفحة الأولى (النصب التذكاري) وأخفِ الألبوم عند أول دخول
+            if (textContent) textContent.classList.remove('hidden', 'opacity-0', 'scale-95');
+            if (gallery) gallery.classList.add('hidden', 'opacity-0', 'translate-y-10');
 
-            // إظهار الشاشة السوداء والصوت
             easterEggOverlay.classList.remove('hidden');
             if (easterEggAudio) {
                 easterEggAudio.volume = 0.5;
@@ -1822,65 +1860,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- الانتقال من صفحة التوثيق إلى الألبوم السري ---
-    const proceedBtn = document.getElementById('proceed-to-gallery-btn');
-    if (proceedBtn) {
-        proceedBtn.addEventListener('click', () => {
-            const textContent = document.getElementById('easter-egg-content');
-            const gallery = document.getElementById('easter-egg-gallery');
-
-            if (textContent) textContent.classList.add('opacity-0', 'scale-95');
-
-            setTimeout(() => {
-                if (textContent) textContent.classList.add('hidden');
-                if (gallery) {
-                    // إرجاع السحب للأعلى فوراً قبل ظهور الصور
-                    const scrollContainer = gallery.closest('.overflow-y-auto');
-                    if (scrollContainer) scrollContainer.scrollTop = 0;
-
-                    gallery.classList.remove('hidden');
-                    setTimeout(() => gallery.classList.remove('opacity-0', 'translate-y-10'), 50);
-                }
-            }, 800); // ينتظر انتهاء تأثير التلاشي قبل إظهار الصور
-        });
-    }
-
-// --- [3] التحقق من الموعد لفتحها تلقائياً (Live Cinematic Trigger) ---
-    const checkMilestone = () => {
-        // 1. تحديد لحظة الصفر بدقة (إضافة +03:00 لضمان توقيت الأردن)
-        const targetDate = new Date('2026-06-23T00:00:00+03:00').getTime();
-        const now = new Date().getTime();
-        const distance = targetDate - now; // حساب الفرق بالملي ثانية
-
-        // دالة التشغيل الداخلية (لكي لا نكرر الكود)
-        const triggerNow = () => {
-            if (localStorage.getItem('v2_unlocked') !== 'true') {
-                const loginCheckInterval = setInterval(() => {
-                    const loginScreen = document.getElementById('login-screen');
-                    if (loginScreen && loginScreen.classList.contains('hidden')) {
-                        clearInterval(loginCheckInterval);
-                        setTimeout(() => {
-                            openEasterEgg();
-                        }, 3000);
-                    }
-                }, 500);
-            }
-        };
-
-        if (distance <= 0) {
-            // إذا فتحت الموقع بعد منتصف الليل، شغله فوراً (بشرط أن تكون سجلت الدخول)
-            triggerNow();
-        } else {
-            // 🎯 السحر: إذا فتحت الموقع قبل منتصف الليل، نضبط المؤقت ليعمل في اللحظة الحاسمة تماماً
-            // المتصفح سينتظر الـ (distance) المتبقية، وبمجرد أن تصل الساعة 12:00 سيفجر الشاشة أمامها!
-            setTimeout(() => {
-                triggerNow();
-            }, distance);
-        }
-    };
-    checkMilestone();
-
-// --- [4] الباب السري: النقر 3 مرات بسرعة على رقم الإصدار ---
+// --- [2] الباب السري: النقر 3 مرات بسرعة على رقم الإصدار ---
     let clickCount = 0;
     let clickTimeout;
 
@@ -1900,127 +1880,61 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-// --- [5] إغلاق الواجهة وإيقاف الصوت بنعومة (Bulletproof Close) ---
+// --- [3] إغلاق الواجهة وإيقاف الصوت بنعومة ---
     const closeFunctions = () => {
-        const overlay = document.getElementById('easter-egg-overlay');
-        const audio = document.getElementById('easter-egg-audio');
-
-        if (overlay) overlay.classList.add('opacity-0');
-
-        if (audio) {
-            let vol = audio.volume;
+        if (easterEggOverlay) easterEggOverlay.classList.add('opacity-0');
+        if (easterEggAudio) {
+            let vol = easterEggAudio.volume;
             let fadeOut = setInterval(() => {
                 if (vol > 0.05) {
                     vol -= 0.05;
-                    audio.volume = vol;
+                    easterEggAudio.volume = vol;
                 } else {
                     clearInterval(fadeOut);
-                    audio.pause();
-                    audio.currentTime = 0;
+                    easterEggAudio.pause();
+                    easterEggAudio.currentTime = 0;
                 }
             }, 100);
         }
-        setTimeout(() => { if (overlay) overlay.classList.add('hidden'); }, 1000);
+        setTimeout(() => { if (easterEggOverlay) easterEggOverlay.classList.add('hidden'); }, 1000);
     };
 
-// استخدام Event Delegation لضمان استجابة الأزرار دائماً
+// Event Delegation للأزرار
     document.addEventListener('click', (e) => {
         if (e.target.id === 'close-easter-egg' || e.target.id === 'close-gallery-btn') {
             closeFunctions();
         }
     });
 
-// --- [6] قفل النسخة، حفظ الإجابة، والانتقال للألبوم ---
-    if (v2PromptForm) {
-        v2PromptForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = v2PromptForm.querySelector('button');
-            const answerInput = document.getElementById('v2-answer').value;
+// --- [4] الانتقال من صفحة النصب التذكاري إلى الألبوم السري ---
+    const proceedBtn = document.getElementById('proceed-to-gallery-btn');
+    if (proceedBtn) {
+        proceedBtn.addEventListener('click', () => {
+            const textContent = document.getElementById('easter-egg-content');
+            const gallery = document.getElementById('easter-egg-gallery');
 
-            // النص الثابت للسؤال لتوثيقه مع الإجابة
-            const questionText = "لو رجعنا بالزمن ليوم 25/3، يوم أن حُذفت كل الحواجز وبدأنا نصبح مقربين.. شو الكلام اللي كنتِ رح تحكيه لمحمد لو كنتِ بتعرفي إننا رح نوصل لهون؟";
+            if (textContent) textContent.classList.add('opacity-0', 'scale-95');
 
-            // 1. عرض حالة التحميل
-            btn.disabled = true;
-            btn.innerHTML = 'Encrypting & Saving to Vault... ⏳';
+            setTimeout(() => {
+                if (textContent) textContent.classList.add('hidden');
+                if (gallery) {
+                    const scrollContainer = gallery.closest('.overflow-y-auto');
+                    if (scrollContainer) scrollContainer.scrollTop = 0;
 
-            try {
-                // إضافة تأخير وهمي (ثانيتين) لترى رسالة التحميل بوضوح
-                await new Promise(resolve => setTimeout(resolve, 2000));
-
-                await fetch(`${API_BASE_URL}/api/commits`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        date: new Date().toISOString().split('T')[0],
-                        // 🎯 دمج السؤال مع الإجابة بتنسيق يظهر بشكل رائع في الـ Timeline
-                        message: `[V2.0.0 SYSTEM UPGRADE UNLOCKED] ✨\n\n💭 السؤال:\n"${questionText}"\n\n❤️ إجابة زوزو:\n"${answerInput}"`,
-                        imageUrl: null,
-                        audioUrl: null
-                    })
-                });
-
-                // 2. تسجيل الإنجاز في المتصفح
-                localStorage.setItem('v2_unlocked', 'true');
-
-                // التحديث الفوري للإصدار في الخلفية
-                if (versionTrigger) {
-                    versionTrigger.innerText = 'v2.0.0';
-                    versionTrigger.classList.add('text-pink-400', 'font-bold');
+                    gallery.classList.remove('hidden');
+                    setTimeout(() => gallery.classList.remove('opacity-0', 'translate-y-10'), 50);
                 }
-
-                // 3. التحول للأخضر الزمردي المطلق
-                btn.innerHTML = 'System Upgraded & Saved ✨';
-                btn.className = 'w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-[0_10px_20px_rgba(16,185,129,0.3)] tracking-wide pointer-events-none';
-                btn.classList.replace('from-indigo-500', 'from-emerald-500');
-                btn.classList.replace('to-purple-500', 'to-emerald-400');
-                btn.classList.replace('shadow-[0_10px_20px_rgba(99,102,241,0.3)]', 'shadow-[0_10px_20px_rgba(16,185,129,0.3)]');
-
-                if (typeof fetchCommits === "function") fetchCommits();
-
-                // 4. تلاشي النص وظهور الألبوم السري
-                setTimeout(() => {
-                    const textContent = document.getElementById('easter-egg-content');
-                    const gallery = document.getElementById('easter-egg-gallery');
-
-                    if (textContent) textContent.classList.add('opacity-0', 'scale-95');
-
-                    setTimeout(() => {
-                        if (textContent) textContent.classList.add('hidden');
-
-                        if (gallery) {
-                            // إرجاع السحب للأعلى فوراً قبل ظهور الصور
-                            const scrollContainer = gallery.closest('.overflow-y-auto');
-                            if (scrollContainer) {
-                                scrollContainer.scrollTop = 0;
-                            }
-
-                            gallery.classList.remove('hidden');
-                            setTimeout(() => gallery.classList.remove('opacity-0', 'translate-y-10'), 50);
-                        } else {
-                            console.error("⚠️ لم يظهر الألبوم لأن كود الـ HTML الخاص به مفقود!");
-                        }
-                    }, 1000);
-                }, 2500);
-
-            } catch (error) {
-                console.error("Failed to execute V2 save:", error);
-                btn.innerHTML = 'Error Saving. Try Again.';
-                btn.disabled = false;
-            }
+            }, 800);
         });
     }
 
-    // 🪄 سحر الظهور المتتابع للصور في الألبوم
+// --- [5] سحر الظهور المتتابع للصور في الألبوم ---
     document.querySelectorAll('.polaroid').forEach((p, index) => {
-        // 1. تأخير الظهور (نصف ثانية بين كل صورة)
         p.style.animationDelay = `${index * 0.4}s`;
-
-        // 2. 🛠️ استعادة تأثير الـ Hover بمجرد انتهاء حركة الظهور
         p.addEventListener('animationend', () => {
-            p.style.animation = 'none'; // تحرير العنصر من سيطرة الأنيميشن
-            p.style.opacity = '1'; // تثبيت الرؤية
-            p.style.transform = 'rotate(var(--rot))'; // تثبيت زاوية الميلان العشوائية
+            p.style.animation = 'none';
+            p.style.opacity = '1';
+            p.style.transform = 'rotate(var(--rot))';
         });
     });
 
