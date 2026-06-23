@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginBtn = document.getElementById('login-btn');
     const errorMsg = document.getElementById('error-msg');
 
-    const API_BASE_URL = '';
+    const API_BASE_URL = "https://zainabvault-v2-0-0.onrender.com";
 
     // --- 1. Authentication (التعديل النهائي والآمن) ---
     const handleLogin = async () => {
