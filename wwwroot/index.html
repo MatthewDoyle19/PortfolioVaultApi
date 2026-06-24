@@ -203,6 +203,29 @@
         </section>
     </div>
 
+    <section id="view-goals" class="hidden pb-24 fade-in" style="animation-delay: 0.1s;">
+
+        <div class="flex flex-col items-center justify-center text-center mb-8 mt-4 px-4">
+            <div class="p-3 bg-indigo-500/20 rounded-2xl shadow-inner border border-indigo-500/20 mb-3">
+                <svg class="w-7 h-7 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 tracking-tight">Our Core Goals</h2>
+        </div>
+
+        <form id="add-goal-form" class="w-full max-w-2xl mx-auto px-4 mb-8">
+            <div class="premium-glass p-2 rounded-2xl flex gap-2 border border-indigo-500/30">
+                <input type="text" id="goal-title" placeholder="Type a new goal here..." required class="flex-grow bg-transparent border-none px-4 py-3 text-sm text-white focus:outline-none placeholder-slate-500">
+                <button type="submit" class="bg-indigo-500/20 text-indigo-400 font-bold py-3 px-6 rounded-xl hover:bg-indigo-500 hover:text-white transition-all active:scale-95">Add</button>
+            </div>
+        </form>
+
+        <div id="goals-list" class="flex flex-col gap-3 w-full max-w-2xl mx-auto px-4">
+        </div>
+
+    </section>
+
     <div id="view-calendar" class="hidden fade-in">
 
         <section class="mb-16 fade-in" style="animation-delay: 0.6s;">
@@ -445,6 +468,13 @@
     <button onclick="switchTab('calendar')" id="tab-calendar" class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition-all">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
         <span class="text-[10px] font-bold tracking-widest uppercase">Calendar</span>
+    </button>
+
+    <button id="tab-goals" class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition-all" onclick="switchTab('goals')">
+        <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+        <span class="text-[9px] font-bold tracking-widest">GOALS</span>
     </button>
 
     <button onclick="switchTab('memories')" id="tab-memories" class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition-all">

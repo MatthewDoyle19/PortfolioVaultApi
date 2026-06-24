@@ -2097,24 +2097,118 @@ document.addEventListener('DOMContentLoaded', () => {
 //         });
 //     }
 
-    // --- 📱 Bottom Navigation Logic (4 Tabs) ---
+    // --- 🚀 OUR GOALS LOGIC ---
+    const goalsList = document.getElementById('goals-list');
+    const addGoalForm = document.getElementById('add-goal-form');
+
+// 1. جلب الأهداف من السيرفر
+    const fetchGoals = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/goals`); // تأكد من إنشاء هذا الـ API في الـ C#
+            const items = await response.json();
+            renderGoals(items);
+        } catch (error) { console.error("Failed to fetch goals", error); }
+    };
+
+// 2. رسم الأهداف على الشاشة
+    const renderGoals = (items) => {
+        if (!goalsList) return;
+        goalsList.innerHTML = '';
+
+        items.forEach((item) => {
+            const isDone = item.isCompleted;
+            const bgClass = isDone ? "bg-indigo-500/10 border-indigo-500/30 opacity-60" : "premium-glass border-white/10 hover:border-indigo-500/30";
+            const textClass = isDone ? "text-slate-400 line-through decoration-indigo-500/50" : "text-white";
+            const icon = isDone ? "✅" : "🎯";
+
+            const card = document.createElement('div');
+            card.className = `flex items-center justify-between px-5 py-4 rounded-2xl transition-all shadow-sm group ${bgClass}`;
+
+            card.innerHTML = `
+            <div class="flex items-center gap-4 flex-grow cursor-pointer" onclick="toggleGoal(${item.id})">
+                <div class="text-xl flex-shrink-0 transition-transform active:scale-75 select-none">${icon}</div>
+                <h4 class="${textClass} font-medium text-sm md:text-base leading-snug flex-grow transition-all select-none">${item.title}</h4>
+            </div>
+            
+            <button onclick="deleteGoal(${item.id})" class="text-slate-500 hover:text-rose-400 p-2 transition-colors opacity-100 sm:opacity-0 group-hover:opacity-100 active:scale-90 flex-shrink-0 ml-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        `;
+            goalsList.appendChild(card);
+        });
+    };
+
+// 3. إضافة هدف جديد
+    if (addGoalForm) {
+        addGoalForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '...';
+
+            try {
+                await fetch(`${API_BASE_URL}/api/goals`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: document.getElementById('goal-title').value,
+                        isCompleted: false
+                    })
+                });
+                addGoalForm.reset();
+                fetchGoals();
+            } catch (error) { console.error("Save failed", error); }
+            finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Add';
+            }
+        });
+    }
+
+// 4. تغيير حالة الهدف (إنجاز / تراجع)
+    window.toggleGoal = async (id) => {
+        try {
+            await fetch(`${API_BASE_URL}/api/goals/${id}`, { method: 'PUT' });
+            fetchGoals();
+        } catch (error) { console.error("Update failed", error); }
+    };
+
+// 5. حذف هدف
+    window.deleteGoal = async (id) => {
+        if(confirm('Delete this goal?')) {
+            await fetch(`${API_BASE_URL}/api/goals/${id}`, { method: 'DELETE' });
+            fetchGoals();
+        }
+    };
+
+// تشغيل جلب الأهداف عند تحميل الصفحة
+    fetchGoals();
+
+    // --- 📱 Bottom Navigation Logic (5 Tabs) ---
     window.switchTab = (tabName) => {
+        // 1. إخفاء جميع الصفحات
         document.getElementById('view-home').classList.add('hidden');
         document.getElementById('view-memories').classList.add('hidden');
         document.getElementById('view-calendar').classList.add('hidden');
         document.getElementById('view-court').classList.add('hidden');
+        document.getElementById('view-goals').classList.add('hidden'); // 👈 السطر الجديد
 
+        // 2. إعادة جميع الأزرار للحالة الباهتة (Inactive)
         const inactiveClass = "flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300 transition-all";
         document.getElementById('tab-home').className = inactiveClass;
         document.getElementById('tab-memories').className = inactiveClass;
         document.getElementById('tab-calendar').className = inactiveClass;
         document.getElementById('tab-court').className = inactiveClass;
+        document.getElementById('tab-goals').className = inactiveClass; // 👈 السطر الجديد
 
+        // 3. إظهار الصفحة المستهدفة
         document.getElementById(`view-${tabName}`).classList.remove('hidden');
 
+        // 4. إضاءة وتكبير الزر المستهدف (Active)
         const activeClass = "flex flex-col items-center gap-1 text-accent transition-all scale-110 drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]";
         document.getElementById(`tab-${tabName}`).className = activeClass;
 
+        // 5. رفع الصفحة للأعلى
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 });
