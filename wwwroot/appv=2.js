@@ -2147,12 +2147,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const isDone = item.isCompleted;
             if (isDone) completedCount++; // زيادة العداد إذا كان الهدف مكتملاً
 
-            const bgClass = isDone ? "bg-indigo-500/10 border-indigo-500/30 opacity-60" : "premium-glass border-white/10 hover:border-indigo-500/30";
+            // ستايل أنحف وأكثر أناقة ليتناسب مع الحاوية الجديدة
+            const bgClass = isDone
+                ? "bg-indigo-500/10 border-indigo-500/30 opacity-60"
+                : "bg-white/5 border-transparent hover:border-indigo-500/30 hover:bg-white/10";
+
             const textClass = isDone ? "text-slate-400 line-through decoration-indigo-500/50" : "text-white";
             const icon = isDone ? "✅" : "🎯";
 
             const card = document.createElement('div');
-            card.className = `flex items-center justify-between px-5 py-4 rounded-2xl transition-all shadow-sm group ${bgClass}`;
+            // قللنا الـ padding وجعلنا الحواف مدورة بشكل أصغر (rounded-xl)
+            card.className = `flex items-center justify-between px-4 py-3.5 rounded-xl border transition-all duration-300 group ${bgClass}`;
 
             card.innerHTML = `
             <div class="flex items-center gap-4 flex-grow cursor-pointer" onclick="toggleGoal(${item.id})">
