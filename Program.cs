@@ -569,13 +569,63 @@ app.MapPost("/api/mansaf/action", async (MansafActionRequest req, VaultDb db) =>
     }
 });
 
-// --- 🌀 THE QUANTUM PORTAL ---
-app.MapPost("/api/teleport", async (TeleportRequest req) => {
-    string displayUser = req.User == "Mohammad" ? "7amodee 👨🏻‍💻" : "ZoZo 👸🏻";
-    string displayDest = req.Destination == "Jordan" ? "Jordan 🇯🇴" : "Kafr Kanna 🇵🇸";
+// // --- 🌀 THE QUANTUM PORTAL ---
+// app.MapPost("/api/teleport", async (TeleportRequest req) => {
+//     string displayUser = req.User == "Mohammad" ? "7amodee 👨🏻‍💻" : "ZoZo 👸🏻";
+//     string displayDest = req.Destination == "Jordan" ? "Jordan 🇯🇴" : "Kafr Kanna 🇵🇸";
+//     
+//     await SendTelegramNotification($"{displayUser} just warped through space and time to arrive at {displayDest}! ✈️🤍");
+//     
+//     return Results.Ok();
+// });
+
+// --- 🎯 CORE GOALS ROUTES ---
+app.MapGet("/api/goals", async (VaultDb db) => 
+    await db.Goals.OrderBy(g => g.IsCompleted).ThenByDescending(g => g.CreatedAt).ToListAsync());
+
+app.MapPost("/api/goals", async (Goal newGoal, VaultDb db) => {
     
-    await SendTelegramNotification($"{displayUser} just warped through space and time to arrive at {displayDest}! ✈️🤍");
+    // 1. جلب توقيت الأردن الفعلي
+    var jordanZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman");
+    var jordanTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, jordanZone);
     
+    // 2. إجبار قاعدة البيانات على قبوله بدون أخطاء
+    newGoal.CreatedAt = DateTime.SpecifyKind(jordanTime, DateTimeKind.Utc);
+    
+    db.Goals.Add(newGoal);
+    await db.SaveChangesAsync();
+
+    // 🚀 إشعار التيليجرام 
+    await SendTelegramNotification($"🎯 New Core Goal Set!\n\nGoal: {newGoal.Title}\nTime: {jordanTime:hh:mm tt}\n\nLet's make it happen! 💪");
+
+    return Results.Created($"/api/goals/{newGoal.Id}", newGoal);
+});
+
+app.MapPut("/api/goals/{id}", async (int id, VaultDb db) => {
+    var goal = await db.Goals.FindAsync(id);
+    if (goal is null) return Results.NotFound();
+
+    // تبديل حالة الهدف (إنجاز / تراجع)
+    goal.IsCompleted = !goal.IsCompleted;
+    await db.SaveChangesAsync();
+
+    // 🚀 إشعار التيليجرام عند الإنجاز
+    string statusText = goal.IsCompleted ? "✅ Achieved!" : "🔄 Re-opened";
+    await SendTelegramNotification($"🎯 Goal Update:\n\nGoal: {goal.Title}\nStatus: {statusText}");
+
+    return Results.Ok(goal);
+});
+
+app.MapDelete("/api/goals/{id}", async (int id, VaultDb db) => {
+    var goal = await db.Goals.FindAsync(id);
+    if (goal is null) return Results.NotFound();
+    
+    db.Goals.Remove(goal);
+    await db.SaveChangesAsync();
+
+    // 🚀 إشعار التيليجرام عند الحذف
+    await SendTelegramNotification($"🗑️ A Core Goal was deleted:\n\nGoal: {goal.Title}");
+
     return Results.Ok();
 });
 
@@ -607,6 +657,7 @@ class VaultDb : DbContext {
     public DbSet<MediaItem> MediaItems { get; set; }
     public DbSet<MansafCounter> MansafCounters => Set<MansafCounter>();
     public DbSet<MansafLog> MansafLogs => Set<MansafLog>();
+    public DbSet<Goal> Goals { get; set; }
 }
 
 class Link {
@@ -731,4 +782,12 @@ public class MansafActionRequest {
 public class TeleportRequest {
     [JsonPropertyName("user")] public string User { get; set; } = string.Empty;
     [JsonPropertyName("destination")] public string Destination { get; set; } = string.Empty;
+}
+
+public class Goal
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public bool IsCompleted { get; set; } = false;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // إضافة ممتازة للتوثيق
 }
