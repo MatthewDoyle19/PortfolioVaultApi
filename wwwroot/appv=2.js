@@ -2111,12 +2111,42 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 // 2. رسم الأهداف على الشاشة
+    // 🌟 دالة تحديث شريط تقدم الأهداف
+    const updateGoalsProgress = (total, completed) => {
+        const progressText = document.getElementById('goals-progress-text');
+        const progressBar = document.getElementById('goals-progress-bar');
+
+        if (progressText && progressBar) {
+            progressText.innerText = `${completed} / ${total}`;
+
+            // حساب النسبة المئوية
+            const percentage = total === 0 ? 0 : (completed / total) * 100;
+            progressBar.style.width = `${percentage}%`;
+
+            // تحويل اللون للأخضر إذا اكتملت كل الأهداف
+            if (percentage === 100 && total > 0) {
+                progressBar.classList.replace('from-indigo-500', 'from-emerald-400');
+                progressBar.classList.replace('to-cyan-400', 'to-teal-400');
+                progressText.classList.replace('text-indigo-400', 'text-emerald-400');
+            } else {
+                progressBar.classList.replace('from-emerald-400', 'from-indigo-500');
+                progressBar.classList.replace('to-teal-400', 'to-cyan-400');
+                progressText.classList.replace('text-emerald-400', 'text-indigo-400');
+            }
+        }
+    };
+
+// 2. رسم الأهداف على الشاشة (محدثة)
     const renderGoals = (items) => {
         if (!goalsList) return;
         goalsList.innerHTML = '';
 
+        let completedCount = 0; // 🎯 عداد الإنجاز
+
         items.forEach((item) => {
             const isDone = item.isCompleted;
+            if (isDone) completedCount++; // زيادة العداد إذا كان الهدف مكتملاً
+
             const bgClass = isDone ? "bg-indigo-500/10 border-indigo-500/30 opacity-60" : "premium-glass border-white/10 hover:border-indigo-500/30";
             const textClass = isDone ? "text-slate-400 line-through decoration-indigo-500/50" : "text-white";
             const icon = isDone ? "✅" : "🎯";
@@ -2136,6 +2166,9 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
             goalsList.appendChild(card);
         });
+
+        // 🎯 استدعاء دالة تحديث الشريط بعد الانتهاء من رسم كل العناصر وحساب المجموع
+        updateGoalsProgress(items.length, completedCount);
     };
 
 // 3. إضافة هدف جديد
