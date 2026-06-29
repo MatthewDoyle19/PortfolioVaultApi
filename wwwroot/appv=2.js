@@ -316,6 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         commits.forEach((commit) => {
             const item = document.createElement('div');
+            // تم الاعتماد على كلاس polaroid-card الذي قمنا بتحديثه في الـ CSS ليدعم الـ GPU
             item.className = 'polaroid-card group fade-in relative overflow-hidden flex flex-col';
 
             const dateObj = new Date(commit.date);
@@ -328,20 +329,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (finalUnlockDate) {
                 // 🛠️ السحر الهندسي: معالجة توقيت الأردن (+03:00) لتوافقية الـ iPhone
-                // 1. إزالة التوقيت العالمي 'Z' إذا كان موجوداً
                 finalUnlockDate = finalUnlockDate.replace('Z', '');
-
-                // 2. إذا كان التاريخ بصيغة يوم فقط (مثال: 2026-06-23)، نعطيه وقت منتصف الليل
                 if (finalUnlockDate.length === 10) {
                     finalUnlockDate += 'T00:00:00';
                 }
-
-                // 3. الخطوة الحاسمة: إجبار المتصفح على اعتباره توقيت الأردن لخصم الـ 3 ساعات
                 if (!finalUnlockDate.includes('+')) {
                     finalUnlockDate += '+03:00';
                 }
 
-                // الآن نختبر إذا كانت الكبسولة مغلقة بناءً على التاريخ الجديد المعدّل
                 const unlockDateObj = new Date(finalUnlockDate);
                 if (unlockDateObj > new Date()) {
                     isLocked = true;
@@ -351,27 +346,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isLocked) {
                 const timerId = `timer-commit-${commit.id}`;
                 item.innerHTML = `
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
-        
-        <button onclick="deleteCommit(${commit.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-all p-1 active:scale-90 z-20">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </button>
-
-        <span class="text-4xl mb-2 animate-bounce">⏳</span>
-        <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
-        <div id="${timerId}" class="w-full min-h-[30px]"></div>
-    </div>
-    
-    <div class="opacity-10 blur-sm">
-        <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
-        <div class="h-32 bg-white/5 rounded-lg"></div>
-    </div>
+<div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
+    <button onclick="deleteCommit(${commit.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-all p-1 active:scale-90 z-20">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+    </button>
+    <span class="text-4xl mb-2 animate-bounce">⏳</span>
+    <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
+    <div id="${timerId}" class="w-full min-h-[30px]"></div>
+</div>
+<div class="opacity-10 blur-sm">
+    <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
+    <div class="h-32 bg-white/5 rounded-lg"></div>
+</div>
 `;
                 commitTimeline.appendChild(item);
-
-                // 🎯 نمرر التاريخ المعدّل (بتوقيت الأردن) لدالة العد التنازلي بدلاً من القديم
                 startCountdown(finalUnlockDate, timerId);
 
             } else {
@@ -386,16 +376,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const displayMessage = isArabic ? `${safeMessage}&#x200F;` : safeMessage;
 
                 item.innerHTML = `
-    <div class="flex justify-between items-start mb-4">
-        <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
-        <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-    </div>
-    
-    ${safeMessage ? `<p dir="${dirAttr}" class="${textFormatClasses} whitespace-pre-wrap text-slate-200 font-medium tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${displayMessage}</p>` : ''}
-    
-    ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
-    
-    ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
+<div class="flex justify-between items-start mb-4">
+    <span class="text-[10px] text-accent font-extrabold tracking-widest uppercase bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">${formattedDate}</span>
+    <button onclick="deleteCommit(${commit.id})" class="text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1 active:scale-90"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+</div>
+
+${safeMessage ? `<p dir="${dirAttr}" class="${textFormatClasses} whitespace-pre-wrap text-slate-200 font-medium tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${displayMessage}</p>` : ''}
+
+${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" loading="lazy" decoding="async" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
+
+${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
 `;
                 commitTimeline.appendChild(item);
             }
