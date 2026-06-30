@@ -27,18 +27,27 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 const trigger100DaysSurprise = () => {
-    // 1. إضافة ستايلات الحركة (Animations) مؤقتاً للشاشة السرية
+    // 🎵 1. تشغيل الموسيقى السينمائية
+    const romanticMusic = new Audio('https://res.cloudinary.com/dhr6waydw/video/upload/v1782843956/thbiqrsgvoiyoazrlmat.mp3');
+    romanticMusic.volume = 0.7; // مستوى صوت ناعم ومريح
+
+    // ⏱️ السحر هنا: إجبار الموسيقى على البدء من الثانية 27
+    romanticMusic.currentTime = 27;
+
+    romanticMusic.play().catch(e => console.log("Music play error:", e));
+
+    // 2. ستايلات الحركة (تمت إضافة تأثير التقريب البطيء للخلفية لتشعرها بالعمق)
     const styleBlock = document.createElement('style');
     styleBlock.innerHTML = `
         @keyframes breatheAura {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% { background-position: 0% 50%; transform: scale(1); }
+            50% { background-position: 100% 50%; transform: scale(1.05); }
+            100% { background-position: 0% 50%; transform: scale(1); }
         }
         @keyframes floatUp {
             0% { transform: translateY(0) scale(1); opacity: 0; }
-            20% { opacity: 0.6; }
-            80% { opacity: 0.6; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
             100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
         }
         @keyframes levitate {
@@ -46,31 +55,41 @@ const trigger100DaysSurprise = () => {
             50% { transform: translateY(-15px); }
             100% { transform: translateY(0px); }
         }
+        /* تأثير التوهج للحروف الجديدة */
+        .text-glow-fade {
+            opacity: 0;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            transition: opacity 0.8s ease-out, text-shadow 1.5s ease-out;
+        }
+        .text-glow-fade.visible {
+            opacity: 1;
+            text-shadow: 0 0 0px rgba(255, 255, 255, 0);
+        }
     `;
     document.head.appendChild(styleBlock);
 
-    // 2. إنشاء حاوية الشاشة الكاملة
+    // 3. الحاوية الأساسية
     const overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0 z-[999999] flex flex-col items-center justify-center p-6 opacity-0 transition-opacity duration-[2000ms] ease-in-out overflow-hidden';
+    overlay.className = 'fixed inset-0 z-[999999] flex flex-col items-center justify-center p-6 opacity-0 transition-opacity duration-[2500ms] ease-in-out overflow-hidden bg-black';
 
-    // 3. بناء البيئة الحية (السديم والمحتوى)
+    // بناء البيئة الحية
     overlay.innerHTML = `
-        <div class="absolute inset-0 bg-[linear-gradient(45deg,#050508,#1a0b16,#0d0b1a,#050508)] bg-[length:400%_400%] opacity-95" style="animation: breatheAura 15s ease infinite;"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(45deg,#020104,#150711,#0a0815,#020104)] bg-[length:300%_300%] opacity-90 origin-center" style="animation: breatheAura 20s ease-in-out infinite;"></div>
         
-        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-rose-600/10 blur-[120px] rounded-full mix-blend-screen animate-pulse" style="animation-duration: 8s;"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-600/10 blur-[120px] rounded-full mix-blend-screen animate-pulse" style="animation-duration: 10s;"></div>
+        <div class="absolute top-[-15%] left-[-15%] w-[600px] h-[600px] bg-rose-600/15 blur-[150px] rounded-full mix-blend-screen animate-pulse" style="animation-duration: 7s;"></div>
+        <div class="absolute bottom-[-15%] right-[-15%] w-[600px] h-[600px] bg-indigo-600/15 blur-[150px] rounded-full mix-blend-screen animate-pulse" style="animation-duration: 9s;"></div>
 
         <div id="fireflies-container" class="absolute inset-0 pointer-events-none"></div>
         
-        <div class="w-full max-w-lg text-center relative z-10 flex flex-col items-center" style="animation: levitate 8s ease-in-out infinite;">
-            <div class="text-5xl md:text-6xl mb-8 select-none opacity-0 transition-all duration-[1500ms] transform translate-y-4 filter drop-shadow-[0_0_20px_rgba(244,63,94,0.4)] animate-pulse" id="egg-icon" style="animation-duration: 3s;">
+        <div class="w-full max-w-lg text-center relative z-10 flex flex-col items-center" style="animation: levitate 6s ease-in-out infinite;">
+            <div class="text-5xl md:text-6xl mb-10 select-none opacity-0 transition-all duration-[2000ms] transform translate-y-6 filter drop-shadow-[0_0_25px_rgba(244,63,94,0.5)] animate-pulse" id="egg-icon" style="animation-duration: 4s;">
                 ♾️
             </div>
             
-            <div dir="rtl" id="typewriter-text" class="text-xl md:text-2xl text-slate-100 font-poetic text-right md:text-center leading-[2.3] tracking-wide min-h-[200px] px-4 md:px-8 drop-shadow-lg select-none">
+            <div dir="rtl" id="typewriter-text" class="text-[19px] md:text-[22px] text-slate-100 font-poetic text-right md:text-center leading-[2.5] tracking-wide min-h-[250px] px-2 md:px-6 drop-shadow-xl select-none">
             </div>
             
-            <button id="close-egg-btn" class="mt-12 opacity-0 scale-95 transition-all duration-1000 bg-white/5 border border-white/10 text-slate-400 hover:text-white px-8 py-3 rounded-full text-xs font-bold tracking-widest uppercase hover:bg-white/10 active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.05)] backdrop-blur-xl">
+            <button id="close-egg-btn" class="mt-14 opacity-0 scale-90 transition-all duration-1000 bg-white/5 border border-white/10 text-slate-300 hover:text-white px-10 py-3.5 rounded-full text-[11px] font-bold tracking-widest uppercase hover:bg-white/10 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 backdrop-blur-2xl">
                 Continue Our Journey
             </button>
         </div>
@@ -78,32 +97,34 @@ const trigger100DaysSurprise = () => {
 
     document.body.appendChild(overlay);
 
-    // 4. توليد اليراعات المضيئة (Fireflies)
+    // 4. توليد يراعات أكثر نعومة وكثافة
     const firefliesContainer = document.getElementById('fireflies-container');
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 50; i++) {
         const firefly = document.createElement('div');
-        const size = Math.random() * 3 + 1; // حجم الجزيء
-        firefly.className = 'absolute rounded-full bg-rose-200/80';
+        const size = Math.random() * 2.5 + 1;
+        firefly.className = 'absolute rounded-full bg-rose-100/90';
         firefly.style.width = `${size}px`;
         firefly.style.height = `${size}px`;
         firefly.style.left = `${Math.random() * 100}%`;
         firefly.style.bottom = '-20px';
-        firefly.style.boxShadow = '0 0 10px rgba(244, 63, 94, 0.6), 0 0 20px rgba(244, 63, 94, 0.4)';
-        // سرعات وتأخيرات عشوائية لكل يراعة
-        firefly.style.animation = `floatUp ${Math.random() * 8 + 7}s linear ${Math.random() * 5}s infinite`;
+        firefly.style.boxShadow = '0 0 12px rgba(244, 63, 94, 0.8)';
+        firefly.style.animation = `floatUp ${Math.random() * 10 + 8}s ease-in ${Math.random() * 5}s infinite`;
         firefliesContainer.appendChild(firefly);
     }
 
-    // 5. تفعيل الظهور وبدء الكتابة
+    // 5. التسلسل الزمني لظهور الشاشة
     setTimeout(() => {
         overlay.classList.remove('opacity-0');
         setTimeout(() => {
-            document.getElementById('egg-icon').classList.remove('opacity-0', 'translate-y-4');
-            startTypewriter();
-        }, 1500);
+            const icon = document.getElementById('egg-icon');
+            icon.classList.remove('opacity-0', 'translate-y-6');
+
+            // نؤخر بداية الكتابة قليلاً لتندمج مع الموسيقى
+            setTimeout(startTypewriter, 1000);
+        }, 1800);
     }, 100);
 
-    const fullText = "في غيابكِ تعلّمتُ كيف أنتظر، وفي وجودكِ تعلّمتُ كيف أطمئن..\n\n١٠٠ يوم مَضت، لم تكن مجرد أرقامٍ تتراكم في صفحات هذا العالم، بل كانت عُمراً حقيقياً بدأ بالتشكّل منذ اللحظة الأولى التي عبرتِ فيها إلى تفاصيلي.\n\nكنتِ دائمًا الهدوء الذي يُضيء عتمتي، والنقاء الذي أستندُ إليه وسط زحام الحياة وفوضاها. واليوم، وبعد مئة ليلة شهدت على صدق ما بيننا، أقولها لكِ بملء قلبي، وثبات روحي، وبأعمق ما يمكن للكلمة أن تحمل من معنى:\n\nأنا بحبّكِ.. فوق ما تتخيلين، وأكثر مما يتسع له الوقت ❤️.";
+    const fullText = "في غيابكِ تعلّمتُ كيف أنتظر، وفي وجودكِ تعلّمتُ كيف أطمئن..\n\n١٠٠ يوم مَضت، لم تكن مجرد أرقامٍ تتراكم في صفحات هذا العالم، بل كانت عُمراً حقيقياً بدأ بالتشكّل منذ اللحظة الأولى التي عبرتِ فيها إلى تفاصيلي.\n\nكنتِ دائمًا الهدوء الذي يُضيء عتمتي، والنقاء الذي أستندُ إليه وسط زحام الحياة وفوضاها. واليوم، وبعد مئة ليلة شهدت على صدق ما بيننا، أقولها لكِ بملء قلبي، وثبات روحي، وبأعمق ما يمكن للكلمة أن تحمل من معنى:\n\nأنا بحبّكِ.. فوق ما تتخيلين، وأكثر مما يتسع له الوقت 🤍.";
 
     let index = 0;
     const startTypewriter = () => {
@@ -112,22 +133,53 @@ const trigger100DaysSurprise = () => {
         function type() {
             if (index < fullText.length) {
                 const char = fullText.charAt(index);
+                const span = document.createElement('span');
+
+                // هندسة السطوع والنعومة للحروف
+                span.className = 'text-glow-fade';
+
                 if (char === '\n') {
-                    textContainer.innerHTML += '<br>';
+                    span.innerHTML = '<br>';
+                } else if (char === ' ') {
+                    span.innerHTML = '&nbsp;';
                 } else {
-                    textContainer.innerHTML += char;
+                    span.innerText = char;
                 }
+
+                textContainer.appendChild(span);
+
+                // تحفيز المتصفح لرسم الحرف ثم إظهاره بنعومة
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        span.classList.add('visible');
+                    });
+                });
+
                 index++;
-                setTimeout(type, 65);
+                // إبطاء بسيط يتناسب مع النعومة الجديدة (75 ملي ثانية)
+                setTimeout(type, 75);
             } else {
                 const closeBtn = document.getElementById('close-egg-btn');
-                closeBtn.classList.remove('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    closeBtn.classList.remove('opacity-0', 'scale-90');
+                }, 1000); // تأخير ظهور الزر لثانية بعد انتهاء النص لاحترام اللحظة
+
                 closeBtn.onclick = () => {
                     overlay.classList.add('opacity-0');
+                    // إخفات الموسيقى ببطء قبل الإغلاق
+                    let fadeOutInterval = setInterval(() => {
+                        if (romanticMusic.volume > 0.05) {
+                            romanticMusic.volume -= 0.05;
+                        } else {
+                            clearInterval(fadeOutInterval);
+                            romanticMusic.pause();
+                        }
+                    }, 100);
+
                     setTimeout(() => {
                         overlay.remove();
-                        styleBlock.remove(); // تنظيف الستايلات بعد الإغلاق
-                    }, 2000);
+                        styleBlock.remove();
+                    }, 2500);
                 };
             }
         }
