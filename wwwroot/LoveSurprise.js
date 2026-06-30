@@ -86,8 +86,7 @@ const trigger100DaysSurprise = () => {
                 ♾️
             </div>
             
-            <div dir="rtl" id="typewriter-text" class="text-[19px] md:text-[22px] text-slate-100 font-poetic text-right md:text-center leading-[2.5] tracking-wide min-h-[250px] px-2 md:px-6 drop-shadow-xl select-none">
-            </div>
+            <div dir="rtl" id="typewriter-text" class="w-full mx-auto text-lg md:text-2xl text-slate-100 font-poetic text-center leading-[2.5] tracking-wide min-h-[250px] px-6 select-none drop-shadow-2xl" style="max-width: 750px;">
             
             <button id="close-egg-btn" class="mt-14 opacity-0 scale-90 transition-all duration-1000 bg-white/5 border border-white/10 text-slate-300 hover:text-white px-10 py-3.5 rounded-full text-[11px] font-bold tracking-widest uppercase hover:bg-white/10 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 backdrop-blur-2xl">
                 Continue Our Journey
