@@ -128,7 +128,9 @@ const trigger100DaysSurprise = () => {
                 if (char === '\n') {
                     span.innerHTML = '<br>';
                 } else if (char === ' ') {
-                    span.innerHTML = '&nbsp;';
+                    // 🚀 الحل هنا: مسافة طبيعية مع السماح بكسر السطر
+                    span.innerHTML = ' ';
+                    span.style.whiteSpace = 'pre-wrap';
                 } else {
                     span.innerText = char;
                 }
@@ -167,6 +169,5 @@ const trigger100DaysSurprise = () => {
                 };
             }
         }
-        type();
     };
 };
