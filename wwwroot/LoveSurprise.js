@@ -169,5 +169,6 @@ const trigger100DaysSurprise = () => {
                 };
             }
         }
+        type();
     };
 };
