@@ -2212,7 +2212,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // تشغيل جلب الأهداف عند تحميل الصفحة
     fetchGoals();
-
+    
     // ==========================================
 // Secret Diary Module
 // ==========================================

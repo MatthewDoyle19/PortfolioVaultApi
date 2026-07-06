@@ -193,13 +193,13 @@
 <!--            </div>-->
         </section>
 
-                <button onclick="openDiaryGateway()" class="fixed bottom-28 left-6 z-[9999] premium-glass flex items-center justify-center gap-3 px-5 py-3.5 rounded-full text-white border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.15)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:border-indigo-400 transition-all duration-300 active:scale-90 group pointer-events-auto">
-                    <div class="relative flex items-center justify-center">
-                        <span class="text-xl group-hover:scale-110 transition-transform duration-300">📖</span>
-                        <span class="absolute -top-1 -right-2 text-[10px] animate-pulse">🔒</span>
-                    </div>
-                    <span class="font-bold tracking-widest uppercase text-[10px] text-indigo-100 mt-0.5">Secret Diary</span>
-                </button>     
+<!--                <button onclick="openDiaryGateway()" class="fixed bottom-28 left-6 z-[9999] premium-glass flex items-center justify-center gap-3 px-5 py-3.5 rounded-full text-white border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.15)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] hover:border-indigo-400 transition-all duration-300 active:scale-90 group pointer-events-auto">-->
+<!--                    <div class="relative flex items-center justify-center">-->
+<!--                        <span class="text-xl group-hover:scale-110 transition-transform duration-300">📖</span>-->
+<!--                        <span class="absolute -top-1 -right-2 text-[10px] animate-pulse">🔒</span>-->
+<!--                    </div>-->
+<!--                    <span class="font-bold tracking-widest uppercase text-[10px] text-indigo-100 mt-0.5">Secret Diary</span>-->
+<!--                </button>     -->
 
         <section class="mb-12 fade-in" style="animation-delay: 0.4s;">
             <div id="blind-prompt-container" class="premium-glass p-6 rounded-3xl border border-pink-500/30 relative overflow-hidden min-h-[150px] flex flex-col justify-center transition-all duration-500">
@@ -950,23 +950,23 @@
 
 <div id="diary-gateway" class="fixed inset-0 z-[99999] premium-glass flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500">
 
-    <button onclick="closeDiaryGateway()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-all active:scale-90">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-    </button>
+<!--    <button onclick="closeDiaryGateway()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-all active:scale-90">-->
+<!--        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>-->
+<!--    </button>-->
 
-    <div class="text-6xl mb-6 animate-pulse filter drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">📖</div>
-    <h2 class="text-2xl md:text-3xl font-sans font-bold text-white mb-2 tracking-widest uppercase">Secret Diary</h2>
-    <p class="text-slate-400 text-sm mb-8 text-center px-4">Enter your personal key to unlock your space</p>
+<!--    <div class="text-6xl mb-6 animate-pulse filter drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">📖</div>-->
+<!--    <h2 class="text-2xl md:text-3xl font-sans font-bold text-white mb-2 tracking-widest uppercase">Secret Diary</h2>-->
+<!--    <p class="text-slate-400 text-sm mb-8 text-center px-4">Enter your personal key to unlock your space</p>-->
 
-    <div class="relative w-full max-w-xs px-4">
-        <input type="password" id="diary-password-input" placeholder="Password..." class="w-full bg-black/40 border border-white/10 rounded-full px-6 py-4 text-center text-white placeholder-slate-500 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 transition-all backdrop-blur-md" onkeypress="handleDiaryKeyPress(event)">
+<!--    <div class="relative w-full max-w-xs px-4">-->
+<!--        <input type="password" id="diary-password-input" placeholder="Password..." class="w-full bg-black/40 border border-white/10 rounded-full px-6 py-4 text-center text-white placeholder-slate-500 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 transition-all backdrop-blur-md" onkeypress="handleDiaryKeyPress(event)">-->
 
-        <p id="diary-error-msg" class="absolute -bottom-4 left-0 w-full text-center text-rose-500 text-xs font-bold opacity-0 transition-opacity">Invalid secret key</p>
-    </div>
+<!--        <p id="diary-error-msg" class="absolute -bottom-4 left-0 w-full text-center text-rose-500 text-xs font-bold opacity-0 transition-opacity">Invalid secret key</p>-->
+<!--    </div>-->
 
-    <button onclick="unlockDiary()" class="mt-10 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-10 py-3 rounded-full text-sm font-bold tracking-widest uppercase transition-all active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
-        Unlock
-    </button>
+<!--    <button onclick="unlockDiary()" class="mt-10 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-10 py-3 rounded-full text-sm font-bold tracking-widest uppercase transition-all active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.05)]">-->
+<!--        Unlock-->
+<!--    </button>-->
 </div>
 
 </body>
