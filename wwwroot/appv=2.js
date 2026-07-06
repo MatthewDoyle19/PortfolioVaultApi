@@ -2213,6 +2213,61 @@ document.addEventListener('DOMContentLoaded', () => {
 // تشغيل جلب الأهداف عند تحميل الصفحة
     fetchGoals();
 
+    // ==========================================
+// Secret Diary Module
+// ==========================================
+
+    const MOHAMMAD_DIARY_PWD = "m1"; // كلمة السر الخاصة بك
+    const ZOZO_DIARY_PWD = "z1";     // كلمة السر الخاصة بشريكتك
+
+    let currentDiaryOwner = null;
+
+    const openDiaryGateway = () => {
+        const gateway = document.getElementById('diary-gateway');
+        gateway.classList.remove('opacity-0', 'pointer-events-none');
+        document.getElementById('diary-password-input').value = '';
+
+        // تأخير بسيط لضمان ظهور الشاشة قبل التركيز على حقل الإدخال
+        setTimeout(() => {
+            document.getElementById('diary-password-input').focus();
+        }, 100);
+    };
+
+    const closeDiaryGateway = () => {
+        const gateway = document.getElementById('diary-gateway');
+        gateway.classList.add('opacity-0', 'pointer-events-none');
+        document.getElementById('diary-error-msg').classList.add('opacity-0');
+    };
+
+    const handleDiaryKeyPress = (event) => {
+        if (event.key === 'Enter') unlockDiary();
+    };
+
+    const unlockDiary = () => {
+        const input = document.getElementById('diary-password-input').value;
+        const errorMsg = document.getElementById('diary-error-msg');
+
+        if (input === MOHAMMAD_DIARY_PWD) {
+            currentDiaryOwner = "Mohammad";
+            launchDiaryMode();
+        } else if (input === ZOZO_DIARY_PWD) {
+            currentDiaryOwner = "Zainab";
+            launchDiaryMode();
+        } else {
+            // رسالة خطأ عند إدخال مفتاح غير صحيح
+            errorMsg.classList.remove('opacity-0');
+            setTimeout(() => errorMsg.classList.add('opacity-0'), 3000);
+        }
+    };
+
+    const launchDiaryMode = () => {
+        closeDiaryGateway();
+
+        // إشعار مؤقت لتأكيد نجاح عملية الدخول برمجياً
+        // سيتم استبدال هذا لاحقاً بكود إظهار واجهة الدفتر وجلب البيانات
+        alert(`System Unlocked 🔓\nWelcome to your private diary, ${currentDiaryOwner}!`);
+    };
+
     // --- 📱 Bottom Navigation Logic (5 Tabs) ---
     window.switchTab = (tabName) => {
         // 1. إخفاء جميع الصفحات

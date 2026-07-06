@@ -53,7 +53,7 @@ app.UseCors("AllowFrontend");
 // --- AUTH ---
 app.MapPost("/api/auth/login", async (LoginRequest request) =>
 {
-    const string secureKey = "2503";
+    const string secureKey = "23";
     if (request.Key == secureKey) {
         await SendTelegramNotification("🔓 Someone just unlocked the Vault!");
         return Results.Ok(new { success = true, message = "Access Granted" });
