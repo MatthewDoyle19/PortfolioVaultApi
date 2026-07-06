@@ -323,26 +323,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
             let isLocked = false;
-
-            // 🛡️ متغير جديد لنحتفظ بالتاريخ الأصلي ونقوم بتعديله
             let finalUnlockDate = commit.unlockDate;
 
             if (finalUnlockDate) {
-                // 🛠️ السحر الهندسي: معالجة توقيت الأردن (+03:00) لتوافقية الـ iPhone
-                // 1. إزالة التوقيت العالمي 'Z' إذا كان موجوداً
                 finalUnlockDate = finalUnlockDate.replace('Z', '');
-
-                // 2. إذا كان التاريخ بصيغة يوم فقط (مثال: 2026-06-23)، نعطيه وقت منتصف الليل
                 if (finalUnlockDate.length === 10) {
                     finalUnlockDate += 'T00:00:00';
                 }
-
-                // 3. الخطوة الحاسمة: إجبار المتصفح على اعتباره توقيت الأردن لخصم الـ 3 ساعات
                 if (!finalUnlockDate.includes('+')) {
                     finalUnlockDate += '+03:00';
                 }
 
-                // الآن نختبر إذا كانت الكبسولة مغلقة بناءً على التاريخ الجديد المعدّل
                 const unlockDateObj = new Date(finalUnlockDate);
                 if (unlockDateObj > new Date()) {
                     isLocked = true;
@@ -352,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isLocked) {
                 const timerId = `timer-commit-${commit.id}`;
                 item.innerHTML = `
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
+    <div class="absolute inset-0 bg-black/95 flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
         
         <button onclick="deleteCommit(${commit.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-all p-1 active:scale-90 z-20">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -365,14 +356,12 @@ document.addEventListener('DOMContentLoaded', () => {
         <div id="${timerId}" class="w-full min-h-[30px]"></div>
     </div>
     
-    <div class="opacity-10 blur-sm">
+    <div class="opacity-10">
         <div class="h-20 bg-white/5 rounded-lg mb-2"></div>
         <div class="h-32 bg-white/5 rounded-lg"></div>
     </div>
 `;
                 commitTimeline.appendChild(item);
-
-                // 🎯 نمرر التاريخ المعدّل (بتوقيت الأردن) لدالة العد التنازلي بدلاً من القديم
                 startCountdown(finalUnlockDate, timerId);
 
             } else {
@@ -394,9 +383,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     ${safeMessage ? `<p dir="${dirAttr}" class="${textFormatClasses} whitespace-pre-wrap text-slate-200 font-medium tracking-wide ${commit.imageUrl ? 'mb-4' : 'mb-0'}">${displayMessage}</p>` : ''}
     
-    ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
+    ${commit.imageUrl ? `<img src="${optimizeOldImages(commit.imageUrl)}" alt="Memory" loading="lazy" decoding="async" style="width: calc(100% + 3rem); margin-left: -1.5rem; ${commit.audioUrl ? 'margin-bottom: 1.5rem;' : 'margin-bottom: -1.5rem;'}" class="max-w-none h-auto object-cover block">` : ''}
     
-    ${commit.audioUrl ? `<audio controls src="${commit.audioUrl}" class="w-full invert hue-rotate-180 grayscale contrast-125 opacity-85 hover:opacity-100 transition-all duration-300 rounded-full"></audio>` : ''}
+    ${commit.audioUrl ? `<audio controls preload="none" src="${commit.audioUrl}" class="w-full grayscale opacity-90 hover:opacity-100 transition-opacity duration-300 rounded-full"></audio>` : ''}
 `;
                 commitTimeline.appendChild(item);
             }
