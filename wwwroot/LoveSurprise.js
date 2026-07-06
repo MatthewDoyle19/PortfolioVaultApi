@@ -119,33 +119,32 @@ const trigger100DaysSurprise = () => {
     const startTypewriter = () => {
         const textContainer = document.getElementById('typewriter-text');
 
+        // إضافة توهج ناعم للنص كامل أثناء الكتابة كبديل للـ spans
+        textContainer.style.textShadow = '0 0 15px rgba(255, 255, 255, 0.6)';
+        textContainer.style.transition = 'text-shadow 2s ease-out';
+
+        let currentHTML = ""; // متغير لتجميع النص بشكل متصل
+
         function type() {
             if (index < fullText.length) {
                 const char = fullText.charAt(index);
-                const span = document.createElement('span');
-                span.className = 'text-glow-fade';
 
+                // تحويل النزول لسطر جديد إلى وسم HTML
                 if (char === '\n') {
-                    span.innerHTML = '<br>';
-                } else if (char === ' ') {
-                    // 🚀 الحل هنا: مسافة طبيعية مع السماح بكسر السطر
-                    span.innerHTML = ' ';
-                    span.style.whiteSpace = 'pre-wrap';
+                    currentHTML += '<br>';
                 } else {
-                    span.innerText = char;
+                    currentHTML += char;
                 }
 
-                textContainer.appendChild(span);
-
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        span.classList.add('visible');
-                    });
-                });
+                // 🚀 السحر هنا: ضخ النص ككتلة واحدة لحماية ترابط الحروف العربية في الآيفون
+                textContainer.innerHTML = currentHTML;
 
                 index++;
                 setTimeout(type, 75);
             } else {
+                // إطفاء التوهج بنعومة بعد انتهاء النص لاحترام اللحظة
+                textContainer.style.textShadow = '0 0 0px rgba(255, 255, 255, 0)';
+
                 const closeBtn = document.getElementById('close-egg-btn');
                 setTimeout(() => {
                     closeBtn.classList.remove('opacity-0', 'scale-90');
@@ -153,6 +152,8 @@ const trigger100DaysSurprise = () => {
 
                 closeBtn.onclick = () => {
                     overlay.classList.add('opacity-0');
+
+                    // إخفات الموسيقى ببطء قبل الإغلاق
                     let fadeOutInterval = setInterval(() => {
                         if (romanticMusic.volume > 0.05) {
                             romanticMusic.volume -= 0.05;
@@ -164,11 +165,14 @@ const trigger100DaysSurprise = () => {
 
                     setTimeout(() => {
                         overlay.remove();
-                        styleBlock.remove();
+                        // تنظيف الستايلات بعد الإغلاق إذا لزم الأمر
+                        const styleBlock = document.querySelector('style:last-of-type');
+                        if (styleBlock) styleBlock.remove();
                     }, 2500);
                 };
             }
         }
+
         type();
     };
 };
