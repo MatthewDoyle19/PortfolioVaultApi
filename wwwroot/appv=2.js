@@ -261,6 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Optimizers ---
     const optimizeOldImages = (url) => {
         if (!url || !url.includes('cloudinary.com')) return url;
+        // رجعنا العرض لـ 1080 والجودة الذكية q_auto عشان تطلع الصور كريستال على شاشتها
         return url.replace('/upload/', '/upload/q_auto,f_auto,w_1080,c_limit/');
     };
 
