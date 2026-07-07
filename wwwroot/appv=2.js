@@ -2215,59 +2215,105 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchGoals();
 
     // ==========================================
-// Secret Diary Module
+// 📖 Secret Diary Canvas Logic (Auto-Save + Manual)
 // ==========================================
 
-    const MOHAMMAD_DIARY_PWD = "m1"; // كلمة السر الخاصة بك
-    const ZOZO_DIARY_PWD = "z1";     // كلمة السر الخاصة بشريكتك
+    let diaryAutoSaveTimer;
+    let isSavingDiary = false;
 
-    let currentDiaryOwner = null;
+// 1. فتح الدفتر وجلب النص من السيرفر
+    window.openDiaryCanvas = async () => {
+        const canvas = document.getElementById('diary-canvas');
+        const textarea = document.getElementById('diary-textarea');
+        const status = document.getElementById('diary-status');
 
-// 🚀 السحر هنا: ربط الدوال بـ window لتصبح مرئية للـ HTML
-    window.openDiaryGateway = () => {
-        const gateway = document.getElementById('diary-gateway');
-        gateway.classList.remove('opacity-0', 'pointer-events-none');
-        document.getElementById('diary-password-input').value = '';
+        canvas.classList.remove('opacity-0', 'pointer-events-none');
+        textarea.value = ''; // تفريغ مؤقت
+        status.innerText = 'LOADING...';
+        status.classList.remove('text-rose-500');
+        status.classList.add('text-indigo-400');
 
-        // تأخير بسيط لضمان ظهور الشاشة قبل التركيز على حقل الإدخال
-        setTimeout(() => {
-            document.getElementById('diary-password-input').focus();
-        }, 100);
-    };
-
-    window.closeDiaryGateway = () => {
-        const gateway = document.getElementById('diary-gateway');
-        gateway.classList.add('opacity-0', 'pointer-events-none');
-        document.getElementById('diary-error-msg').classList.add('opacity-0');
-    };
-
-    window.handleDiaryKeyPress = (event) => {
-        if (event.key === 'Enter') window.unlockDiary();
-    };
-
-    window.unlockDiary = () => {
-        const input = document.getElementById('diary-password-input').value;
-        const errorMsg = document.getElementById('diary-error-msg');
-
-        if (input === MOHAMMAD_DIARY_PWD) {
-            currentDiaryOwner = "Mohammad";
-            launchDiaryMode();
-        } else if (input === ZOZO_DIARY_PWD) {
-            currentDiaryOwner = "Zainab";
-            launchDiaryMode();
-        } else {
-            // رسالة خطأ عند إدخال مفتاح غير صحيح
-            errorMsg.classList.remove('opacity-0');
-            setTimeout(() => errorMsg.classList.add('opacity-0'), 3000);
+        try {
+            // نطلب الدفتر الخاص بصاحب الكلمة السرية اللي دخلناها
+            const response = await fetch(`https://zainabvault-v2-0-0.onrender.com/api/diary/${currentDiaryOwner}`);
+            if(response.ok) {
+                const data = await response.json();
+                textarea.value = data.content || ''; // نضع النص القديم إن وجد
+                status.innerText = 'SYNCED ✅';
+                status.classList.replace('text-indigo-400', 'text-emerald-400');
+            }
+        } catch(e) {
+            status.innerText = 'CONNECTION ERROR ❌';
+            status.classList.replace('text-indigo-400', 'text-rose-500');
         }
     };
 
-// دالة داخلية لا يستدعيها الـ HTML مباشرة، لذا تبقى const
+// 2. إغلاق الدفتر
+    window.closeDiaryCanvas = () => {
+        // نعمل حفظ إجباري أخير قبل ما يطلع عشان نضمن ما يضيع حرف
+        saveDiary(true);
+        document.getElementById('diary-canvas').classList.add('opacity-0', 'pointer-events-none');
+    };
+
+// 3. دالة الحفظ (تستدعى يدوياً أو تلقائياً)
+    window.saveDiary = async (isManual = false) => {
+        if(isSavingDiary) return; // منع التكرار لو ضغط الزر مرتين ورا بعض
+
+        const textarea = document.getElementById('diary-textarea');
+        const status = document.getElementById('diary-status');
+        const content = textarea.value;
+
+        status.innerText = 'SAVING...';
+        status.classList.remove('text-emerald-400', 'text-rose-500');
+        status.classList.add('text-indigo-400');
+        isSavingDiary = true;
+
+        try {
+            const response = await fetch(`https://zainabvault-v2-0-0.onrender.com/api/diary`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    owner: currentDiaryOwner,
+                    content: content
+                })
+            });
+
+            if(response.ok) {
+                status.innerText = isManual ? 'FORCE SAVED ✅' : 'AUTO-SAVED ✅';
+                status.classList.replace('text-indigo-400', 'text-emerald-400');
+            } else {
+                throw new Error("Failed to save");
+            }
+        } catch(e) {
+            status.innerText = 'SAVE FAILED ❌';
+            status.classList.replace('text-indigo-400', 'text-rose-500');
+        } finally {
+            isSavingDiary = false;
+        }
+    };
+
+// 4. نظام الحفظ التلقائي (Auto-save on typing)
+    document.getElementById('diary-textarea').addEventListener('input', () => {
+        const status = document.getElementById('diary-status');
+
+        // إظهار حالة الكتابة
+        status.innerText = 'TYPING...';
+        status.classList.remove('text-emerald-400', 'text-rose-500');
+        status.classList.add('text-slate-400');
+
+        // تصفير العداد مع كل حرف جديد
+        clearTimeout(diaryAutoSaveTimer);
+
+        // إذا وقف طباعة لمدة ثانيتين، بيعمل حفظ لحاله!
+        diaryAutoSaveTimer = setTimeout(() => {
+            window.saveDiary(false);
+        }, 2000);
+    });
+
     const launchDiaryMode = () => {
         window.closeDiaryGateway();
-
-        // إشعار مؤقت لتأكيد نجاح عملية الدخول برمجياً
-        alert(`System Unlocked 🔓\nWelcome to your private diary, ${currentDiaryOwner}!`);
+        // نفتح الدفتر ونحمل البيانات فوراً بعد نجاح إدخال كلمة السر
+        window.openDiaryCanvas();
     };
 
     // --- 📱 Bottom Navigation Logic (5 Tabs) ---

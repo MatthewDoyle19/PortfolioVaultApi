@@ -653,43 +653,44 @@ app.MapDelete("/api/goals/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
-// --- 📖 SECRET DIARY ROUTES ---
+// --- 📖 SECRET DIARY ROUTES (SINGLE NOTEBOOK MODE) ---
 
-// 1. استرجاع المذكرات الخاصة بشخص معين
+// 1. فتح الدفتر (جلب النص الحالي)
 app.MapGet("/api/diary/{owner}", async (string owner, VaultDb db) => {
-    return await db.DiaryEntries
-        .Where(d => d.Owner == owner)
-        .OrderByDescending(d => d.CreatedAt)
-        .ToListAsync();
+    // نبحث عن دفتر المستخدم، إذا لم نجده نرجع دفتر فارغ برمجياً لتجنب الأخطاء
+    var entry = await db.DiaryEntries.FirstOrDefaultAsync(d => d.Owner == owner);
+    
+    return Results.Ok(entry ?? new DiaryEntry { Owner = owner, Content = "" });
 });
 
-// 2. حفظ مذكرة جديدة
-app.MapPost("/api/diary", async (DiaryEntry entry, VaultDb db) => {
+// 2. الحفظ في الدفتر (تحديث المستند الوحيد)
+app.MapPost("/api/diary", async (DiaryEntry request, VaultDb db) => {
     
     // ضبط توقيت الأردن الفعلي
     var jordanZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman");
     var jordanTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, jordanZone);
-    entry.CreatedAt = DateTime.SpecifyKind(jordanTime, DateTimeKind.Utc);
+    var dbFriendlyTime = DateTime.SpecifyKind(jordanTime, DateTimeKind.Utc);
 
-    db.DiaryEntries.Add(entry);
+    // نبحث إذا كان المستخدم يملك دفتراً مسبقاً
+    var existingEntry = await db.DiaryEntries.FirstOrDefaultAsync(d => d.Owner == request.Owner);
+
+    if (existingEntry != null) {
+        // إذا الدفتر موجود: نقوم بتحديث النص وتاريخ آخر تعديل
+        existingEntry.Content = request.Content;
+        existingEntry.CreatedAt = dbFriendlyTime; // استخدمنا نفس الحقل لتمثيل آخر تعديل
+    } else {
+        // إذا الدفتر غير موجود: ننشئه لأول مرة
+        request.CreatedAt = dbFriendlyTime;
+        db.DiaryEntries.Add(request);
+    }
+
     await db.SaveChangesAsync();
 
-    // إشعار تيليجرام يحترم الخصوصية (بدون كشف المحتوى)
-    string displayUser = entry.Owner == "Mohammad" ? "7amodee 👨🏻‍💻" : (entry.Owner == "Zainab" ? "ZoZo 👸🏻" : entry.Owner);
-    await SendTelegramNotification($"📖 The Secret Diary:\n\n{displayUser} just wrote a new page in their private diary! 🤫");
+    // إشعار تيليجرام صامت (بدون كشف المحتوى)
+    string displayUser = request.Owner == "Mohammad" ? "7amodee 👨🏻‍💻" : (request.Owner == "Zainab" ? "ZoZo 👸🏻" : request.Owner);
+    await SendTelegramNotification($"📖 The Secret Diary:\n\n{displayUser} just updated their private notebook! 🤫");
 
-    return Results.Created($"/api/diary/{entry.Id}", entry);
-});
-
-// 3. حذف مذكرة
-app.MapDelete("/api/diary/{id}", async (int id, VaultDb db) => {
-    var entry = await db.DiaryEntries.FindAsync(id);
-    if (entry is null) return Results.NotFound();
-    
-    db.DiaryEntries.Remove(entry);
-    await db.SaveChangesAsync();
-
-    return Results.Ok();
+    return Results.Ok(new { success = true });
 });
 
 // --- DB SEEDING ---
