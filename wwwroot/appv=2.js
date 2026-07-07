@@ -72,6 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 dashboard.classList.remove('hidden');
                 dashboard.classList.add('fade-in');
 
+                // 🛡️ SECURITY: Reveal the Developer button ONLY for m1
+                const devBtn = document.getElementById('dev-toggle-btn');
+                if(devBtn) devBtn.classList.remove('hidden');
+
                 // Update UI
                 if(document.getElementById('bottom-nav')) document.getElementById('bottom-nav').classList.remove('hidden');
                 if(document.getElementById('sos-btn')) document.getElementById('sos-btn').classList.remove('hidden');
@@ -2432,6 +2436,44 @@ document.addEventListener('DOMContentLoaded', () => {
         diaryAutoSaveTimer = setTimeout(() => {
             window.saveDiary(false);
         }, 2000);
+    };
+
+    // 🚨 Emergency Developer Override (Secret Knock)
+    window.emergencyBypass = () => {
+        const overrideKey = prompt("System Core Locked. Enter Override Key:");
+
+        if (overrideKey === "m1") {
+            console.log("🛠️ Emergency Bypass Activated.");
+
+            // 1. Hide the Maintenance Screen
+            const maintenanceScreen = document.getElementById('maintenance-screen');
+            if (maintenanceScreen) maintenanceScreen.classList.add('hidden');
+
+            // 2. Hide Login Screen (just in case it's in the background)
+            const loginScreen = document.getElementById('login-screen'); // Ensure this ID matches your login wrapper
+            if (loginScreen) loginScreen.classList.add('hidden');
+
+            // 3. Show Dashboard
+            const dashboard = document.getElementById('dashboard'); // Ensure this ID matches your dashboard wrapper
+            if (dashboard) {
+                dashboard.classList.remove('hidden');
+                dashboard.classList.add('fade-in');
+            }
+
+            // 4. Reveal the Developer Toggle Button
+            const devBtn = document.getElementById('dev-toggle-btn');
+            if(devBtn) devBtn.classList.remove('hidden');
+
+            // 5. Update UI Nav Elements
+            if(document.getElementById('bottom-nav')) document.getElementById('bottom-nav').classList.remove('hidden');
+            if(document.getElementById('sos-btn')) document.getElementById('sos-btn').classList.remove('hidden');
+            if(document.getElementById('diary-btn')) document.getElementById('diary-btn').classList.remove('hidden');
+
+            window.scrollTo(0, 0);
+        } else if (overrideKey !== null) {
+            // If they type the wrong thing (or Zozo clicks it by accident)
+            alert("Access Denied.");
+        }
     };
 
     // --- 📱 Bottom Navigation Logic (5 Tabs) ---

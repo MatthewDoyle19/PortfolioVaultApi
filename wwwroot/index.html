@@ -53,8 +53,7 @@
     <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: repeating-linear-gradient(transparent, transparent 39px, #cbd5e1 39px, #cbd5e1 40px);"></div>
 
     <div class="relative z-10 max-w-md flex flex-col items-center gap-6">
-        <span class="text-6xl animate-spin" style="animation-duration: 4s;">⚙️</span>
-        <h1 class="text-3xl md:text-4xl font-serif font-bold tracking-wide text-slate-900">Vault Under Maintenance</h1>
+        <span onclick="emergencyBypass()" class="text-6xl animate-spin cursor-pointer hover:scale-110 transition-transform" style="animation-duration: 4s;" title="System Core">⚙️</span>        <h1 class="text-3xl md:text-4xl font-serif font-bold tracking-wide text-slate-900">Vault Under Maintenance</h1>
 
         <div class="w-16 h-[2px] bg-red-400/50 my-2"></div>
 
@@ -85,9 +84,9 @@
 </div>
 
         <main id="dashboard" class="hidden max-w-md w-full mx-auto px-5 pt-12 pb-32 flex-grow relative">
-            
-            <!-- ⚙️ Secret Developer Toggle -->
-            <button onclick="toggleMaintenanceMode()" class="opacity-30 hover:opacity-100 transition-opacity p-2 text-slate-500 absolute top-4 left-4 z-50" title="Developer Toggle">
+
+            <!-- ⚙️ Secret Developer Toggle (Hidden by Default) -->
+            <button id="dev-toggle-btn" onclick="toggleMaintenanceMode()" class="hidden opacity-30 hover:opacity-100 transition-opacity p-2 text-slate-500 absolute top-4 left-4 z-50" title="Developer Toggle">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </button>
 
