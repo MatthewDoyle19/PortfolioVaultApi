@@ -2315,7 +2315,8 @@ document.addEventListener('DOMContentLoaded', () => {
         isSavingDiary = true;
 
         try {
-            const response = await fetch(`https://zainabvault-v2-0-0.onrender.com/api/diary`, {
+            // أضفنا ?isManual=${isManual} في نهاية الرابط
+            const response = await fetch(`https://zainabvault-v2-0-0.onrender.com/api/diary?isManual=${isManual}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
