@@ -2212,7 +2212,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // تشغيل جلب الأهداف عند تحميل الصفحة
     fetchGoals();
-    
+
     // ==========================================
 // Secret Diary Module
 // ==========================================
@@ -2222,7 +2222,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentDiaryOwner = null;
 
-    const openDiaryGateway = () => {
+// 🚀 السحر هنا: ربط الدوال بـ window لتصبح مرئية للـ HTML
+    window.openDiaryGateway = () => {
         const gateway = document.getElementById('diary-gateway');
         gateway.classList.remove('opacity-0', 'pointer-events-none');
         document.getElementById('diary-password-input').value = '';
@@ -2233,17 +2234,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 100);
     };
 
-    const closeDiaryGateway = () => {
+    window.closeDiaryGateway = () => {
         const gateway = document.getElementById('diary-gateway');
         gateway.classList.add('opacity-0', 'pointer-events-none');
         document.getElementById('diary-error-msg').classList.add('opacity-0');
     };
 
-    const handleDiaryKeyPress = (event) => {
-        if (event.key === 'Enter') unlockDiary();
+    window.handleDiaryKeyPress = (event) => {
+        if (event.key === 'Enter') window.unlockDiary();
     };
 
-    const unlockDiary = () => {
+    window.unlockDiary = () => {
         const input = document.getElementById('diary-password-input').value;
         const errorMsg = document.getElementById('diary-error-msg');
 
@@ -2260,11 +2261,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+// دالة داخلية لا يستدعيها الـ HTML مباشرة، لذا تبقى const
     const launchDiaryMode = () => {
-        closeDiaryGateway();
+        window.closeDiaryGateway();
 
         // إشعار مؤقت لتأكيد نجاح عملية الدخول برمجياً
-        // سيتم استبدال هذا لاحقاً بكود إظهار واجهة الدفتر وجلب البيانات
         alert(`System Unlocked 🔓\nWelcome to your private diary, ${currentDiaryOwner}!`);
     };
 
