@@ -653,6 +653,45 @@ app.MapDelete("/api/goals/{id}", async (int id, VaultDb db) => {
     return Results.Ok();
 });
 
+// --- 📖 SECRET DIARY ROUTES ---
+
+// 1. استرجاع المذكرات الخاصة بشخص معين
+app.MapGet("/api/diary/{owner}", async (string owner, VaultDb db) => {
+    return await db.DiaryEntries
+        .Where(d => d.Owner == owner)
+        .OrderByDescending(d => d.CreatedAt)
+        .ToListAsync();
+});
+
+// 2. حفظ مذكرة جديدة
+app.MapPost("/api/diary", async (DiaryEntry entry, VaultDb db) => {
+    
+    // ضبط توقيت الأردن الفعلي
+    var jordanZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman");
+    var jordanTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, jordanZone);
+    entry.CreatedAt = DateTime.SpecifyKind(jordanTime, DateTimeKind.Utc);
+
+    db.DiaryEntries.Add(entry);
+    await db.SaveChangesAsync();
+
+    // إشعار تيليجرام يحترم الخصوصية (بدون كشف المحتوى)
+    string displayUser = entry.Owner == "Mohammad" ? "7amodee 👨🏻‍💻" : (entry.Owner == "Zainab" ? "ZoZo 👸🏻" : entry.Owner);
+    await SendTelegramNotification($"📖 The Secret Diary:\n\n{displayUser} just wrote a new page in their private diary! 🤫");
+
+    return Results.Created($"/api/diary/{entry.Id}", entry);
+});
+
+// 3. حذف مذكرة
+app.MapDelete("/api/diary/{id}", async (int id, VaultDb db) => {
+    var entry = await db.DiaryEntries.FindAsync(id);
+    if (entry is null) return Results.NotFound();
+    
+    db.DiaryEntries.Remove(entry);
+    await db.SaveChangesAsync();
+
+    return Results.Ok();
+});
+
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<VaultDb>();
@@ -682,6 +721,7 @@ class VaultDb : DbContext {
     public DbSet<MansafCounter> MansafCounters => Set<MansafCounter>();
     public DbSet<MansafLog> MansafLogs => Set<MansafLog>();
     public DbSet<Goal> Goals { get; set; }
+    public DbSet<DiaryEntry> DiaryEntries { get; set; }
 }
 
 class Link {
@@ -814,4 +854,12 @@ public class Goal
     public string Title { get; set; } = string.Empty;
     public bool IsCompleted { get; set; } = false;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // إضافة ممتازة للتوثيق
+}
+
+public class DiaryEntry
+{
+    [JsonPropertyName("id")] public int Id { get; set; }
+    [JsonPropertyName("owner")] public string Owner { get; set; } = string.Empty;
+    [JsonPropertyName("content")] public string Content { get; set; } = string.Empty;
+    [JsonPropertyName("createdAt")] public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
