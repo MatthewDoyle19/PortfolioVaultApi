@@ -2219,7 +2219,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 
     const MOHAMMAD_DIARY_PWD = "m1";
-    const ZOZO_DIARY_PWD = "z1";
+    const ZOZO_DIARY_PWD = "9863";
 
     let currentDiaryOwner = null;
     let diaryAutoSaveTimer;
