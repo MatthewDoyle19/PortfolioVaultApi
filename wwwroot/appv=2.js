@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // تحديث الـ UI
                     if(document.getElementById('bottom-nav')) document.getElementById('bottom-nav').classList.remove('hidden');
                     if(document.getElementById('sos-btn')) document.getElementById('sos-btn').classList.remove('hidden');
+                    if(document.getElementById('diary-btn')) document.getElementById('diary-btn').classList.remove('hidden');
                     window.scrollTo(0, 0);
                 }, 500);
             } else {
