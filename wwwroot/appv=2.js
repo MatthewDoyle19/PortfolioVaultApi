@@ -837,6 +837,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Study': { icon: '📚', text: 'Focus Mode / Studying' },
         'Coding': { icon: '👨🏻‍💻', text: 'Coding / Deep Focus' },
         'Relaxing': {icon: '😌', text: 'Relaxing / Chilling'},
+        'Grumpy': {icon: '😤', text: 'Upset / Moody'},
         'Angry': {icon: '🤬', text: 'Mad AF / Angry'},
         'Working': {icon: '😓', text: 'At Work / Busy' },
         'Gym': { icon: '🏋️‍♂️', text: 'At the Gym / Beast Mode' },
