@@ -968,23 +968,35 @@
     </button>
 </div>
 
-<div id="diary-canvas" class="fixed inset-0 z-[99999] bg-[#0a0a0a]/95 backdrop-blur-2xl flex flex-col opacity-0 pointer-events-none transition-opacity duration-500">
+<div id="diary-canvas" class="fixed inset-0 z-[99999] bg-[#050505]/90 backdrop-blur-3xl flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-700 p-4 md:p-10" style="padding-top: max(1rem, env(safe-area-inset-top)); padding-bottom: max(1rem, env(safe-area-inset-bottom));">
 
-    <div class="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-black/30">
-        <button onclick="closeDiaryCanvas()" class="text-slate-400 hover:text-white transition-all flex items-center gap-2 text-sm uppercase tracking-widest font-bold">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-            Close
-        </button>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vh] bg-indigo-900/20 blur-[120px] rounded-full pointer-events-none"></div>
 
-        <div class="flex items-center gap-4">
-            <span id="diary-status" class="text-[10px] uppercase tracking-widest text-slate-500 font-mono animate-pulse">Ready</span>
-            <button onclick="saveDiary(true)" class="bg-indigo-600/80 hover:bg-indigo-500 text-white px-5 py-2 rounded-full text-xs font-bold tracking-widest uppercase transition-all active:scale-95 shadow-[0_0_15px_rgba(99,102,241,0.4)]">
-                Save
+    <div class="relative w-full max-w-4xl h-full max-h-[900px] premium-glass bg-white/[0.02] border border-white/10 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden">
+
+        <div class="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-black/40 backdrop-blur-md z-10">
+            <button onclick="closeDiaryCanvas()" class="text-slate-400 hover:text-white transition-all flex items-center gap-2 text-xs uppercase tracking-widest font-bold group">
+                <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                Close Vault
             </button>
+
+            <div class="flex items-center gap-4">
+                <span id="diary-status" class="text-[10px] uppercase tracking-widest text-slate-500 font-mono animate-pulse">Ready</span>
+                <button onclick="saveDiary(true)" class="bg-indigo-600/80 hover:bg-indigo-500 text-white px-6 py-2 rounded-full text-xs font-bold tracking-widest uppercase transition-all active:scale-95 shadow-[0_0_15px_rgba(99,102,241,0.4)] border border-indigo-400/30">
+                    Save
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-grow relative w-full h-full p-6 md:p-12 overflow-y-auto custom-scrollbar">
+            <div class="mb-6 border-b border-white/10 pb-4">
+                <h3 class="text-indigo-200/50 text-sm tracking-[0.3em] uppercase font-bold">Confidential Space</h3>
+            </div>
+
+            <textarea id="diary-textarea" oninput="handleDiaryInput()" class="w-full h-full min-h-[500px] bg-transparent text-slate-200 text-xl md:text-2xl leading-[2.5] focus:outline-none resize-none placeholder-slate-800 font-serif" placeholder="Begin your entry here..."></textarea>
         </div>
     </div>
-
-    <textarea id="diary-textarea" oninput="handleDiaryInput()" class="flex-grow w-full bg-transparent text-slate-200 p-6 md:p-12 text-lg md:text-xl leading-relaxed focus:outline-none resize-none placeholder-slate-700 font-sans" placeholder="Start typing your thoughts... the vault is listening."></textarea></div>
+</div>
 
 </body>
 </html>

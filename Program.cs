@@ -664,7 +664,7 @@ app.MapGet("/api/diary/{owner}", async (string owner, VaultDb db) => {
 });
 
 // 2. الحفظ في الدفتر (تحديث المستند الوحيد)
-app.MapPost("/api/diary", async (DiaryEntry request, VaultDb db) => {
+app.MapPost("/api/diary", async (bool isManual, DiaryEntry request, VaultDb db) => {
     
     // ضبط توقيت الأردن الفعلي
     var jordanZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman");
@@ -675,20 +675,20 @@ app.MapPost("/api/diary", async (DiaryEntry request, VaultDb db) => {
     var existingEntry = await db.DiaryEntries.FirstOrDefaultAsync(d => d.Owner == request.Owner);
 
     if (existingEntry != null) {
-        // إذا الدفتر موجود: نقوم بتحديث النص وتاريخ آخر تعديل
         existingEntry.Content = request.Content;
-        existingEntry.CreatedAt = dbFriendlyTime; // استخدمنا نفس الحقل لتمثيل آخر تعديل
+        existingEntry.CreatedAt = dbFriendlyTime; 
     } else {
-        // إذا الدفتر غير موجود: ننشئه لأول مرة
         request.CreatedAt = dbFriendlyTime;
         db.DiaryEntries.Add(request);
     }
 
     await db.SaveChangesAsync();
 
-    // إشعار تيليجرام صامت (بدون كشف المحتوى)
-    string displayUser = request.Owner == "Mohammad" ? "7amodee 👨🏻‍💻" : (request.Owner == "Zainab" ? "ZoZo 👸🏻" : request.Owner);
-    await SendTelegramNotification($"📖 The Secret Diary:\n\n{displayUser} just updated their private notebook! 🤫");
+    // 🚀 السحر هنا: إرسال الإشعار *فقط* إذا كان الحفظ يدوياً (عن طريق الزر)
+    if (isManual) {
+        string displayUser = request.Owner == "Mohammad" ? "7amodee 👨🏻‍💻" : (request.Owner == "Zainab" ? "ZoZo 👸🏻" : request.Owner);
+        await SendTelegramNotification($"📖 The Secret Diary:\n\n{displayUser} just securely saved new thoughts in their private notebook! 🤫");
+    }
 
     return Results.Ok(new { success = true });
 });
