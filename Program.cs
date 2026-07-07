@@ -693,6 +693,31 @@ app.MapPost("/api/diary", async (bool isManual, DiaryEntry request, VaultDb db) 
     return Results.Ok(new { success = true });
 });
 
+// --- ⚙️ SYSTEM MAINTENANCE ROUTES ---
+
+// Fetch current maintenance status
+app.MapGet("/api/system/maintenance", async (VaultDb db) => {
+    var setting = await db.SystemSettings.FirstOrDefaultAsync();
+    return Results.Ok(setting ?? new SystemSetting { IsMaintenance = false });
+});
+
+// Toggle maintenance mode (Called from developer dashboard)
+app.MapPost("/api/system/maintenance/toggle", async (VaultDb db) => {
+    var setting = await db.SystemSettings.FirstOrDefaultAsync();
+    if (setting == null) {
+        setting = new SystemSetting { IsMaintenance = true };
+        db.SystemSettings.Add(setting);
+    } else {
+        setting.IsMaintenance = !setting.IsMaintenance;
+    }
+    await db.SaveChangesAsync();
+
+    string statusText = setting.IsMaintenance ? "🔴 ENABLED (Surprise Mode Active)" : "🟢 DISABLED (Public)";
+    await SendTelegramNotification($"⚙️ System Update: Maintenance Mode is now {statusText}");
+
+    return Results.Ok(setting);
+});
+
 // --- DB SEEDING ---
 using (var scope = app.Services.CreateScope()) {
     var db = scope.ServiceProvider.GetRequiredService<VaultDb>();
@@ -723,7 +748,7 @@ class VaultDb : DbContext {
     public DbSet<MansafLog> MansafLogs => Set<MansafLog>();
     public DbSet<Goal> Goals { get; set; }
     public DbSet<DiaryEntry> DiaryEntries { get; set; }
-}
+    public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();}
 
 class Link {
     [JsonPropertyName("id")] public int Id { get; set; }
@@ -863,4 +888,9 @@ public class DiaryEntry
     [JsonPropertyName("owner")] public string Owner { get; set; } = string.Empty;
     [JsonPropertyName("content")] public string Content { get; set; } = string.Empty;
     [JsonPropertyName("createdAt")] public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
+public class SystemSetting {
+    [JsonPropertyName("id")] public int Id { get; set; }
+    [JsonPropertyName("isMaintenance")] public bool IsMaintenance { get; set; }
 }

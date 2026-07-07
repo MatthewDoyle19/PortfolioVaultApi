@@ -8,17 +8,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const API_BASE_URL = "https://zainabvault-v2-0-0.onrender.com";
 
-    // --- 1. Authentication (التعديل النهائي والآمن) ---
+    // ==========================================
+// ⚙️ SYSTEM MAINTENANCE & AUTHENTICATION
+// ==========================================
+
+// 1. Check Maintenance Status on Page Load
+    window.isSystemInMaintenance = false;
+
+    const checkMaintenanceStatus = async () => {
+        try {
+            const response = await fetch('https://zainabvault-v2-0-0.onrender.com/api/system/maintenance');
+            if (response.ok) {
+                const data = await response.json();
+                window.isSystemInMaintenance = data.isMaintenance;
+
+                if (window.isSystemInMaintenance) {
+                    console.log("⚙️ System is currently under maintenance.");
+                }
+            }
+        } catch (e) {
+            console.error("Failed to fetch maintenance status", e);
+        }
+    };
+
+// Execute immediately and handle potential promise rejections
+    checkMaintenanceStatus().catch(console.error);
+
+// 2. Developer Toggle Function (Add a hidden button for this in your dashboard later)
+    window.toggleMaintenanceMode = async () => {
+        if(confirm("Are you sure you want to toggle the system maintenance mode?")) {
+            const response = await fetch('https://zainabvault-v2-0-0.onrender.com/api/system/maintenance/toggle', { method: 'POST' });
+            if(response.ok) {
+
+                /** @type {{ isMaintenance: boolean }} */
+                const data = await response.json();
+
+                alert(`Update Successful! Maintenance Mode is now: ${data.isMaintenance ? "🔴 ENABLED" : "🟢 DISABLED"}`);
+                location.reload();
+            }
+        }
+    };
+
+
+// 3. Authentication & Bypass Logic
     const handleLogin = async () => {
         const key = authKey.value;
 
-        // الباب السري
+        // Secret Door (Easter Egg)
         if (key === '2027') {
             triggerTawjihiEasterEgg();
             return;
         }
 
-        // الدخول الطبيعي
+        // 🚀 Developer Bypass (Overrides Maintenance Mode)
+        if (key === 'm1') {
+            console.log("🛠️ Developer Mode Activated: Bypassing Maintenance.");
+            const maintenanceScreen = document.getElementById('maintenance-screen');
+            if (maintenanceScreen) maintenanceScreen.classList.add('hidden');
+
+            loginScreen.classList.add('fade-out');
+            setTimeout(() => {
+                loginScreen.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+                dashboard.classList.add('fade-in');
+
+                // Update UI
+                if(document.getElementById('bottom-nav')) document.getElementById('bottom-nav').classList.remove('hidden');
+                if(document.getElementById('sos-btn')) document.getElementById('sos-btn').classList.remove('hidden');
+                if(document.getElementById('diary-btn')) document.getElementById('diary-btn').classList.remove('hidden');
+                window.scrollTo(0, 0);
+            }, 500);
+            return;
+        }
+
+        // Standard Login (Validates via API for Zozo/Guests)
         try {
             const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
                 method: 'POST',
@@ -29,12 +92,25 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (response.ok && result.success) {
+
+                // 🛡️ Maintenance Block
+                if (window.isSystemInMaintenance) {
+                    console.log("🔒 System is under maintenance. Access denied for standard user.");
+                    const maintenanceScreen = document.getElementById('maintenance-screen');
+                    if (maintenanceScreen) {
+                        maintenanceScreen.classList.remove('hidden');
+                    }
+                    return; // Stop execution, show the maintenance screen
+                }
+
+                // Normal access granted
                 loginScreen.classList.add('fade-out');
                 setTimeout(() => {
                     loginScreen.classList.add('hidden');
                     dashboard.classList.remove('hidden');
                     dashboard.classList.add('fade-in');
-                    // تحديث الـ UI
+
+                    // Update UI
                     if(document.getElementById('bottom-nav')) document.getElementById('bottom-nav').classList.remove('hidden');
                     if(document.getElementById('sos-btn')) document.getElementById('sos-btn').classList.remove('hidden');
                     if(document.getElementById('diary-btn')) document.getElementById('diary-btn').classList.remove('hidden');
@@ -44,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(result.message || "Invalid Key");
             }
         } catch (error) {
-            console.error("Login Failed:", error); // هذا سيظهر لك السبب في الـ Console
+            console.error("Login Failed:", error);
             errorMsg.style.opacity = '1';
             authKey.value = '';
             authKey.focus();
@@ -52,8 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+// Event Listeners
     loginBtn.addEventListener('click', handleLogin);
-    authKey.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+    authKey.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleLogin();
+    });
 
     // --- 🎓 1.5 Tawjihi Easter Egg Logic ---
     const triggerTawjihiEasterEgg = () => {
@@ -836,9 +915,9 @@ document.addEventListener('DOMContentLoaded', () => {
         'Happy': { icon: '✨', text: 'Chill / Happy' },
         'Study': { icon: '📚', text: 'Focus Mode / Studying' },
         'Coding': { icon: '👨🏻‍💻', text: 'Coding / Deep Focus' },
-        'Relaxing': {icon: '😌', text: 'Relaxing / Chilling'},
-        'Grumpy': {icon: '😤', text: 'Upset / Moody'},
-        'Angry': {icon: '🤬', text: 'Mad AF / Angry'},
+        'Relaxing': { icon: '😌', text: 'Relaxing / Chilling'},
+        'Grumpy': { icon: '😤', text: 'Upset / Moody'},
+        'Angry': { icon: '🤬', text: 'Mad AF / Angry'},
         'Working': {icon: '😓', text: 'At Work / Busy' },
         'Gym': { icon: '🏋️‍♂️', text: 'At the Gym / Beast Mode' },
         'Coffee': { icon: '☕', text: 'Coffee Time' },
@@ -848,6 +927,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Excited': { icon: '🤩', text: 'Excited / Good News' },
         'Overthinking': { icon: '🧠', text: 'Overthinking' },
         'Sleeping': { icon: '😴', text: 'Sleeping / DND' },
+        // '5ra': { icon : '💩', text: 'zgg / Stay away' },
         'SOS': { icon: '🚨', text: 'Need You ASAP' }
     };
 
