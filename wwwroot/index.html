@@ -193,13 +193,6 @@
 <!--            </div>-->
         </section>
 
-                <button onclick="openDiaryGateway()" style="bottom: -10px; right: -307px;" class="fixed z-50 w-14 h-14 flex items-center justify-center rounded-full premium-glass border border-indigo-500/40 shadow-[0_0_15px_rgba(99,102,241,0.2)] hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] hover:border-indigo-400 transition-all duration-300 active:scale-90 pointer-events-auto group">
-                    <div class="relative flex items-center justify-center">
-                        <span class="text-2xl group-hover:scale-110 transition-transform duration-300">📖</span>
-                        <span class="absolute -top-2 -right-3 text-[11px] animate-pulse">🔒</span>
-                    </div>
-                </button>
-
         <section class="mb-12 fade-in" style="animation-delay: 0.4s;">
             <div id="blind-prompt-container" class="premium-glass p-6 rounded-3xl border border-pink-500/30 relative overflow-hidden min-h-[150px] flex flex-col justify-center transition-all duration-500">
             </div>
@@ -527,6 +520,13 @@
 <!-- 🚨 Floating SOS Button -->
 <button id="sos-btn" onclick="triggerSOS()" class="hidden fixed bottom-24 right-4 z-50 bg-rose-600/90 backdrop-blur-md text-white p-4 rounded-full shadow-[0_0_20px_rgba(225,29,72,0.6)] hover:bg-rose-700 active:scale-90 transition-all font-bold flex items-center justify-center gap-2 group border border-rose-400/50">
     <span class="text-2xl animate-pulse">🚨</span>
+</button>
+
+<button onclick="openDiaryGateway()" style="bottom: 170px; right: 16px;" class="fixed z-50 w-14 h-14 flex items-center justify-center rounded-full premium-glass border border-indigo-500/40 shadow-[0_0_15px_rgba(99,102,241,0.2)] hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] hover:border-indigo-400 transition-all duration-300 active:scale-90 pointer-events-auto group">
+    <div class="relative flex items-center justify-center">
+        <span class="text-2xl group-hover:scale-110 transition-transform duration-300">📖</span>
+        <span class="absolute -top-2 -right-3 text-[11px] animate-pulse">🔒</span>
+    </div>
 </button>
 
 <style>
