@@ -528,6 +528,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             let finalImageUrl = null, finalAudioUrl = null;
+
+            // --- Image Upload Logic ---
             if (document.getElementById('commit-image').files[0]) {
                 const originalFile = document.getElementById('commit-image').files[0];
                 const compressedBase64 = await compressImage(originalFile, 1080, 0.8);
@@ -542,33 +544,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
                 finalImageUrl = data.secure_url;
             }
-            if (audioBlob) {
+
+            // --- Audio Upload Logic ---
+            if (typeof window.audioBlob !== 'undefined' && window.audioBlob) {
                 const fd = new FormData();
-                fd.append('file', audioBlob, 'voice.mp4');
+                fd.append('file', window.audioBlob, 'voice.mp4');
                 fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
                 const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: fd });
                 const data = await res.json();
                 finalAudioUrl = data.secure_url;
             }
-            await fetch(`${API_BASE_URL}/api/commits`, {
+
+            // --- THE FIX: Match IDs and Format Dates ---
+            const memoryDateInput = document.getElementById('memory-date').value;
+            const capsuleInput = document.getElementById('capsule-date').value;
+
+            const finalDate = memoryDateInput ? new Date(memoryDateInput).toISOString() : new Date().toISOString();
+            const finalUnlockDate = capsuleInput ? new Date(capsuleInput).toISOString() : null;
+
+            // --- Store in Database ---
+            const response = await fetch(`${API_BASE_URL}/api/commits`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    date: document.getElementById('commit-date').value,
+                    date: finalDate,
                     message: document.getElementById('commit-message').value,
                     imageUrl: finalImageUrl,
                     audioUrl: finalAudioUrl,
-                    unlockDate: document.getElementById('commit-unlock-date').value || null
+                    unlockDate: finalUnlockDate
                 })
             });
+
+            if (!response.ok) throw new Error("Failed to store in DB");
+
+            // --- Reset UI ---
             e.target.reset();
-            audioBlob = null;
-            recordBtn.innerHTML = '🎤 Record';
+            if (typeof window.audioBlob !== 'undefined') window.audioBlob = null;
+
+            const recordBtn = document.getElementById('record-btn');
+            if (recordBtn) recordBtn.innerHTML = '🎤 Record';
+
             const previewAudio = document.querySelector('#add-commit-form audio');
-            if(previewAudio) previewAudio.remove();
+            if (previewAudio) previewAudio.remove();
+
             fetchCommits();
-        } catch (error) { console.error(error); }
-        finally { submitBtn.innerHTML = 'Store Memory'; submitBtn.disabled = false; }
+
+        } catch (error) {
+            console.error("Submission error:", error);
+        } finally {
+            submitBtn.innerHTML = 'Store Memory';
+            submitBtn.disabled = false;
+        }
     });
 
     window.deleteCommit = async (id) => {
