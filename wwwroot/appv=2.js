@@ -314,9 +314,10 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const unlockDateInput = document.getElementById('link-unlock-date').value;
 
-                // 🕒 THE FIX: Convert local UI time to an absolute universal timestamp
+                // 🕒 THE FIX: Capture the exact date AND time chosen in the UI
                 let finalUnlockDate = null;
                 if (unlockDateInput) {
+                    // The browser reads the exact local time you picked and converts it strictly to UTC for the database
                     finalUnlockDate = new Date(unlockDateInput).toISOString();
                 }
 
