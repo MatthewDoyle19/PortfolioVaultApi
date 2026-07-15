@@ -314,13 +314,19 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const unlockDateInput = document.getElementById('link-unlock-date').value;
 
+                // 🕒 THE FIX: Convert local UI time to an absolute universal timestamp
+                let finalUnlockDate = null;
+                if (unlockDateInput) {
+                    finalUnlockDate = new Date(unlockDateInput).toISOString();
+                }
+
                 await fetch(`${API_BASE_URL}/api/links`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         title: document.getElementById('link-title').value,
                         url: document.getElementById('link-url').value,
-                        unlockDate: unlockDateInput ? unlockDateInput : null
+                        unlockDate: finalUnlockDate // Sending the corrected time
                     })
                 });
 

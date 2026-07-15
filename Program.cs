@@ -66,6 +66,17 @@ app.MapPost("/api/auth/login", async (LoginRequest request) =>
 app.MapGet("/api/links", async (VaultDb db) => await db.Links.ToListAsync());
 
 app.MapPost("/api/links", async (Link link, VaultDb db) => {
+    
+    // 🕒 Adjusting time to Amman, Jordan timezone
+    var jordanZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman");
+    var jordanTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, jordanZone);
+    
+    // Trick PostgreSQL into accepting our local time by specifying it as UTC
+    var dbFriendlyTime = DateTime.SpecifyKind(jordanTime, DateTimeKind.Utc);
+    
+    // Assign the time to your link object (Change 'CreatedAt' if your model uses a different name)
+    link.CreatedAt = dbFriendlyTime;
+
     db.Links.Add(link);
     await db.SaveChangesAsync();
 
@@ -230,7 +241,7 @@ app.MapPost("/api/heartbeats", async (Heartbeat hb, VaultDb db) => {
 
     string displaySender = hb.Sender == "Mohammad" ? "7amodee" : (hb.Sender == "Zainab" ? "ZoZo" : hb.Sender);
     string target = hb.Sender == "Mohammad" ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻";
-    await SendTelegramNotification($"✨ {displaySender} is thinking of {target} right now and sent a Spark! 🤍");
+    await SendTelegramNotification($"✨ {displaySender} is thinking of {target} right now and Love {target} ❤️😘");
 
     return Results.Ok(hb);
 });
@@ -755,6 +766,7 @@ class Link {
     [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
     [JsonPropertyName("url")] public string Url { get; set; } = string.Empty;
     [JsonPropertyName("unlockDate")] public string? UnlockDate { get; set; }
+    public DateTime CreatedAt { get; set; }
 }
 
 class Commit {
