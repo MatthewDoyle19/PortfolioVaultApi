@@ -439,8 +439,7 @@
             </h3>
             <form id="add-commit-form" class="premium-glass p-5 rounded-[2rem] flex flex-col gap-4 mb-10">
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <input type="datetime-local" id="memory-date" class="bg-black/40 border border-white/5 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-accent/50 text-slate-300 sm:w-1/3 shadow-inner shadow-black/50">
-                    <textarea id="commit-message" maxlength="1500" rows="2" placeholder="Caption this memory..." required class="bg-black/40 border border-white/5 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-accent/50 text-white placeholder-slate-500 flex-grow shadow-inner shadow-black/50 resize-none"></textarea>                </div>
+                    <input type="datetime-local" id="memory-date" class="block w-full min-w-fit bg-black/40 border border-white/5 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-accent/50 text-slate-300 sm:w-1/3 shadow-inner shadow-black/50 appearance-none">                    <textarea id="commit-message" maxlength="1500" rows="2" placeholder="Caption this memory..." required class="bg-black/40 border border-white/5 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-accent/50 text-white placeholder-slate-500 flex-grow shadow-inner shadow-black/50 resize-none"></textarea>                </div>
                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full bg-black/30 border border-white/5 rounded-xl px-3 py-2 shadow-inner shadow-black/50 relative">
                     <input type="file" id="commit-image" accept="image/*" class="text-sm text-slate-400 file:mr-2 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-white/5 file:text-white hover:file:bg-white/10 transition-all cursor-pointer flex-grow w-full sm:w-auto">
                     <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
@@ -452,8 +451,7 @@
                     <span class="text-xl">⏳</span>
                     <div class="flex-grow">
                         <label class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider block mb-1">Time Capsule</label>
-                        <input type="datetime-local" id="capsule-date" class="w-full bg-transparent text-sm text-slate-300 focus:outline-none">
-                    </div>
+                        <input type="datetime-local" id="capsule-date" class="block w-full min-h-[40px] bg-transparent text-sm text-slate-300 focus:outline-none appearance-none">                    </div>
                 </div>
                 <button type="submit" class="bg-gradient-to-r from-accent to-purple-500 text-white font-bold py-4 rounded-xl text-sm transition-all active:scale-95 shadow-[0_0_20px_rgba(244,114,182,0.2)] mt-2">Store Memory</button>
             </form>
