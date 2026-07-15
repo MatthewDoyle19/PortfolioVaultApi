@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // --- 4. The Timeline & Mansaf Counter ---
+    // --- 4. The Timeline ---
     const fetchCommits = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/commits`);
@@ -417,16 +417,16 @@ document.addEventListener('DOMContentLoaded', () => {
             let finalUnlockDate = commit.unlockDate;
 
             if (finalUnlockDate) {
-                finalUnlockDate = finalUnlockDate.replace('Z', '');
+                // 1. If it's just a date string (length 10), add midnight
                 if (finalUnlockDate.length === 10) {
-                    finalUnlockDate += 'T00:00:00';
-                }
-                if (!finalUnlockDate.includes('+')) {
-                    finalUnlockDate += '+03:00';
+                    finalUnlockDate += 'T00:00:00Z'; // Add Z to ensure UTC
                 }
 
+                // 2. Parse it directly as a UTC date
                 const unlockDateObj = new Date(finalUnlockDate);
-                if (unlockDateObj > new Date()) {
+
+                // 3. Now compare UTC to UTC to avoid any "local time" shifts
+                if (unlockDateObj.getTime() > new Date().getTime()) {
                     isLocked = true;
                 }
             }
