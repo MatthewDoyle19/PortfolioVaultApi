@@ -45,6 +45,18 @@
             50% { box-shadow: inset 0 0 120px rgba(225, 29, 72, 0.4); }
             100% { box-shadow: inset 0 0 0px rgba(225, 29, 72, 0); }
         }
+
+        /* iOS Safari Fix for datetime-local to display time correctly */
+        /* noinspection CssUnknownPseudoSelector */
+        input[type="datetime-local"]::-webkit-datetime-edit {
+            display: block !important;
+            width: 100% !important;
+            padding: 0 !important;
+        }
+        input[type="datetime-local"]::-webkit-datetime-edit-fields-wrapper {
+            display: flex !important;
+            width: 100% !important;
+        }
     </style>
 </head>
 <body class="bg-dark text-slate-300 font-sans antialiased min-h-screen selection:bg-accent selection:text-white flex flex-col pb-safe overflow-x-hidden">
@@ -437,9 +449,17 @@
                 <div class="p-2 bg-accent/20 rounded-xl"><svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
                 The Timeline
             </h3>
+
             <form id="add-commit-form" class="premium-glass p-5 rounded-[2rem] flex flex-col gap-4 mb-10">
+
+                <!-- Memory Date & Textarea -->
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <input type="datetime-local" id="memory-date" class="block w-full min-w-fit bg-black/40 border border-white/5 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-accent/50 text-slate-300 sm:w-1/3 shadow-inner shadow-black/50 appearance-none">                    <textarea id="commit-message" maxlength="1500" rows="2" placeholder="Caption this memory..." required class="bg-black/40 border border-white/5 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-accent/50 text-white placeholder-slate-500 flex-grow shadow-inner shadow-black/50 resize-none"></textarea>                </div>
+                    <!-- التعديل هنا: text-base بدلاً من text-sm -->
+                    <input type="datetime-local" id="memory-date" class="block w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3.5 text-base focus:outline-none focus:border-accent/50 text-slate-300 sm:w-1/3 shadow-inner shadow-black/50 tracking-wider">
+                    <textarea id="commit-message" maxlength="1500" rows="2" placeholder="Caption this memory..." required class="bg-black/40 border border-white/5 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:border-accent/50 text-white placeholder-slate-500 flex-grow shadow-inner shadow-black/50 resize-none"></textarea>
+                </div>
+
+                <!-- Media (Image & Audio) -->
                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full bg-black/30 border border-white/5 rounded-xl px-3 py-2 shadow-inner shadow-black/50 relative">
                     <input type="file" id="commit-image" accept="image/*" class="text-sm text-slate-400 file:mr-2 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-white/5 file:text-white hover:file:bg-white/10 transition-all cursor-pointer flex-grow w-full sm:w-auto">
                     <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
@@ -447,12 +467,20 @@
                         <button type="button" id="record-btn" class="bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500 hover:text-white font-bold py-2.5 px-5 rounded-xl transition-all active:scale-95 flex items-center gap-2 text-sm w-full sm:w-auto justify-center">🎤 Record</button>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
-                    <span class="text-xl">⏳</span>
-                    <div class="flex-grow">
-                        <label class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider block mb-1">Time Capsule</label>
-                        <input type="datetime-local" id="capsule-date" class="block w-full min-h-[40px] bg-transparent text-sm text-slate-300 focus:outline-none appearance-none">                    </div>
+
+                <!-- ⏳ Time Capsule Container -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3 w-full">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">⏳</span>
+                        <label class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider sm:hidden block">Time Capsule</label>
+                    </div>
+                    <div class="w-full flex-grow overflow-hidden">
+                        <label class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider hidden sm:block mb-1">Time Capsule</label>
+                        <!-- التعديل هنا: text-base وإعطاء مساحة مريحة للحقل -->
+                        <input type="datetime-local" id="capsule-date" class="block w-full bg-transparent text-base text-slate-300 focus:outline-none tracking-wider min-h-[44px]">
+                    </div>
                 </div>
+
                 <button type="submit" class="bg-gradient-to-r from-accent to-purple-500 text-white font-bold py-4 rounded-xl text-sm transition-all active:scale-95 shadow-[0_0_20px_rgba(244,114,182,0.2)] mt-2">Store Memory</button>
             </form>
             <div id="commit-timeline" class="polaroid-grid"></div>
