@@ -101,19 +101,27 @@ app.MapGet("/api/commits", async (VaultDb db) =>
     await db.Commits.OrderByDescending(c => c.Date).ToListAsync());
 
 app.MapPost("/api/commits", async (Commit commit, VaultDb db) => {
-    // 1. الحفظ في قاعدة البيانات أولاً (الترتيب هنا صحيح لديك)
+    // 1. الحفظ في قاعدة البيانات 
     db.Commits.Add(commit);
     await db.SaveChangesAsync();
 
     // 2. حماية الكبسولة الزمنية (Data Encapsulation Logic)
-    // تحقق مما إذا كانت هذه الذكرى عبارة عن كبسولة زمنية (عدل 'UnlockDate' حسب ما تستخدمه في الكلاس)
     bool isTimeCapsule = !string.IsNullOrEmpty(commit.UnlockDate); 
 
     if (isTimeCapsule) {
-        // إذا كانت كبسولة: نرسل إشعاراً تشويقياً بدون كشف الرسالة
-        await SendTelegramNotification($"⏳ THE VAULT ALERT: A new Time Capsule has been buried!\n\n🔒 It contains a secret memory that will unlock on {commit.UnlockDate}. No peeking!");
+        // --- THE FIX: Format Time for Telegram ---
+        string displayTime = commit.UnlockDate;
+        
+        // محاولة تحويل النص إلى كائن DateTime
+        if (DateTime.TryParse(commit.UnlockDate, null, System.Globalization.DateTimeStyles.RoundtripKind, out DateTime parsedDate))
+        {
+            // تحويل الوقت إلى UTC أولاً، ثم إضافة 3 ساعات للتوقيت المحلي، وتنسيقه ليظهر بصيغة 10:30 PM
+            displayTime = parsedDate.ToUniversalTime().AddHours(3).ToString("yyyy-MM-dd 'at' hh:mm tt");
+        }
+
+        // إرسال الإشعار بالتوقيت المنسق
+        await SendTelegramNotification($"⏳ THE VAULT ALERT: A new Time Capsule has been buried!\n\n🔒 It contains a secret memory that will unlock on {displayTime}. No peeking!");
     } else {
-        // إذا كانت ذكرى عادية: نعرض الرسالة بشكل طبيعي
         await SendTelegramNotification($"📸 THE VAULT ALERT: A new memory has been added!\n\n📝 \"{commit.Message}\"");
     }
 
