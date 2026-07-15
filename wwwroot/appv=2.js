@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let isLocked = false;
             if (link.unlockDate) {
-                const unlockDateObj = new Date(link.unlockDate);
+                const unlockDateObj = new Date(link.unlockDate.replace('Z', ''));
                 if (unlockDateObj > new Date()) {
                     isLocked = true;
                 }
