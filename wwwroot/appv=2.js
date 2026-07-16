@@ -438,7 +438,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isLocked) {
                 const timerId = `timer-commit-${commit.id}`;
                 item.innerHTML = `
-    <div class="absolute inset-0 bg-black/95 flex flex-col items-center justify-center z-10 rounded-xl border border-indigo-500/30">
+    <!-- تمت إضافة text-center هنا -->
+    <div class="absolute inset-0 bg-black/95 flex flex-col items-center justify-center text-center z-10 rounded-xl border border-indigo-500/30">
         
         <button onclick="deleteCommit(${commit.id})" class="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-all p-1 active:scale-90 z-20">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -448,7 +449,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <span class="text-4xl mb-2 animate-bounce">⏳</span>
         <p class="text-indigo-400 font-bold tracking-widest uppercase text-xs mb-3">Time Capsule</p>
-        <div id="${timerId}" class="w-full min-h-[30px]"></div>
+        
+        <!-- تمت إضافة كلاسات التوسيط flex justify-center items-center هنا لضمان تمركز رسالة الفتح -->
+        <div id="${timerId}" class="w-full min-h-[30px] flex justify-center items-center"></div>
     </div>
     
     <div class="opacity-10">
@@ -1759,9 +1762,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // نعطيها رسالة تشويقية تومض
                 displayElement.innerHTML = `<span class="text-emerald-400 font-bold tracking-widest animate-pulse">🔓 Unlocking The Memory...</span>`;
 
-                // 🛠️ السحر هنا: إعادة تحميل الصفحة تلقائياً بعد ثانيتين لفك الـ Blur وإظهار البوست
+                // 🛠️ السحر الحقيقي: تحديث البيانات بصمت وبدون طرد المستخدم!
                 setTimeout(() => {
-                    location.reload();
+                    // استدعِ الدالة المسؤولة عن جلب الذكريات لرسمها من جديد بدون قفل
+                    // (إذا كان اسمها fetchMemories لديك، استخدمها كما هي)
+                    fetchMemories();
                 }, 2000);
 
                 return;
