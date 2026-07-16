@@ -561,21 +561,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // --- THE FIX: Decoupled Dates & Match IDs with Midnight Default ---
 
-// 1. سحب قيم الذاكرة (Memory)
-            const memoryDateVal = document.getElementById('memory-date-only').value;
-            const memoryTimeVal = document.getElementById('memory-time-only').value;
+// 1. سحب تاريخ الذاكرة العادية (تم إرجاع الـ ID القديم لحقل واحد)
+            const memoryDateVal = document.getElementById('memory-date').value;
 
-// 2. سحب قيم الكبسولة (Capsule)
+// 2. سحب قيم الكبسولة (تبقى كما هي بحقلين)
             const capsuleDateVal = document.getElementById('capsule-date-only').value;
             const capsuleTimeVal = document.getElementById('capsule-time-only').value;
 
 // 3. معالجة تاريخ الذاكرة
             let finalDate;
             if (memoryDateVal) {
-                const timeToUse = memoryTimeVal || "00:00";
-                finalDate = new Date(`${memoryDateVal}T${timeToUse}:00`).toISOString();
+                // إذا اختار يوماً محدداً، نلصق به منتصف الليل
+                finalDate = new Date(`${memoryDateVal}T00:00:00`).toISOString();
             } else {
-                // إذا لم يتم تحديد تاريخ، استخدم الوقت الحالي كافتراضي
+                // إذا لم يختر شيئاً، نأخذ تاريخ ووقت اللحظة الحالية (Immediate Store)
                 finalDate = new Date().toISOString();
             }
 
