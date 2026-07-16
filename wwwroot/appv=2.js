@@ -555,12 +555,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 finalAudioUrl = data.secure_url;
             }
 
-            // --- THE FIX: Match IDs and Format Dates ---
+            // --- THE FIX: Match IDs and Format Dates (Midnight Default) ---
             const memoryDateInput = document.getElementById('memory-date').value;
             const capsuleInput = document.getElementById('capsule-date').value;
 
             const finalDate = memoryDateInput ? new Date(memoryDateInput).toISOString() : new Date().toISOString();
-            const finalUnlockDate = capsuleInput ? new Date(capsuleInput).toISOString() : null;
+
+            let finalUnlockDate = null;
+            if (capsuleInput) {
+                // استخراج التاريخ فقط (YYYY-MM-DD)
+                const dateOnly = capsuleInput.split('T')[0];
+
+                // إجبار الوقت على منتصف الليل
+                finalUnlockDate = new Date(`${dateOnly}T00:00:00`).toISOString();
+            }
 
             // --- Store in Database ---
             const response = await fetch(`${API_BASE_URL}/api/commits`, {
