@@ -312,13 +312,15 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.innerHTML = 'Storing... ⏳';
 
             try {
-                const unlockDateInput = document.getElementById('link-unlock-date').value;
+                const linkCapsuleInput = document.getElementById('link-unlock-date').value;
 
-                // 🕒 THE FIX: Capture the exact date AND time chosen in the UI
                 let finalUnlockDate = null;
-                if (unlockDateInput) {
-                    // The browser reads the exact local time you picked and converts it strictly to UTC for the database
-                    finalUnlockDate = new Date(unlockDateInput).toISOString();
+                if (linkCapsuleInput) {
+                    // استخراج التاريخ فقط (YYYY-MM-DD)
+                    const linkDateOnly = linkCapsuleInput.split('T')[0];
+
+                    // إجبار الوقت على منتصف الليل (00:00:00)
+                    finalUnlockDate = new Date(`${linkDateOnly}T00:00:00`).toISOString();
                 }
 
                 await fetch(`${API_BASE_URL}/api/links`, {
@@ -555,19 +557,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 finalAudioUrl = data.secure_url;
             }
 
-            // --- THE FIX: Match IDs and Format Dates (Midnight Default) ---
+            // --- THE FIX: Match IDs and Format Dates (Midnight Default for BOTH) ---
             const memoryDateInput = document.getElementById('memory-date').value;
             const capsuleInput = document.getElementById('capsule-date').value;
 
-            const finalDate = memoryDateInput ? new Date(memoryDateInput).toISOString() : new Date().toISOString();
+// 1. معالجة تاريخ الذاكرة العادية (Memory Date)
+            let finalDate;
+            if (memoryDateInput) {
+                const memoryDateOnly = memoryDateInput.split('T')[0];
+                finalDate = new Date(`${memoryDateOnly}T00:00:00`).toISOString();
+            } else {
+                // إذا لم تختر تاريخاً، استخدم تاريخ اليوم عند منتصف الليل
+                const todayDateOnly = new Date().toISOString().split('T')[0];
+                finalDate = new Date(`${todayDateOnly}T00:00:00`).toISOString();
+            }
 
+// 2. معالجة تاريخ الكبسولة الزمنية (Time Capsule)
             let finalUnlockDate = null;
             if (capsuleInput) {
-                // استخراج التاريخ فقط (YYYY-MM-DD)
-                const dateOnly = capsuleInput.split('T')[0];
-
-                // إجبار الوقت على منتصف الليل
-                finalUnlockDate = new Date(`${dateOnly}T00:00:00`).toISOString();
+                const capsuleDateOnly = capsuleInput.split('T')[0];
+                finalUnlockDate = new Date(`${capsuleDateOnly}T00:00:00`).toISOString();
             }
 
             // --- Store in Database ---
