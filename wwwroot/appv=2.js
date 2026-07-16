@@ -312,24 +312,26 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.innerHTML = 'Storing... ⏳';
 
             try {
-                const linkCapsuleInput = document.getElementById('link-unlock-date').value;
+                // 1. سحب قيم الكبسولة الخاصة بالروابط
+                const linkDateVal = document.getElementById('link-unlock-date-only').value;
+                const linkTimeVal = document.getElementById('link-unlock-time-only').value;
 
-                let finalUnlockDate = null;
-                if (linkCapsuleInput) {
-                    // استخراج التاريخ فقط (YYYY-MM-DD)
-                    const linkDateOnly = linkCapsuleInput.split('T')[0];
-
-                    // إجبار الوقت على منتصف الليل (00:00:00)
-                    finalUnlockDate = new Date(`${linkDateOnly}T00:00:00`).toISOString();
+                // 2. معالجة وتجهيز تاريخ الفتح النهائي
+                let finalLinkUnlockDate = null;
+                if (linkDateVal) {
+                    const timeToUse = linkTimeVal || "00:00";
+                    // دمج التاريخ والوقت ليصبح صيغة ISO مقبولة
+                    finalLinkUnlockDate = new Date(`${linkDateVal}T${timeToUse}:00`).toISOString();
                 }
 
+                // 3. إرسال البيانات (تم تصحيح اسم المتغير هنا)
                 await fetch(`${API_BASE_URL}/api/links`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         title: document.getElementById('link-title').value,
                         url: document.getElementById('link-url').value,
-                        unlockDate: finalUnlockDate // Sending the corrected time
+                        unlockDate: finalLinkUnlockDate // التعديل هنا: استخدام المتغير الصحيح
                     })
                 });
 
@@ -557,26 +559,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 finalAudioUrl = data.secure_url;
             }
 
-            // --- THE FIX: Match IDs and Format Dates (Midnight Default for BOTH) ---
-            const memoryDateInput = document.getElementById('memory-date').value;
-            const capsuleInput = document.getElementById('capsule-date').value;
+            // --- THE FIX: Decoupled Dates & Match IDs with Midnight Default ---
 
-// 1. معالجة تاريخ الذاكرة العادية (Memory Date)
+// 1. سحب قيم الذاكرة (Memory)
+            const memoryDateVal = document.getElementById('memory-date-only').value;
+            const memoryTimeVal = document.getElementById('memory-time-only').value;
+
+// 2. سحب قيم الكبسولة (Capsule)
+            const capsuleDateVal = document.getElementById('capsule-date-only').value;
+            const capsuleTimeVal = document.getElementById('capsule-time-only').value;
+
+// 3. معالجة تاريخ الذاكرة
             let finalDate;
-            if (memoryDateInput) {
-                const memoryDateOnly = memoryDateInput.split('T')[0];
-                finalDate = new Date(`${memoryDateOnly}T00:00:00`).toISOString();
+            if (memoryDateVal) {
+                const timeToUse = memoryTimeVal || "00:00";
+                finalDate = new Date(`${memoryDateVal}T${timeToUse}:00`).toISOString();
             } else {
-                // إذا لم تختر تاريخاً، استخدم تاريخ اليوم عند منتصف الليل
-                const todayDateOnly = new Date().toISOString().split('T')[0];
-                finalDate = new Date(`${todayDateOnly}T00:00:00`).toISOString();
+                // إذا لم يتم تحديد تاريخ، استخدم الوقت الحالي كافتراضي
+                finalDate = new Date().toISOString();
             }
 
-// 2. معالجة تاريخ الكبسولة الزمنية (Time Capsule)
+// 4. معالجة تاريخ الكبسولة الزمنية
             let finalUnlockDate = null;
-            if (capsuleInput) {
-                const capsuleDateOnly = capsuleInput.split('T')[0];
-                finalUnlockDate = new Date(`${capsuleDateOnly}T00:00:00`).toISOString();
+            if (capsuleDateVal) {
+                const timeToUse = capsuleTimeVal || "00:00";
+                finalUnlockDate = new Date(`${capsuleDateVal}T${timeToUse}:00`).toISOString();
             }
 
             // --- Store in Database ---
@@ -970,11 +977,11 @@ document.addEventListener('DOMContentLoaded', () => {
         'Study': { icon: '📚', text: 'Focus Mode / Studying' },
         'Coding': { icon: '👨🏻‍💻', text: 'Coding / Deep Focus' },
         'Relaxing': { icon: '😌', text: 'Relaxing / Chilling'},
+        'Sad': { icon: '😢', text: 'Feeling Sad' },
         'Grumpy': { icon: '😤', text: 'Upset / Moody'},
         'Angry': { icon: '🤬', text: 'Mad AF / Angry'},
         'Working': {icon: '😓', text: 'At Work / Busy' },
         'Gym': { icon: '🏋️‍♂️', text: 'At the Gym / Beast Mode' },
-        'Coffee': { icon: '☕', text: 'Coffee Time' },
         'Tired': { icon: '🔋', text: 'Out of Energy / Tired' },
         'MissYou': { icon: '🥺', text: 'Missing You' },
         'Bored': { icon: '🥱', text: 'Bored / Need You' },
