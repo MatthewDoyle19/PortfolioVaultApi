@@ -2535,9 +2535,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Access Denied.");
         }
     };
-
-    const bgPhotos = document.querySelectorAll('.secret-bg-photo');
-
+    
     // --- 🎭 THE SECRET CINEMATIC TRIGGER ---
 
     const secretTrigger = document.getElementById('secret-trigger');
@@ -2694,6 +2692,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 secretBgm.currentTime = 0;
             }
 
+            // 3. التنظيف الشامل للصور الرئيسية (الذي كان مفقوداً)
+            clearInterval(cinematicPhotoInterval);
+            photos.forEach(p => {
+                p.classList.remove('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
+                p.classList.add('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
+            });
+
             // تطفئة وهج الأورورا عند الخروج
             const auraPhotosToClean = document.querySelectorAll('.aura-photo');
             auraPhotosToClean.forEach(bg => {
@@ -2718,7 +2723,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 🌟 STARDUST PARTICLE SYSTEM ---
+    // --- 🌟 STARDUST PARTICLE SYSTEM (Enhanced) ---
     let animationFrameId;
 
     function startStardust() {
@@ -2728,16 +2733,16 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = window.innerHeight;
 
         const particlesArray = [];
-        const numberOfParticles = 70; // عدد الجزيئات
+        const numberOfParticles = 150; // تمت المضاعفة لكثافة أعلى
 
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2; // حجم صغير جداً
-                this.speedX = Math.random() * 0.5 - 0.25; // حركة بطيئة يميناً ويساراً
-                this.speedY = Math.random() * 0.5 - 0.25; // حركة بطيئة للأعلى والأسفل
-                this.opacity = Math.random() * 0.5 + 0.1;
+                this.size = Math.random() * 2.5; // حجم أكبر قليلاً للتفاوت
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.6 + 0.2; // لمعان أقوى
             }
             update() {
                 this.x += this.speedX;
@@ -2746,7 +2751,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
             }
             draw() {
-                ctx.fillStyle = `rgba(255, 215, 0, ${this.opacity})`; // لون ذهبي خافت
+                ctx.fillStyle = `rgba(255, 215, 0, ${this.opacity})`;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
