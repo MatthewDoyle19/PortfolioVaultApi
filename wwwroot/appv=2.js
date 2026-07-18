@@ -2642,18 +2642,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 5500);
         }
 
-        // 4. تشغيل الترجمة السينمائية (The Whispering Blur)
+        // 4. تشغيل الترجمة السينمائية (The Whispering Blur) + ❤️ النبض البصري
         const subtitleEl = document.getElementById('cinematic-subtitle');
-        subtitlesSequence.forEach(item => {
+        subtitlesSequence.forEach((item, index) => {
             const timeout = setTimeout(() => {
-                // تبخير النص القديم في الضباب
+                // تبخير النص القديم
                 subtitleEl.classList.replace('opacity-100', 'opacity-0');
                 subtitleEl.classList.replace('blur-0', 'blur-md');
                 subtitleEl.classList.replace('translate-y-0', 'translate-y-2');
 
                 setTimeout(() => {
-                    subtitleEl.innerText = item.text;
-                    // سحب النص الجديد من العدم إلى التركيز التام
+                    // التحقق: إذا كانت هذه الجملة الأخيرة، اجعل القلب ينبض!
+                    if (index === subtitlesSequence.length - 1) {
+                        subtitleEl.innerHTML = 'و... بحبك <span class="animate-heartbeat text-red-500 drop-shadow-md">❤️</span>';
+                    } else {
+                        subtitleEl.innerText = item.text;
+                    }
+
+                    // سحب النص الجديد للتركيز
                     subtitleEl.classList.replace('opacity-0', 'opacity-100');
                     subtitleEl.classList.replace('blur-md', 'blur-0');
                     subtitleEl.classList.replace('translate-y-2', 'translate-y-0');
