@@ -1062,6 +1062,15 @@
     <!-- 🌟 نظام الغبار النجمي (في الخلفية المطلقة) -->
     <canvas id="stardust-canvas" class="absolute inset-0 z-0"></canvas>
 
+    <!-- ✨ الإضاءة المحيطية الدافئة (The Cinematic Ambient Glow) -->
+    <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none mix-blend-screen">
+        <!-- هالة ذهبية تتنفس ببطء (مركزة خلف الصورة) -->
+        <div class="absolute w-[60vw] md:w-[40vw] h-[60vw] md:h-[40vw] bg-amber-600/10 rounded-full blur-[100px] animate-pulse" style="animation-duration: 7s;"></div>
+
+        <!-- هالة وردية خافتة تعطي عمقاً للفراغ الأسود -->
+        <div class="absolute w-[80vw] md:w-[60vw] h-[50vw] md:h-[30vw] bg-rose-900/10 rounded-full blur-[150px] animate-pulse" style="animation-duration: 11s;"></div>
+    </div>
+
     <!-- حاوية الصور (فوق الغبار) -->
     <div id="secret-photos-container" class="relative w-full max-w-2xl h-[65vh] px-4 z-10 flex items-center justify-center pointer-events-none" style="-webkit-mask-image: radial-gradient(circle, black 50%, transparent 100%); mask-image: radial-gradient(circle, black 50%, transparent 100%);">
         <!-- صورها هنا كما اتفقنا -->
@@ -1074,7 +1083,6 @@
         <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362196/s0ahp0eo6ndcjj6aanlm.jpg" class="secret-photo absolute w-full h-full object-contain opacity-0 blur-xl scale-90 transition-all duration-[3000ms] ease-out">
         <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362194/ljvmpi031g9jarfbwb0q.jpg" class="secret-photo absolute w-full h-full object-contain opacity-0 blur-xl scale-90 transition-all duration-[3000ms] ease-out">
         <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784369079/hfxi9exn6cqxosojmdhu.jpg" class="secret-photo absolute w-full h-full object-contain opacity-0 blur-xl scale-90 transition-all duration-[3000ms] ease-out">
-
     </div>
 
     <!-- 📝 الترجمة السينمائية (Focus Reveal) -->
