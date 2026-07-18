@@ -1063,26 +1063,26 @@
     <canvas id="stardust-canvas" class="absolute inset-0 z-0"></canvas>
 
     <!-- حاوية الصور (فوق الغبار) -->
-    <div id="secret-photos-container" class="relative w-full max-w-md h-[60vh] px-4 z-10">
+    <div id="secret-photos-container" class="relative w-full max-w-2xl h-[65vh] px-4 z-10 flex items-center justify-center pointer-events-none" style="-webkit-mask-image: radial-gradient(circle, black 40%, transparent 90%); mask-image: radial-gradient(circle, black 40%, transparent 90%);">      
         <!-- صورها هنا كما اتفقنا -->
-        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362196/cwkbx7eog12fk957a4zd.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 scale-95 brightness-75 transition-all duration-[5000ms] ease-out">
-        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362195/b8dkh6oqjh1vrivgx0fg.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 scale-95 brightness-75 transition-all duration-[5000ms] ease-out">
-        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362197/ttvk9k0x4khkydti5ffu.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 scale-95 brightness-75 transition-all duration-[5000ms] ease-out">
-        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362210/rqujntmbzs4sdo0l5zym.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 scale-95 brightness-75 transition-all duration-[5000ms] ease-out">
-        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362197/srqccdt3ghakm4bv6xit.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 scale-95 brightness-75 transition-all duration-[5000ms] ease-out">
-        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362197/rehr8cmk8tilxercxlor.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 scale-95 brightness-75 transition-all duration-[5000ms] ease-out">
-        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362196/s0ahp0eo6ndcjj6aanlm.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 scale-95 brightness-75 transition-all duration-[5000ms] ease-out">
-        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362194/ljvmpi031g9jarfbwb0q.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 scale-95 brightness-75 transition-all duration-[5000ms] ease-out">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362196/cwkbx7eog12fk957a4zd.jpg" class="secret-photo absolute inset-0 w-full h-full object-cover opacity-0 blur-xl scale-100 transition-all duration-[3000ms] ease-out">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362195/b8dkh6oqjh1vrivgx0fg.jpg" class="secret-photo absolute inset-0 w-full h-full object-cover opacity-0 blur-xl scale-100 transition-all duration-[3000ms] ease-out">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362197/ttvk9k0x4khkydti5ffu.jpg" class="secret-photo absolute inset-0 w-full h-full object-cover opacity-0 blur-xl scale-100 transition-all duration-[3000ms] ease-out">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362210/rqujntmbzs4sdo0l5zym.jpg" class="secret-photo absolute inset-0 w-full h-full object-cover opacity-0 blur-xl scale-100 transition-all duration-[3000ms] ease-out">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362197/srqccdt3ghakm4bv6xit.jpg" class="secret-photo absolute inset-0 w-full h-full object-cover opacity-0 blur-xl scale-100 transition-all duration-[3000ms] ease-out">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362197/rehr8cmk8tilxercxlor.jpg" class="secret-photo absolute inset-0 w-full h-full object-cover opacity-0 blur-xl scale-100 transition-all duration-[3000ms] ease-out">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362196/s0ahp0eo6ndcjj6aanlm.jpg" class="secret-photo absolute inset-0 w-full h-full object-cover opacity-0 blur-xl scale-100 transition-all duration-[3000ms] ease-out">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362194/ljvmpi031g9jarfbwb0q.jpg" class="secret-photo absolute inset-0 w-full h-full object-cover opacity-0 blur-xl scale-100 transition-all duration-[3000ms] ease-out">
     </div>
 
-    <!-- 📝 الترجمة السينمائية المتنفسة -->
-    <div class="absolute bottom-24 w-full text-center z-20 px-6">
-        <!-- أضفنا translate-y-6 و drop-shadow للوهج -->
-        <p id="cinematic-subtitle" class="text-xl md:text-2xl text-white/95 font-bold tracking-widest leading-loose opacity-0 transform translate-y-6 transition-all duration-[1200ms] ease-out drop-shadow-[0_4px_15px_rgba(255,255,255,0.4)]" dir="rtl"></p>
+    <!-- 📝 الترجمة السينمائية (Focus Reveal) -->
+    <div class="absolute bottom-24 w-full text-center z-20 px-8">
+        <!-- حولنا الخط إلى font-light مع تباعد tracking-[0.15em] ليصبح عصرياً وأنيقاً جداً -->
+        <p id="cinematic-subtitle" class="text-xl md:text-2xl text-white/90 font-light tracking-[0.15em] leading-relaxed opacity-0 blur-md transform translate-y-2 transition-all duration-[1500ms] ease-out drop-shadow-xl" dir="rtl"></p>
     </div>
 
-    <!-- زر الخروج -->
-    <button id="close-secret" class="absolute bottom-10 z-30 px-8 py-3 bg-white/5 text-slate-400 border border-white/10 rounded-full font-bold tracking-widest hover:bg-white/10 hover:text-white transition-all opacity-0 transform translate-y-4 duration-1000">
+    <!-- زر الخروج (محصن ضد التداخل) -->
+    <button id="close-secret" class="absolute bottom-10 z-[99999] px-8 py-3 bg-white/5 text-slate-400 border border-white/10 rounded-full font-bold tracking-widest hover:bg-white/10 hover:text-white transition-all opacity-0 pointer-events-none transform translate-y-4 duration-1000">
         دائماً وأبداً 🤍
     </button>
 

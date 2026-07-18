@@ -2597,101 +2597,104 @@ document.addEventListener('DOMContentLoaded', () => {
             if(secretVoice) secretVoice.play().catch(e => console.log("Voice play blocked", e));
         }, 1000);
 
-        // 3. عرض الصور المتعاقبة (The Ken Burns Effect)
+        // 3. عرض الصور (Focus Pull & Infinite Slow Zoom)
         cinematicPhotoIndex = 0;
         if(photos.length > 0) {
-            // إيقاظ الصورة الأولى (تقترب وتضيء)
+            // إيقاظ الصورة الأولى من الضباب
             photos[cinematicPhotoIndex].classList.replace('opacity-0', 'opacity-100');
-            photos[cinematicPhotoIndex].classList.replace('scale-95', 'scale-105');
-            photos[cinematicPhotoIndex].classList.replace('brightness-75', 'brightness-100');
+            photos[cinematicPhotoIndex].classList.replace('blur-xl', 'blur-0');
+            photos[cinematicPhotoIndex].classList.replace('scale-100', 'scale-110');
 
             cinematicPhotoInterval = setInterval(() => {
-                // تنويم الصورة الحالية (تبتعد وتظلم وتتلاشى)
+                // إغراق الصورة الحالية في الضباب والظلام
                 photos[cinematicPhotoIndex].classList.replace('opacity-100', 'opacity-0');
-                photos[cinematicPhotoIndex].classList.replace('scale-105', 'scale-95');
-                photos[cinematicPhotoIndex].classList.replace('brightness-100', 'brightness-75');
+                photos[cinematicPhotoIndex].classList.replace('blur-0', 'blur-xl');
 
-                // الانتقال للصورة التالية
-                cinematicPhotoIndex = (cinematicPhotoIndex + 1) % photos.length;
+                // تهيئة الصورة القادمة بسرعة قبل ظهورها
+                let nextIndex = (cinematicPhotoIndex + 1) % photos.length;
+                photos[nextIndex].classList.replace('scale-110', 'scale-100');
 
-                // إيقاظ الصورة الجديدة
-                photos[cinematicPhotoIndex].classList.replace('opacity-0', 'opacity-100');
-                photos[cinematicPhotoIndex].classList.replace('scale-95', 'scale-105');
-                photos[cinematicPhotoIndex].classList.replace('brightness-75', 'brightness-100');
-            }, 5500); // زيادة الوقت لتبدو الحركة أكثر هدوءاً ورومانسية
+                setTimeout(() => {
+                    // إيقاظ الصورة الجديدة بسلاسة
+                    cinematicPhotoIndex = nextIndex;
+                    photos[cinematicPhotoIndex].classList.replace('opacity-0', 'opacity-100');
+                    photos[cinematicPhotoIndex].classList.replace('blur-xl', 'blur-0');
+                    photos[cinematicPhotoIndex].classList.replace('scale-100', 'scale-110');
+                }, 100);
+
+            }, 5500);
         }
 
-        // 4. تشغيل الترجمة السينمائية (The Breath Effect)
+        // 4. تشغيل الترجمة السينمائية (The Whispering Blur)
         const subtitleEl = document.getElementById('cinematic-subtitle');
         subtitlesSequence.forEach(item => {
             const timeout = setTimeout(() => {
-                // تأثير الاختفاء: النص يغطس للأسفل ويتلاشى
+                // تبخير النص القديم في الضباب
                 subtitleEl.classList.replace('opacity-100', 'opacity-0');
-                subtitleEl.classList.replace('translate-y-0', 'translate-y-6');
+                subtitleEl.classList.replace('blur-0', 'blur-md');
+                subtitleEl.classList.replace('translate-y-0', 'translate-y-2');
 
-                // وضع النص الجديد وإظهاره بعد 800 ملي ثانية لضمان اختفاء القديم تماماً
                 setTimeout(() => {
                     subtitleEl.innerText = item.text;
-                    // تأثير الظهور: النص يصعد للأعلى بنعومة
+                    // سحب النص الجديد من العدم إلى التركيز التام
                     subtitleEl.classList.replace('opacity-0', 'opacity-100');
-                    subtitleEl.classList.replace('translate-y-6', 'translate-y-0');
-                }, 800);
+                    subtitleEl.classList.replace('blur-md', 'blur-0');
+                    subtitleEl.classList.replace('translate-y-2', 'translate-y-0');
+                }, 1000);
 
             }, item.time);
             subtitleTimeouts.push(timeout);
         });
 
-        // 5. إظهار زر الإغلاق في النهاية (اضبط هذا الوقت ليكون بعد انتهاء التسجيل)
+        // 5. إظهار زر الإغلاق بذكاء وحماية
         setTimeout(() => {
             if(closeSecretBtn) {
-                closeSecretBtn.classList.replace('opacity-0', 'opacity-100');
-                closeSecretBtn.classList.replace('translate-y-4', 'translate-y-0');
+                closeSecretBtn.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+                closeSecretBtn.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
             }
-        }, 40000); // يظهر بعد 40 ثانية
+        }, 39000); // يظهر بعد انتهاء التسجيل الصوتي
     }
 
-// إنهاء التجربة
-    if (secretTrigger) {
-        secretTrigger.addEventListener('click', () => {
-            cinematicClickCount++;
+// إنهاء التجربة (منطق التنظيف الجذري)
+    if (closeSecretBtn) {
+        closeSecretBtn.addEventListener('click', () => {
+            // 1. إخفاء الشاشة الرئيسية
+            secretExperience.classList.remove('opacity-100');
+            secretExperience.classList.add('opacity-0');
+            setTimeout(() => {
+                secretExperience.classList.add('pointer-events-none');
+            }, 1000);
 
-            clearTimeout(cinematicClickTimeout);
-            cinematicClickTimeout = setTimeout(() => { cinematicClickCount = 0; }, 1500);
+            // 2. إيقاف وتصفير الصوتيات
+            if(secretVoice) {
+                secretVoice.pause();
+                secretVoice.currentTime = 0;
+            }
+            if(secretBgm) {
+                secretBgm.pause();
+                secretBgm.currentTime = 0;
+            }
 
-            // إذا ضغط 3 مرات متتالية
-            if (cinematicClickCount === 3) {
-                cinematicClickCount = 0;
+            // 3. إعادة الصور لوضع الاستعداد
+            clearInterval(cinematicPhotoInterval);
+            photos.forEach(p => {
+                p.classList.remove('opacity-100', 'blur-0', 'scale-110');
+                p.classList.add('opacity-0', 'blur-xl', 'scale-100');
+            });
 
-                // 🚨 [مهم جداً] كود اختراق حماية الآيفون لتهيئة الصوت (Audio Unlocking) 🚨
-                // نقوم بتشغيل الأصوات بصمت تام فور الضغطة لفتح صلاحيات التشغيل
-                if(secretVoice) {
-                    let originalVoiceVol = secretVoice.volume;
-                    secretVoice.volume = 0;
-                    let voicePromise = secretVoice.play();
-                    if (voicePromise !== undefined) {
-                        voicePromise.then(() => {
-                            secretVoice.pause();
-                            secretVoice.currentTime = 0;
-                            secretVoice.volume = originalVoiceVol; // إعادة الصوت لطبيعته
-                        }).catch(e => console.log("iOS Voice Unlock Error:", e));
-                    }
-                }
+            // 4. إخفاء الزر السري وتعطيل الضغط عليه تماماً
+            closeSecretBtn.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            closeSecretBtn.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
 
-                if(secretBgm) {
-                    let originalBgmVol = secretBgm.volume;
-                    secretBgm.volume = 0;
-                    let bgmPromise = secretBgm.play();
-                    if (bgmPromise !== undefined) {
-                        bgmPromise.then(() => {
-                            secretBgm.pause();
-                            secretBgm.currentTime = 0;
-                            secretBgm.volume = originalBgmVol;
-                        }).catch(e => console.log("iOS BGM Unlock Error:", e));
-                    }
-                }
+            // 5. إيقاف الغبار النجمي وتصفير الترجمة
+            stopStardust();
+            subtitleTimeouts.forEach(t => clearTimeout(t));
 
-                // الآن نظام الآيفون أصبح مخدوعاً ويسمح لنا بتشغيل الأصوات متى أردنا
-                startSecretExperience();
+            const subtitleEl = document.getElementById('cinematic-subtitle');
+            if (subtitleEl) {
+                subtitleEl.innerText = "";
+                subtitleEl.classList.remove('opacity-100', 'blur-0', 'translate-y-0');
+                subtitleEl.classList.add('opacity-0', 'blur-md', 'translate-y-2');
             }
         });
     }
