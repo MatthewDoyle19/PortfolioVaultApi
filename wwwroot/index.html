@@ -1057,26 +1057,37 @@
 </div>
 
 <!-- 🎬 The Secret Cinematic Experience -->
-<div id="secret-experience" class="fixed inset-0 z-[9999] bg-black opacity-0 pointer-events-none transition-opacity duration-1000 flex flex-col items-center justify-center">
+<div id="secret-experience" class="fixed inset-0 z-[9999] bg-[#050505] opacity-0 pointer-events-none transition-opacity duration-1000 flex flex-col items-center justify-center overflow-hidden">
 
-    <!-- حاوية الصور (تتبدل تلقائياً) -->
-    <div id="secret-photos-container" class="relative w-full max-w-md h-[70vh] px-4">
-        <!-- أضف مسارات صورها هنا، يمكنك إضافة أكثر من 4 -->
-        <img src="photo1.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
-        <img src="photo2.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
-        <img src="photo3.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
-        <img src="photo4.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
-        <!-- يمكن إضافة المزيد بنفس الكلاس -->
+    <!-- 🌟 نظام الغبار النجمي (في الخلفية المطلقة) -->
+    <canvas id="stardust-canvas" class="absolute inset-0 z-0"></canvas>
+
+    <!-- حاوية الصور (فوق الغبار) -->
+    <div id="secret-photos-container" class="relative w-full max-w-md h-[60vh] px-4 z-10">
+        <!-- صورها هنا كما اتفقنا -->
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362196/cwkbx7eog12fk957a4zd.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362195/b8dkh6oqjh1vrivgx0fg.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362197/ttvk9k0x4khkydti5ffu.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362210/rqujntmbzs4sdo0l5zym.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362197/srqccdt3ghakm4bv6xit.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362197/rehr8cmk8tilxercxlor.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362196/s0ahp0eo6ndcjj6aanlm.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
+        <img src="https://res.cloudinary.com/dhr6waydw/image/upload/v1784362194/ljvmpi031g9jarfbwb0q.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
     </div>
 
-    <!-- زر الخروج لإنهاء التجربة -->
-    <button id="close-secret" class="absolute bottom-10 px-8 py-3 bg-white/10 text-slate-300 border border-white/20 rounded-full font-poetic tracking-widest hover:bg-white/20 hover:text-white transition-all opacity-0 transform translate-y-4 duration-1000">
+    <!-- 📝 الترجمة السينمائية (أسفل الصور) -->
+    <div class="absolute bottom-32 w-full text-center z-20 px-6">
+        <p id="cinematic-subtitle" class="text-lg md:text-xl text-amber-50 font-bold tracking-widest leading-relaxed opacity-0 transition-opacity duration-1000" dir="rtl"></p>
+    </div>
+
+    <!-- زر الخروج -->
+    <button id="close-secret" class="absolute bottom-10 z-30 px-8 py-3 bg-white/5 text-slate-400 border border-white/10 rounded-full font-bold tracking-widest hover:bg-white/10 hover:text-white transition-all opacity-0 transform translate-y-4 duration-1000">
         دائماً وأبداً 🤍
     </button>
 
-    <!-- مشغلات الصوت (مخفية) -->
-    <audio id="secret-voice" src="your-voice-note.mp3" preload="auto"></audio>
-    <audio id="secret-bgm" src="perfect-song.mp3" loop preload="auto"></audio>
+    <!-- الصوتيات -->
+    <audio id="secret-voice" src="https://res.cloudinary.com/dhr6waydw/video/upload/v1784363914/ocu73ujiv4ljy8ozenhk.m4a" preload="auto"></audio>
+    <audio id="secret-bgm" src="music.mp3" loop preload="auto"></audio>
 </div>
 
 </body>

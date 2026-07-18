@@ -2565,41 +2565,73 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // مصفوفة النصوص وتوقيت ظهورها (بالملي ثانية)
+    const subtitlesSequence = [
+        { text: "زوزو...", time: 500 }, // تظهر بعد نصف ثانية
+        { text: "أنا ما صممت هذا المكان بس عشان أحفظ ذكرياتنا...", time: 3000 },
+        { text: "أنا صممته عشان يكون مراية، تشوفي فيها نفسك بعيوني.", time: 7000 },
+        { text: "في كل مرة بشوف فيها ملامحك...", time: 12000 },
+        { text: "بتأكد إنك أجمل وأصدق شي صار بحياتي.", time: 15500 },
+        { text: "أنا بحب نسختك الأصلية... بكل تفاصيلها الطبيعية...", time: 20000 },
+        { text: "وما بدي ولا شي يتغير.", time: 24500 },
+        { text: "إنتِ المعيار اللي بقيس فيه كل شي حلو.", time: 27500 },
+        { text: "خليكي دائماً واثقة إنك بعيوني...", time: 30500 },
+        { text: "أجمل بنت شافتها عيني، وأغلى شي بملكه.", time: 32500 },
+        { text: "و بحبك ❤️", time: 34400 } // اللحظة الحاسمة بدقة
+    ];
+
+    let subtitleTimeouts = [];
+
     function startSecretExperience() {
-        // 1. إظهار الشاشة السوداء
+        // 1. إظهار الشاشة وبدء الغبار النجمي
         secretExperience.classList.remove('pointer-events-none');
         secretExperience.classList.replace('opacity-0', 'opacity-100');
+        startStardust(); // تشغيل السحر البصري
 
-        // 2. تشغيل الصوت
+        // 2. تشغيل الصوتيات
         if(secretBgm) {
             secretBgm.volume = 0.2;
             secretBgm.play().catch(e => console.log("BGM play blocked", e));
         }
-
         setTimeout(() => {
             if(secretVoice) secretVoice.play().catch(e => console.log("Voice play blocked", e));
         }, 1000);
 
-        // 3. عرض الصورة الأولى
+        // 3. عرض الصور المتعاقبة
         cinematicPhotoIndex = 0;
         if(photos.length > 0) {
             photos[cinematicPhotoIndex].classList.replace('opacity-0', 'opacity-100');
-
-            // 4. تقليب الصور كل 4 ثوانٍ
             cinematicPhotoInterval = setInterval(() => {
                 photos[cinematicPhotoIndex].classList.replace('opacity-100', 'opacity-0');
                 cinematicPhotoIndex = (cinematicPhotoIndex + 1) % photos.length;
                 photos[cinematicPhotoIndex].classList.replace('opacity-0', 'opacity-100');
-            }, 4000);
+            }, 5000); // إبطاء تقليب الصور ليناسب المشهد
         }
 
-        // 5. إظهار زر الإغلاق بعد 5 ثوانٍ
+        // 4. تشغيل الترجمة السينمائية
+        const subtitleEl = document.getElementById('cinematic-subtitle');
+        subtitlesSequence.forEach(item => {
+            const timeout = setTimeout(() => {
+                // إخفاء النص القديم
+                subtitleEl.classList.replace('opacity-100', 'opacity-0');
+
+                // وضع النص الجديد وإظهاره بعد نصف ثانية (ليكون الانتقال ناعماً)
+                setTimeout(() => {
+                    subtitleEl.innerText = item.text;
+                    subtitleEl.classList.replace('opacity-0', 'opacity-100');
+                }, 500);
+
+            }, item.time);
+            subtitleTimeouts.push(timeout);
+        });
+
+        // 5. إظهار زر الإغلاق في النهاية (اضبط هذا الوقت ليكون بعد انتهاء التسجيل)
         setTimeout(() => {
             if(closeSecretBtn) {
                 closeSecretBtn.classList.replace('opacity-0', 'opacity-100');
                 closeSecretBtn.classList.replace('translate-y-4', 'translate-y-0');
             }
-        }, 5000);
+        }, 40000); // يظهر بعد 40 ثانية
     }
 
 // إنهاء التجربة
@@ -2624,7 +2656,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
             closeSecretBtn.classList.replace('opacity-100', 'opacity-0');
             closeSecretBtn.classList.replace('translate-y-0', 'translate-y-4');
+
+            stopStardust();
+            subtitleTimeouts.forEach(t => clearTimeout(t));
+            document.getElementById('cinematic-subtitle').innerText = "";
         });
+    }
+
+    // --- 🌟 STARDUST PARTICLE SYSTEM ---
+    let animationFrameId;
+
+    function startStardust() {
+        const canvas = document.getElementById('stardust-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particlesArray = [];
+        const numberOfParticles = 70; // عدد الجزيئات
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2; // حجم صغير جداً
+                this.speedX = Math.random() * 0.5 - 0.25; // حركة بطيئة يميناً ويساراً
+                this.speedY = Math.random() * 0.5 - 0.25; // حركة بطيئة للأعلى والأسفل
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
+                if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 215, 0, ${this.opacity})`; // لون ذهبي خافت
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < numberOfParticles; i++) {
+            particlesArray.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            animationFrameId = requestAnimationFrame(animate);
+        }
+        animate();
+    }
+
+    function stopStardust() {
+        cancelAnimationFrame(animationFrameId);
     }
 
     // --- 📱 Bottom Navigation Logic (5 Tabs) ---
