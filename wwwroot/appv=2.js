@@ -1347,7 +1347,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formatShortDate = (dateStr) => {
         if (!dateStr) return '';
         const d = new Date(dateStr);
-        return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     };
 
     const fetchVisitData = async () => {
@@ -2535,6 +2535,97 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Access Denied.");
         }
     };
+
+    // --- 🎭 THE SECRET CINEMATIC TRIGGER ---
+
+    const secretTrigger = document.getElementById('secret-trigger');
+    const secretExperience = document.getElementById('secret-experience');
+    const closeSecretBtn = document.getElementById('close-secret');
+    const secretVoice = document.getElementById('secret-voice');
+    const secretBgm = document.getElementById('secret-bgm');
+    const photos = document.querySelectorAll('.secret-photo');
+
+// استخدام أسماء فريدة لتجنب التضارب مع الأكواد القديمة
+    let cinematicClickCount = 0;
+    let cinematicClickTimeout;
+    let cinematicPhotoInterval;
+    let cinematicPhotoIndex = 0;
+
+    if (secretTrigger) {
+        secretTrigger.addEventListener('click', () => {
+            cinematicClickCount++;
+
+            clearTimeout(cinematicClickTimeout);
+            cinematicClickTimeout = setTimeout(() => { cinematicClickCount = 0; }, 1500);
+
+            if (cinematicClickCount === 3) {
+                cinematicClickCount = 0;
+                startSecretExperience();
+            }
+        });
+    }
+
+    function startSecretExperience() {
+        // 1. إظهار الشاشة السوداء
+        secretExperience.classList.remove('pointer-events-none');
+        secretExperience.classList.replace('opacity-0', 'opacity-100');
+
+        // 2. تشغيل الصوت
+        if(secretBgm) {
+            secretBgm.volume = 0.2;
+            secretBgm.play().catch(e => console.log("BGM play blocked", e));
+        }
+
+        setTimeout(() => {
+            if(secretVoice) secretVoice.play().catch(e => console.log("Voice play blocked", e));
+        }, 1000);
+
+        // 3. عرض الصورة الأولى
+        cinematicPhotoIndex = 0;
+        if(photos.length > 0) {
+            photos[cinematicPhotoIndex].classList.replace('opacity-0', 'opacity-100');
+
+            // 4. تقليب الصور كل 4 ثوانٍ
+            cinematicPhotoInterval = setInterval(() => {
+                photos[cinematicPhotoIndex].classList.replace('opacity-100', 'opacity-0');
+                cinematicPhotoIndex = (cinematicPhotoIndex + 1) % photos.length;
+                photos[cinematicPhotoIndex].classList.replace('opacity-0', 'opacity-100');
+            }, 4000);
+        }
+
+        // 5. إظهار زر الإغلاق بعد 5 ثوانٍ
+        setTimeout(() => {
+            if(closeSecretBtn) {
+                closeSecretBtn.classList.replace('opacity-0', 'opacity-100');
+                closeSecretBtn.classList.replace('translate-y-4', 'translate-y-0');
+            }
+        }, 5000);
+    }
+
+// إنهاء التجربة
+    if (closeSecretBtn) {
+        closeSecretBtn.addEventListener('click', () => {
+            secretExperience.classList.replace('opacity-100', 'opacity-0');
+            setTimeout(() => {
+                secretExperience.classList.add('pointer-events-none');
+            }, 1000);
+
+            if(secretVoice) {
+                secretVoice.pause();
+                secretVoice.currentTime = 0;
+            }
+            if(secretBgm) {
+                secretBgm.pause();
+                secretBgm.currentTime = 0;
+            }
+
+            clearInterval(cinematicPhotoInterval);
+            photos.forEach(p => p.classList.replace('opacity-100', 'opacity-0'));
+
+            closeSecretBtn.classList.replace('opacity-100', 'opacity-0');
+            closeSecretBtn.classList.replace('translate-y-0', 'translate-y-4');
+        });
+    }
 
     // --- 📱 Bottom Navigation Logic (5 Tabs) ---
     window.switchTab = (tabName) => {

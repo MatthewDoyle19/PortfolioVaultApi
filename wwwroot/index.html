@@ -157,7 +157,7 @@
         <section class="grid grid-cols-2 gap-4 mb-12 fade-in" style="animation-delay: 0.4s;">
             <div class="col-span-2 premium-glass p-6 rounded-[2rem] flex flex-col justify-center items-center relative overflow-hidden group">
                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                <h3 class="text-[11px] text-slate-400 uppercase tracking-[0.2em] mb-2 font-semibold">Uptime</h3>
+                <h3 id="secret-trigger" class="text-2xl font-bold cursor-pointer select-none">Uptime</h3>
                 <div id="uptime-counter" class="text-3xl font-bold text-accent tracking-tight drop-shadow-[0_0_15px_rgba(244,114,182,0.4)]">Calculating...</div>
             </div>
 
@@ -1054,6 +1054,29 @@
             <textarea id="diary-textarea" dir="auto" oninput="handleDiaryInput()" class="w-full h-full min-h-[500px] bg-transparent text-slate-800 text-lg md:text-2xl leading-[40px] focus:outline-none resize-none placeholder-slate-400 font-serif" placeholder="Dear Diary..."></textarea>
         </div>
     </div>
+</div>
+
+<!-- 🎬 The Secret Cinematic Experience -->
+<div id="secret-experience" class="fixed inset-0 z-[100] bg-black opacity-0 pointer-events-none transition-opacity duration-1000 flex flex-col items-center justify-center">
+
+    <!-- حاوية الصور (تتبدل تلقائياً) -->
+    <div id="secret-photos-container" class="relative w-full max-w-md h-[70vh] px-4">
+        <!-- أضف مسارات صورها هنا، يمكنك إضافة أكثر من 4 -->
+        <img src="photo1.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
+        <img src="photo2.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
+        <img src="photo3.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
+        <img src="photo4.jpg" class="secret-photo absolute inset-0 w-full h-full object-contain opacity-0 transition-opacity duration-2000">
+        <!-- يمكن إضافة المزيد بنفس الكلاس -->
+    </div>
+
+    <!-- زر الخروج لإنهاء التجربة -->
+    <button id="close-secret" class="absolute bottom-10 px-8 py-3 bg-white/10 text-slate-300 border border-white/20 rounded-full font-poetic tracking-widest hover:bg-white/20 hover:text-white transition-all opacity-0 transform translate-y-4 duration-1000">
+        دائماً وأبداً 🤍
+    </button>
+
+    <!-- مشغلات الصوت (مخفية) -->
+    <audio id="secret-voice" src="your-voice-note.mp3" preload="auto"></audio>
+    <audio id="secret-bgm" src="perfect-song.mp3" loop preload="auto"></audio>
 </div>
 
 </body>
