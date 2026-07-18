@@ -2589,7 +2589,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. تشغيل الصوتيات
         if(secretBgm) {
-            secretBgm.volume = 0.02;
+            secretBgm.volume = 0;
             secretBgm.play().catch(e => console.log("BGM play blocked", e));
         }
         setTimeout(() => {
