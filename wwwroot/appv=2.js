@@ -2599,22 +2599,24 @@ document.addEventListener('DOMContentLoaded', () => {
             if(secretVoice) secretVoice.play().catch(e => console.log("Voice play blocked", e));
         }, 1000);
 
-        // 3. عرض الصور فقط (بدون تعقيدات الخلفية)
+        // 3. عرض الصور (تأثير الإشراق والتكبير السينمائي)
         cinematicPhotoIndex = 0;
         if(photos.length > 0) {
-            photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95');
-            photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105');
+            photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
+            // إشراق الصورة لدرجة 110 لتبدو حية ونابضة
+            photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
 
             cinematicPhotoInterval = setInterval(() => {
-                photos[cinematicPhotoIndex].classList.remove('opacity-100', 'blur-0', 'scale-105');
-                photos[cinematicPhotoIndex].classList.add('opacity-0', 'blur-xl', 'scale-95');
+                // إغراق الصورة في الظلام والتلاشي
+                photos[cinematicPhotoIndex].classList.remove('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
+                photos[cinematicPhotoIndex].classList.add('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
 
                 let nextIndex = (cinematicPhotoIndex + 1) % photos.length;
 
                 setTimeout(() => {
                     cinematicPhotoIndex = nextIndex;
-                    photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95');
-                    photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105');
+                    photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
+                    photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
                 }, 100);
 
             }, 5500);
@@ -2670,11 +2672,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 secretBgm.currentTime = 0;
             }
 
-            // 3. إعادة الصور الرئيسية لوضع الاستعداد (تم حذف كود الخلفيات الوهمية من هنا)
+            // داخل زر الإغلاق: إعادة الصور للوضع المظلم والمصغر
             clearInterval(cinematicPhotoInterval);
             photos.forEach(p => {
-                p.classList.remove('opacity-100', 'blur-0', 'scale-105');
-                p.classList.add('opacity-0', 'blur-xl', 'scale-95');
+                p.classList.remove('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
+                p.classList.add('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
             });
 
             // 4. إخفاء الزر السري وتعطيل الضغط عليه تماماً
