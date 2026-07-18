@@ -2590,37 +2590,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. تشغيل الصوتيات
         if(secretBgm) {
-            secretBgm.volume = 0.08;
+            secretBgm.volume = 0.04;
             secretBgm.play().catch(e => console.log("BGM play blocked", e));
         }
         setTimeout(() => {
             if(secretVoice) secretVoice.play().catch(e => console.log("Voice play blocked", e));
         }, 1000);
 
-        // 3. عرض الصور (Focus Pull & Infinite Slow Zoom)
+        // 3. عرض الصور (Dramatic Focus Pull & Zoom)
         cinematicPhotoIndex = 0;
         if(photos.length > 0) {
-            // إيقاظ الصورة الأولى من الضباب
-            photos[cinematicPhotoIndex].classList.replace('opacity-0', 'opacity-100');
-            photos[cinematicPhotoIndex].classList.replace('blur-xl', 'blur-0');
-            photos[cinematicPhotoIndex].classList.replace('scale-100', 'scale-110');
+            // اندفاع الصورة الأولى نحو الشاشة (من 90 إلى 110)
+            photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-90');
+            photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-110');
 
             cinematicPhotoInterval = setInterval(() => {
-                // إغراق الصورة الحالية في الضباب والظلام
-                photos[cinematicPhotoIndex].classList.replace('opacity-100', 'opacity-0');
-                photos[cinematicPhotoIndex].classList.replace('blur-0', 'blur-xl');
+                // غرق الصورة الحالية في الظلام (تعود لـ 90)
+                photos[cinematicPhotoIndex].classList.remove('opacity-100', 'blur-0', 'scale-110');
+                photos[cinematicPhotoIndex].classList.add('opacity-0', 'blur-xl', 'scale-90');
 
-                // تهيئة الصورة القادمة بسرعة قبل ظهورها
                 let nextIndex = (cinematicPhotoIndex + 1) % photos.length;
-                photos[nextIndex].classList.replace('scale-110', 'scale-100');
 
                 setTimeout(() => {
-                    // إيقاظ الصورة الجديدة بسلاسة
+                    // اندفاع الصورة الجديدة
                     cinematicPhotoIndex = nextIndex;
-                    photos[cinematicPhotoIndex].classList.replace('opacity-0', 'opacity-100');
-                    photos[cinematicPhotoIndex].classList.replace('blur-xl', 'blur-0');
-                    photos[cinematicPhotoIndex].classList.replace('scale-100', 'scale-110');
-                }, 100);
+                    photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-90');
+                    photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-110');
+                }, 100); // تأخير بسيط جداً للسلاسة
 
             }, 5500);
         }
@@ -2677,9 +2673,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 3. إعادة الصور لوضع الاستعداد
             clearInterval(cinematicPhotoInterval);
+            // داخل زر الإغلاق: إعادة الصور لوضع الاستعداد الصغير
             photos.forEach(p => {
                 p.classList.remove('opacity-100', 'blur-0', 'scale-110');
-                p.classList.add('opacity-0', 'blur-xl', 'scale-100');
+                p.classList.add('opacity-0', 'blur-xl', 'scale-90');
             });
 
             // 4. إخفاء الزر السري وتعطيل الضغط عليه تماماً
