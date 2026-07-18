@@ -2598,24 +2598,46 @@ document.addEventListener('DOMContentLoaded', () => {
             if(secretVoice) secretVoice.play().catch(e => console.log("Voice play blocked", e));
         }, 1000);
 
-        // 3. عرض الصور (تأثير الإشراق والتكبير السينمائي)
+        // 3. عرض الصور مع نظام الأورورا (Aura Ambilight)
+        const auraPhotos = document.querySelectorAll('.aura-photo');
         cinematicPhotoIndex = 0;
+
         if(photos.length > 0) {
+            // إيقاظ الصورة
             photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
-            // إشراق الصورة لدرجة 110 لتبدو حية ونابضة
             photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
 
+            // إيقاظ الوهج اللوني في الخلفية
+            if(auraPhotos.length > 0) {
+                auraPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
+                auraPhotos[cinematicPhotoIndex].classList.add('opacity-40'); // شفافية 40% لتعطي توهجاً دافئاً غير مزعج
+            }
+
             cinematicPhotoInterval = setInterval(() => {
-                // إغراق الصورة في الظلام والتلاشي
+                // إخفاء الصورة
                 photos[cinematicPhotoIndex].classList.remove('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
                 photos[cinematicPhotoIndex].classList.add('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
+
+                // إخفاء الوهج
+                if(auraPhotos.length > 0) {
+                    auraPhotos[cinematicPhotoIndex].classList.remove('opacity-40');
+                    auraPhotos[cinematicPhotoIndex].classList.add('opacity-0');
+                }
 
                 let nextIndex = (cinematicPhotoIndex + 1) % photos.length;
 
                 setTimeout(() => {
                     cinematicPhotoIndex = nextIndex;
+
+                    // إظهار الصورة التالية
                     photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
                     photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
+
+                    // إظهار وهجها
+                    if(auraPhotos.length > 0) {
+                        auraPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
+                        auraPhotos[cinematicPhotoIndex].classList.add('opacity-40');
+                    }
                 }, 100);
 
             }, 5500);
@@ -2671,11 +2693,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 secretBgm.currentTime = 0;
             }
 
-            // داخل زر الإغلاق: إعادة الصور للوضع المظلم والمصغر
-            clearInterval(cinematicPhotoInterval);
-            photos.forEach(p => {
-                p.classList.remove('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
-                p.classList.add('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
+            // تطفئة وهج الأورورا عند الخروج
+            const auraPhotosToClean = document.querySelectorAll('.aura-photo');
+            auraPhotosToClean.forEach(bg => {
+                bg.classList.remove('opacity-40');
+                bg.classList.add('opacity-0');
             });
 
             // 4. إخفاء الزر السري وتعطيل الضغط عليه تماماً
