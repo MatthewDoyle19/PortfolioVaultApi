@@ -2589,11 +2589,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. تشغيل الصوتيات
         if(secretBgm) {
-            secretBgm.volume = 0.04;
+            secretBgm.volume = 0.02;
             secretBgm.play().catch(e => console.log("BGM play blocked", e));
         }
         setTimeout(() => {
-            if(secretVoice) secretVoice.play().catch(e => console.log("Voice play blocked", e));
+            if(secretVoice) {
+                // إجبار المتصفح على رفع مستوى صوتك إلى 100% (الحد الأقصى)
+                secretVoice.volume = 1.0;
+                secretVoice.play().catch(e => console.log("Voice play blocked", e));
+            }
         }, 1000);
 
         // 3. عرض الصور مع نظام الأورورا (Aura Ambilight) المحصن
