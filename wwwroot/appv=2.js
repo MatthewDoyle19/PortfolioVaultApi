@@ -2598,32 +2598,33 @@ document.addEventListener('DOMContentLoaded', () => {
             if(secretVoice) secretVoice.play().catch(e => console.log("Voice play blocked", e));
         }, 1000);
 
-        // 3. عرض الصور مع نظام الأورورا (Aura Ambilight)
+        // 3. عرض الصور مع نظام الأورورا (Aura Ambilight) المحصن
         const auraPhotos = document.querySelectorAll('.aura-photo');
         cinematicPhotoIndex = 0;
 
         if(photos.length > 0) {
-            // إيقاظ الصورة
+            // إيقاظ الصورة الأولى
             photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
             photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
 
-            // إيقاظ الوهج اللوني في الخلفية
-            if(auraPhotos.length > 0) {
+            // الحماية الجذربة: التأكد من وجود وهج مطابق للصورة الحالية بالذات
+            if(auraPhotos[cinematicPhotoIndex]) {
                 auraPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
-                auraPhotos[cinematicPhotoIndex].classList.add('opacity-40'); // شفافية 40% لتعطي توهجاً دافئاً غير مزعج
+                auraPhotos[cinematicPhotoIndex].classList.add('opacity-40');
             }
 
             cinematicPhotoInterval = setInterval(() => {
-                // إخفاء الصورة
+                // إخفاء الصورة الحالية
                 photos[cinematicPhotoIndex].classList.remove('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
                 photos[cinematicPhotoIndex].classList.add('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
 
-                // إخفاء الوهج
-                if(auraPhotos.length > 0) {
+                // إخفاء الوهج الحالي (إن وجد)
+                if(auraPhotos[cinematicPhotoIndex]) {
                     auraPhotos[cinematicPhotoIndex].classList.remove('opacity-40');
                     auraPhotos[cinematicPhotoIndex].classList.add('opacity-0');
                 }
 
+                // الانتقال الدائري المستمر
                 let nextIndex = (cinematicPhotoIndex + 1) % photos.length;
 
                 setTimeout(() => {
@@ -2633,8 +2634,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
                     photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
 
-                    // إظهار وهجها
-                    if(auraPhotos.length > 0) {
+                    // إظهار وهجها (إن وجد)
+                    if(auraPhotos[cinematicPhotoIndex]) {
                         auraPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
                         auraPhotos[cinematicPhotoIndex].classList.add('opacity-40');
                     }
