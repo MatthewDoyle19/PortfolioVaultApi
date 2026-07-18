@@ -2599,26 +2599,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if(secretVoice) secretVoice.play().catch(e => console.log("Voice play blocked", e));
         }, 1000);
 
-        // 3. عرض الصور (الصور مكتملة بحواف ناعمة + خلفية ساطعة)
+        // 3. عرض الصور فقط (بدون تعقيدات الخلفية)
         cinematicPhotoIndex = 0;
         if(photos.length > 0) {
             photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95');
             photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105');
 
-            if(bgPhotos.length > 0) {
-                bgPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
-                // رفعنا قوة الخلفية لتشع بقوة
-                bgPhotos[cinematicPhotoIndex].classList.add('opacity-80');
-            }
-
             cinematicPhotoInterval = setInterval(() => {
                 photos[cinematicPhotoIndex].classList.remove('opacity-100', 'blur-0', 'scale-105');
                 photos[cinematicPhotoIndex].classList.add('opacity-0', 'blur-xl', 'scale-95');
-
-                if(bgPhotos.length > 0) {
-                    bgPhotos[cinematicPhotoIndex].classList.remove('opacity-80');
-                    bgPhotos[cinematicPhotoIndex].classList.add('opacity-0');
-                }
 
                 let nextIndex = (cinematicPhotoIndex + 1) % photos.length;
 
@@ -2626,11 +2615,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     cinematicPhotoIndex = nextIndex;
                     photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95');
                     photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105');
-
-                    if(bgPhotos.length > 0) {
-                        bgPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
-                        bgPhotos[cinematicPhotoIndex].classList.add('opacity-80');
-                    }
                 }, 100);
 
             }, 5500);
@@ -2666,7 +2650,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 39000); // يظهر بعد انتهاء التسجيل الصوتي
     }
 
-// إنهاء التجربة (منطق التنظيف الجذري)
+// إنهاء التجربة (منطق التنظيف الجذري والصارم)
     if (closeSecretBtn) {
         closeSecretBtn.addEventListener('click', () => {
             // 1. إخفاء الشاشة الرئيسية
@@ -2686,15 +2670,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 secretBgm.currentTime = 0;
             }
 
-            // إعادة الصور والخلفيات لوضع الاستعداد
+            // 3. إعادة الصور الرئيسية لوضع الاستعداد (تم حذف كود الخلفيات الوهمية من هنا)
             clearInterval(cinematicPhotoInterval);
             photos.forEach(p => {
                 p.classList.remove('opacity-100', 'blur-0', 'scale-105');
                 p.classList.add('opacity-0', 'blur-xl', 'scale-95');
-            });
-            bgPhotos.forEach(bg => {
-                bg.classList.remove('opacity-80');
-                bg.classList.add('opacity-0');
             });
 
             // 4. إخفاء الزر السري وتعطيل الضغط عليه تماماً
