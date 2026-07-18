@@ -2599,40 +2599,37 @@ document.addEventListener('DOMContentLoaded', () => {
             if(secretVoice) secretVoice.play().catch(e => console.log("Voice play blocked", e));
         }, 1000);
 
-        // 3. عرض الصور (تكبير درامي للصورة الكاملة + خلفية ديناميكية)
+        // 3. عرض الصور (الصور مكتملة بحواف ناعمة + خلفية ساطعة)
         cinematicPhotoIndex = 0;
         if(photos.length > 0) {
-            // إيقاظ الصورة الأولى والخلفية الأولى
             photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95');
-            photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105'); // تكبير ناعم
+            photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105');
 
             if(bgPhotos.length > 0) {
                 bgPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
-                bgPhotos[cinematicPhotoIndex].classList.add('opacity-40'); // شفافية الخلفية
+                // رفعنا قوة الخلفية لتشع بقوة
+                bgPhotos[cinematicPhotoIndex].classList.add('opacity-80');
             }
 
             cinematicPhotoInterval = setInterval(() => {
-                // إخفاء الصورة الحالية وخلفيتها
                 photos[cinematicPhotoIndex].classList.remove('opacity-100', 'blur-0', 'scale-105');
                 photos[cinematicPhotoIndex].classList.add('opacity-0', 'blur-xl', 'scale-95');
 
                 if(bgPhotos.length > 0) {
-                    bgPhotos[cinematicPhotoIndex].classList.remove('opacity-40');
+                    bgPhotos[cinematicPhotoIndex].classList.remove('opacity-80');
                     bgPhotos[cinematicPhotoIndex].classList.add('opacity-0');
                 }
 
                 let nextIndex = (cinematicPhotoIndex + 1) % photos.length;
 
                 setTimeout(() => {
-                    // إيقاظ الصورة القادمة وخلفيتها
                     cinematicPhotoIndex = nextIndex;
-
                     photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95');
                     photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105');
 
                     if(bgPhotos.length > 0) {
                         bgPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
-                        bgPhotos[cinematicPhotoIndex].classList.add('opacity-40');
+                        bgPhotos[cinematicPhotoIndex].classList.add('opacity-80');
                     }
                 }, 100);
 
@@ -2696,7 +2693,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 p.classList.add('opacity-0', 'blur-xl', 'scale-95');
             });
             bgPhotos.forEach(bg => {
-                bg.classList.remove('opacity-40');
+                bg.classList.remove('opacity-80');
                 bg.classList.add('opacity-0');
             });
 
