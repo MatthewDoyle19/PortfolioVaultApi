@@ -2536,6 +2536,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const bgPhotos = document.querySelectorAll('.secret-bg-photo');
+
     // --- 🎭 THE SECRET CINEMATIC TRIGGER ---
 
     const secretTrigger = document.getElementById('secret-trigger');
@@ -2597,26 +2599,42 @@ document.addEventListener('DOMContentLoaded', () => {
             if(secretVoice) secretVoice.play().catch(e => console.log("Voice play blocked", e));
         }, 1000);
 
-        // 3. عرض الصور (Dramatic Focus Pull & Zoom)
+        // 3. عرض الصور (تكبير درامي للصورة الكاملة + خلفية ديناميكية)
         cinematicPhotoIndex = 0;
         if(photos.length > 0) {
-            // اندفاع الصورة الأولى نحو الشاشة (من 90 إلى 110)
-            photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-90');
-            photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-110');
+            // إيقاظ الصورة الأولى والخلفية الأولى
+            photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95');
+            photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105'); // تكبير ناعم
+
+            if(bgPhotos.length > 0) {
+                bgPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
+                bgPhotos[cinematicPhotoIndex].classList.add('opacity-40'); // شفافية الخلفية
+            }
 
             cinematicPhotoInterval = setInterval(() => {
-                // غرق الصورة الحالية في الظلام (تعود لـ 90)
-                photos[cinematicPhotoIndex].classList.remove('opacity-100', 'blur-0', 'scale-110');
-                photos[cinematicPhotoIndex].classList.add('opacity-0', 'blur-xl', 'scale-90');
+                // إخفاء الصورة الحالية وخلفيتها
+                photos[cinematicPhotoIndex].classList.remove('opacity-100', 'blur-0', 'scale-105');
+                photos[cinematicPhotoIndex].classList.add('opacity-0', 'blur-xl', 'scale-95');
+
+                if(bgPhotos.length > 0) {
+                    bgPhotos[cinematicPhotoIndex].classList.remove('opacity-40');
+                    bgPhotos[cinematicPhotoIndex].classList.add('opacity-0');
+                }
 
                 let nextIndex = (cinematicPhotoIndex + 1) % photos.length;
 
                 setTimeout(() => {
-                    // اندفاع الصورة الجديدة
+                    // إيقاظ الصورة القادمة وخلفيتها
                     cinematicPhotoIndex = nextIndex;
-                    photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-90');
-                    photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-110');
-                }, 100); // تأخير بسيط جداً للسلاسة
+
+                    photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95');
+                    photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105');
+
+                    if(bgPhotos.length > 0) {
+                        bgPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
+                        bgPhotos[cinematicPhotoIndex].classList.add('opacity-40');
+                    }
+                }, 100);
 
             }, 5500);
         }
@@ -2671,12 +2689,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 secretBgm.currentTime = 0;
             }
 
-            // 3. إعادة الصور لوضع الاستعداد
+            // إعادة الصور والخلفيات لوضع الاستعداد
             clearInterval(cinematicPhotoInterval);
-            // داخل زر الإغلاق: إعادة الصور لوضع الاستعداد الصغير
             photos.forEach(p => {
-                p.classList.remove('opacity-100', 'blur-0', 'scale-110');
-                p.classList.add('opacity-0', 'blur-xl', 'scale-90');
+                p.classList.remove('opacity-100', 'blur-0', 'scale-105');
+                p.classList.add('opacity-0', 'blur-xl', 'scale-95');
+            });
+            bgPhotos.forEach(bg => {
+                bg.classList.remove('opacity-40');
+                bg.classList.add('opacity-0');
             });
 
             // 4. إخفاء الزر السري وتعطيل الضغط عليه تماماً
