@@ -2569,7 +2569,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // مصفوفة النصوص وتوقيت ظهورها (بالملي ثانية) لتتطابق مع التسجيل الفعلي
     const subtitlesSequence = [
-        { text: "زوزو...", time: 0 },
+        { text: "زوزو...", time: 750 },
         { text: "أنا ما صممت هذا المكان بس عشان أحفظ ذكرياتنا...", time: 1500 },
         { text: "أنا صممته عشان يكون مراية، تشوفي فيها نفسك بعيوني.", time: 5500 },
         { text: "في كل مرة بشوف فيها ملامحك...", time: 10500 },
@@ -2620,25 +2620,33 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 5500);
         }
 
-        // 4. تشغيل الترجمة السينمائية (The Whispering Blur)
         const subtitleEl = document.getElementById('cinematic-subtitle');
-        subtitlesSequence.forEach(item => {
-            const timeout = setTimeout(() => {
-                // تبخير النص القديم في الضباب
-                subtitleEl.classList.replace('opacity-100', 'opacity-0');
-                subtitleEl.classList.replace('blur-0', 'blur-md');
-                subtitleEl.classList.replace('translate-y-0', 'translate-y-2');
-
-                setTimeout(() => {
+        subtitlesSequence.forEach((item, index) => {
+            if (index === 0) {
+                // الكلمة الأولى تظهر فوراً في وقتها المحدد
+                const showTimeout = setTimeout(() => {
                     subtitleEl.innerText = item.text;
-                    // سحب النص الجديد من العدم إلى التركيز التام
-                    subtitleEl.classList.replace('opacity-0', 'opacity-100');
-                    subtitleEl.classList.replace('blur-md', 'blur-0');
-                    subtitleEl.classList.replace('translate-y-2', 'translate-y-0');
-                }, 1000);
+                    subtitleEl.classList.remove('opacity-0', 'blur-md', 'translate-y-2');
+                    subtitleEl.classList.add('opacity-100', 'blur-0', 'translate-y-0');
+                }, item.time);
+                subtitleTimeouts.push(showTimeout);
+            } else {
+                // تبخير النص القديم قبل ثانية واحدة من ظهور النص الجديد
+                const fadeOutTime = item.time - 1000;
+                const fadeOutTimeout = setTimeout(() => {
+                    subtitleEl.classList.remove('opacity-100', 'blur-0', 'translate-y-0');
+                    subtitleEl.classList.add('opacity-0', 'blur-md', 'translate-y-2');
+                }, fadeOutTime);
+                subtitleTimeouts.push(fadeOutTimeout);
 
-            }, item.time);
-            subtitleTimeouts.push(timeout);
+                // إظهار النص الجديد في وقته الدقيق تماماً
+                const showTimeout = setTimeout(() => {
+                    subtitleEl.innerText = item.text;
+                    subtitleEl.classList.remove('opacity-0', 'blur-md', 'translate-y-2');
+                    subtitleEl.classList.add('opacity-100', 'blur-0', 'translate-y-0');
+                }, item.time);
+                subtitleTimeouts.push(showTimeout);
+            }
         });
 
         // 5. إظهار زر الإغلاق بذكاء وحماية
