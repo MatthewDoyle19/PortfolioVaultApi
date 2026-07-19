@@ -2589,10 +2589,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. تشغيل الصوتيات
         if(secretBgm) {
+            secretBgm.volume = 0.04;
             secretBgm.play().catch(e => console.log("BGM play blocked", e));
         }
         setTimeout(() => {
             if(secretVoice) {
+                // إجبار المتصفح على رفع مستوى صوتك إلى 100% (الحد الأقصى)
+                secretVoice.volume = 1.0;
                 secretVoice.play().catch(e => console.log("Voice play blocked", e));
             }
         }, 1000);
