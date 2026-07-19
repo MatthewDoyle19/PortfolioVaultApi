@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // --- 1. THE BUILDER PHASE ---
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
-                       ?? "Host=ep-summer-king-alcbyjyd-pooler.c-3.eu-central-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_PKj7ioea6XNE;SSL Mode=Require;Trust Server Certificate=true";
+                       ?? "Host=ep-wandering-surf-asxjtab9-pooler.c-4.eu-central-1.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=npg_tA2Gp7iwTbBK;SSL Mode=Require;Trust Server Certificate=true";
 
 builder.Services.AddDbContext<VaultDb>(options => options.UseNpgsql(connectionString));
 

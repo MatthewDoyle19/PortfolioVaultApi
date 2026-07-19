@@ -153,9 +153,10 @@
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/ref/ZainabVaultApi.dll
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/ZainabVaultApi.sourcelink.json
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/swae.build.ex.cache
-/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/o8fn19zgq0-{0}-3m51qn7481-3m51qn7481.gz
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/qses482l28-{0}-5gg0kwfnxm-5gg0kwfnxm.gz
-/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/93v731rr28-{0}-wgjs9aef5j-wgjs9aef5j.gz
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/24aiv9uflp-{0}-v81d9kx7kk-v81d9kx7kk.gz
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/3jj0pwvag4-{0}-7skuxph1ks-7skuxph1ks.gz
-/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/viwpe8vi03-{0}-ckzlhcpexk-ckzlhcpexk.gz
+/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/o8fn19zgq0-{0}-11m154cvev-11m154cvev.gz
+/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/93v731rr28-{0}-4hwt5p9efm-4hwt5p9efm.gz
+/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/ktxlqowvwp-{0}-7pivm63xia-7pivm63xia.gz
+/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/viwpe8vi03-{0}-8zmxn9ddxq-8zmxn9ddxq.gz
