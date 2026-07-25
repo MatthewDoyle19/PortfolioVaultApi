@@ -1,3 +1,11 @@
+/* ============================================
+   CSS CUSTOM PROPERTIES
+   ============================================ */
+/* Note: Custom properties are defined in Tailwind config in index.html */
+
+/* ============================================
+   FONT IMPORTS & TYPOGRAPHY CLASSES
+   ============================================ */
 /* Import Premium Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
 
@@ -6,7 +14,9 @@
     font-family: 'Amiri', serif !important;
 }
 
-/* Custom Animations */
+/* ============================================
+   CUSTOM ANIMATIONS
+   ============================================ */
 .fade-in { animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .fade-out { animation: fadeOut 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 @keyframes fadeIn {
@@ -19,7 +29,7 @@
 }
 .hidden-start { opacity: 0; display: none; }
 
-/* Ultra-Smooth Aurora Background Blob Animation */
+/* Blob Animation */
 @keyframes blob {
     0% { transform: translate(0px, 0px) scale(1); opacity: 0.5; }
     33% { transform: translate(40px, -60px) scale(1.1); opacity: 0.8; }
@@ -29,6 +39,10 @@
 .animate-blob { animation: blob 14s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
 .animation-delay-2000 { animation-delay: 2s; }
 .animation-delay-4000 { animation-delay: 4s; }
+
+/* ============================================
+   RESET & GLOBAL BASE STYLES
+   ============================================ */
 
 /* Safe Area padding for iPhone & Android Fallback */
 .pt-safe {
@@ -58,6 +72,10 @@ body {
     padding-bottom: 110px !important;
 }
 
+/* ============================================
+   LAYOUT & CONTAINER STRUCTURES
+   ============================================ */
+
 /* Ultra-Premium Glass Effect (The Dashboard) */
 .premium-glass {
     background: linear-gradient(135deg, rgba(30, 30, 35, 0.4) 0%, rgba(15, 15, 18, 0.6) 100%);
@@ -77,6 +95,12 @@ body {
     gap: 1.75rem;
     padding: 0.5rem 0;
 }
+
+/* ============================================
+   COMPONENT STYLES
+   ============================================ */
+
+/* --- Cards --- */
 
 /* Masterpiece Polaroid Cards */
 .polaroid-card {
@@ -117,7 +141,9 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* --- The Ultimate Bulletproof Dark Audio Player --- */
+/* --- Audio Player --- */
+
+/* The Ultimate Bulletproof Dark Audio Player */
 audio {
     width: 100%;
     height: 44px;
@@ -147,6 +173,8 @@ audio:hover {
 /*    backface-visibility: hidden;*/
 /*    perspective: 1000px;*/
 /*}*/
+
+/* --- Special Overlays & Effects --- */
 
 /* 1. الخلفية والطبقة الأساسية */
 #tawjihi-overlay {
@@ -202,6 +230,8 @@ audio:hover {
     pointer-events: none;
 }
 
+/* --- Additional Animations --- */
+
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
@@ -219,7 +249,11 @@ audio:hover {
     animation: heartbeat 1.2s ease-in-out infinite;
 }
 
-/*!* 1. سرعة الضوء (Hyperspace Warp) *!*/
+/* ============================================
+   LEGACY ANIMATIONS (Commented Out)
+   ============================================ */
+
+/* 1. سرعة الضوء (Hyperspace Warp) */
 /*.hyperspace-bg {*/
 /*    background-image:*/
 /*            radial-gradient(circle at center, transparent 0%, #000 100%),*/
@@ -276,9 +310,11 @@ audio:hover {
 /*    100% { offset-distance: 100%; transform: scale(1); }*/
 /*}*/
 
-/*!* ==========================================*/
-/*!* 📱 RESPONSIVE PORTAL STYLES (DESKTOP & MOBILE)*/
-/*!* ========================================== *!*/
+/* ============================================
+   RESPONSIVE STYLES (Commented Out)
+   ============================================ */
+
+/* 📱 RESPONSIVE PORTAL STYLES (DESKTOP & MOBILE) */
 
 /*!* 1. الإعداد الافتراضي لشاشات الكمبيوتر واللابتوب *!*/
 /*.portal-map {*/
