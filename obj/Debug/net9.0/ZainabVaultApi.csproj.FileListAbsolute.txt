@@ -152,12 +152,12 @@
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/ZainabVaultApi.genruntimeconfig.cache
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/ref/ZainabVaultApi.dll
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/ZainabVaultApi.sourcelink.json
-/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/we96qhh24d-gvenurf907.gz
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/xksviomjed-5gg0kwfnxm.gz
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/e1j1bcxr7a-t4hcvigi37.gz
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/081oh0xodt-7pivm63xia.gz
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/ic3wop520h-v81d9kx7kk.gz
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/ygg0bkpmzo-7skuxph1ks.gz
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/fvbx3rciz5-3ggw8yfhdm.gz
-/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/6srhq9v0pb-qov9lkhouv.gz
-/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/gl1gzeexmp-o67xs7ndyq.gz
+/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/we96qhh24d-nm99rxhy2d.gz
+/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/6srhq9v0pb-6ifqhxx5rn.gz
+/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/gl1gzeexmp-oeh6dij2ev.gz

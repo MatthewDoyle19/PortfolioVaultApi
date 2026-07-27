@@ -800,15 +800,52 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 💭 DUAL-LOCK BLIND PROMPT LOGIC ---
     const promptContainer = document.getElementById('blind-prompt-container');
 
+// نجعل الـ ID متاحاً عالمياً لكي تقرأه الدالة الجديدة
+    window.currentPromptId = null;
+
     const fetchBlindPrompt = async () => {
         try {
             const prompt = await api.fetchCurrentPrompt();
             if (!prompt) {
+                window.currentPromptId = null;
                 ui.renderEmptyPrompt();
             } else {
-                ui.renderPrompt(prompt);
+                window.currentPromptId = prompt.id; // حفظ الـ ID عالمياً
+                ui.renderPrompt(prompt); // رسم الواجهة
             }
         } catch (error) { console.error(error); }
+    };
+
+// 🔥 الدالة النووية التي سيستدعيها الفورم مباشرة من الـ HTML 🔥
+    window.lockMyAnswer = async () => {
+        const btn = document.querySelector('#submit-prompt-form button');
+        const userSelect = document.getElementById('prompt-user');
+        const answerInput = document.getElementById('prompt-answer');
+
+        if (!window.currentPromptId || !userSelect || !answerInput) return;
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = 'Encrypting... ⏳';
+        }
+
+        try {
+            await api.answerPrompt(
+                window.currentPromptId,
+                userSelect.value,
+                answerInput.value
+            );
+
+            // التحديث بصمت بعد النجاح
+            fetchBlindPrompt();
+            fetchPromptHistory();
+        } catch (error) {
+            console.error("Submission failed:", error);
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Lock My Answer 🔒';
+            }
+        }
     };
 
     window.generatePrompt = async () => {
@@ -825,34 +862,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const renderPrompt = (prompt) => {
-        if (!promptContainer) return;
-        ui.renderPrompt(prompt);
-
-        const form = document.getElementById('submit-prompt-form');
-        if (form) {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const btn = form.querySelector('button');
-                btn.disabled = true;
-                btn.innerHTML = 'Encrypting... ⏳';
-
-                try {
-                    await api.answerPrompt(
-                        prompt.id,
-                        document.getElementById('prompt-user').value,
-                        document.getElementById('prompt-answer').value
-                    );
-                    fetchBlindPrompt();
-                    fetchPromptHistory();
-                } catch (error) { console.error(error); btn.disabled = false; }
-            });
-        }
-    };
-
+// الاستدعاء الأول عند التحميل
     fetchBlindPrompt();
 
-    // --- 📜 PROMPTS HISTORY LOGIC ---
+// --- 📜 PROMPTS HISTORY LOGIC ---
     const fetchPromptHistory = async () => {
         try {
             const history = await api.fetchPromptHistory();

@@ -718,17 +718,21 @@ export const renderPrompt = (prompt) => {
 
         html += `
             <form id="submit-prompt-form" class="flex flex-col gap-3 bg-black/20 p-4 rounded-2xl border border-white/5">
-                <div class="flex items-center gap-2">
-                    <label class="text-xs text-slate-400 font-medium">Answering as:</label>
-                    <select id="prompt-user" class="bg-black/60 text-white text-xs px-2 py-1 rounded-lg border border-white/10 focus:outline-none focus:border-pink-500">
-                        <option value="Mohammad">7amodee 👨🏻‍💻</option>
-                        <option value="Zainab">ZoZo 👸🏻</option>
-                    </select>
+                <div id="submit-prompt-form" class="flex flex-col gap-3 bg-black/20 p-4 rounded-2xl border border-white/5">
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-slate-400 font-medium">Answering as:</label>
+                        <select id="prompt-user" class="bg-black/60 text-white text-xs px-2 py-1 rounded-lg border border-white/10 focus:outline-none focus:border-pink-500">
+                            <option value="Mohammad">7amodee 👨🏻‍💻</option>
+                            <option value="Zainab">ZoZo 👸🏻</option>
+                        </select>
+                    </div>
+                    <textarea id="prompt-answer" rows="2" placeholder="Write your honest answer..." required class="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 shadow-inner resize-none"></textarea>
+    
+                    <!-- السحر هنا: نوع الزر button وليس submit، ومربوط مباشرة بالدالة -->
+                    <button type="button" onclick="window.lockMyAnswer()" class="w-full bg-indigo-600/90 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-xl transition-all active:scale-95 shadow-[0_0_15px_rgba(79,70,229,0.4)]">
+                        Lock My Answer 🔒
+                    </button>
                 </div>
-                <textarea id="prompt-answer" rows="2" placeholder="Write your honest answer..." required class="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 shadow-inner resize-none"></textarea>
-                <button type="submit" class="w-full bg-indigo-600/90 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-xl transition-all active:scale-95 shadow-[0_0_15px_rgba(79,70,229,0.4)]">
-                    Lock My Answer 🔒
-                </button>
             </form>
             <div class="flex justify-between items-center mt-4 px-2">
                 <button onclick="window.cancelPrompt()" class="text-[10px] text-rose-400 hover:text-rose-300 uppercase font-bold tracking-wider transition-colors flex items-center gap-1 active:scale-95">
