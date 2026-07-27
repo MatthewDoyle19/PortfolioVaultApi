@@ -159,5 +159,5 @@
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/ic3wop520h-v81d9kx7kk.gz
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/ygg0bkpmzo-7skuxph1ks.gz
 /Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/fvbx3rciz5-3ggw8yfhdm.gz
-/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/gl1gzeexmp-jo2me24d6d.gz
-/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/6srhq9v0pb-gvhbxzpixl.gz
+/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/6srhq9v0pb-qov9lkhouv.gz
+/Users/bateman/ZainabVaultApi/obj/Debug/net9.0/compressed/gl1gzeexmp-o67xs7ndyq.gz

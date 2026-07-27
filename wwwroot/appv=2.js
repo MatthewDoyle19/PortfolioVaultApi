@@ -994,83 +994,83 @@ document.addEventListener('DOMContentLoaded', () => {
 ========================================== */
 
 // ==========================================
-// 🚀 V2.0.0 EASTER EGG & SECRET DOOR (STABLE EDITION - ACTIVE CODE)
+// 🚀 V2.0.0 EASTER EGG & SECRET DOOR (ORIGINAL MAGIC EDITION)
 // ==========================================
-    const easterEggOverlay = document.getElementById('easter-egg-overlay');
-    const easterEggAudio = document.getElementById('easter-egg-audio');
-    const versionTrigger = document.getElementById('version-trigger');
 
-// --- [1] دالة فتح الباب السري ---
     const openEasterEgg = () => {
-        if (easterEggOverlay) {
-            const textContent = document.getElementById('easter-egg-content');
-            const gallery = document.getElementById('easter-egg-gallery');
+        const overlay = document.getElementById('easter-egg-overlay');
+        const audio = document.getElementById('easter-egg-audio');
+        const textContent = document.getElementById('easter-egg-content');
+        const gallery = document.getElementById('easter-egg-gallery');
 
-            // دائماً أظهر الصفحة الأولى (النصب التذكاري) وأخفِ الألبوم عند أول دخول
+        if (overlay) {
             if (textContent) textContent.classList.remove('hidden', 'opacity-0', 'scale-95');
             if (gallery) gallery.classList.add('hidden', 'opacity-0', 'translate-y-10');
 
-            easterEggOverlay.classList.remove('hidden');
-            if (easterEggAudio) {
-                easterEggAudio.volume = 0.5;
-                easterEggAudio.play().catch(e => console.log("Audio play blocked", e));
+            overlay.classList.remove('hidden');
+            if (audio) {
+                audio.volume = 0.5;
+                audio.play().catch(e => console.log("Audio play blocked", e));
             }
             setTimeout(() => {
-                easterEggOverlay.classList.remove('opacity-0');
+                overlay.classList.remove('opacity-0');
             }, 50);
         }
     };
 
-// --- [2] الباب السري: النقر 3 مرات بسرعة على رقم الإصدار ---
-    let clickCount = 0;
-    let clickTimeout;
-
-    if (versionTrigger) {
-        versionTrigger.addEventListener('click', () => {
-            clickCount++;
-            clearTimeout(clickTimeout);
-
-            if (clickCount >= 3) {
-                clickCount = 0;
-                openEasterEgg(); // فتح الشاشة!
-            } else {
-                clickTimeout = setTimeout(() => {
-                    clickCount = 0;
-                }, 800);
-            }
-        });
-    }
-
-// --- [3] إغلاق الواجهة وإيقاف الصوت بنعومة ---
     const closeFunctions = () => {
-        if (easterEggOverlay) easterEggOverlay.classList.add('opacity-0');
-        if (easterEggAudio) {
-            let vol = easterEggAudio.volume;
+        const overlay = document.getElementById('easter-egg-overlay');
+        const audio = document.getElementById('easter-egg-audio');
+
+        if (overlay) overlay.classList.add('opacity-0');
+        if (audio) {
+            let vol = audio.volume;
             let fadeOut = setInterval(() => {
                 if (vol > 0.05) {
                     vol -= 0.05;
-                    easterEggAudio.volume = vol;
+                    audio.volume = vol;
                 } else {
                     clearInterval(fadeOut);
-                    easterEggAudio.pause();
-                    easterEggAudio.currentTime = 0;
+                    audio.pause();
+                    audio.currentTime = 0;
                 }
             }, 100);
         }
-        setTimeout(() => { if (easterEggOverlay) easterEggOverlay.classList.add('hidden'); }, 1000);
+        setTimeout(() => { if (overlay) overlay.classList.add('hidden'); }, 1000);
     };
 
-// Event Delegation للأزرار
+// --- Event Delegation الشامل (لضمان عمل الزر دائماً) ---
+    let easterEggClickCount = 0;
+    let easterEggTimeout;
+
     document.addEventListener('click', (e) => {
+
+        // 1. فتح الباب السري عبر النقر 3 مرات على رقم الإصدار
+        const trigger = e.target.closest('#version-trigger');
+        if (trigger) {
+            easterEggClickCount++;
+            clearTimeout(easterEggTimeout);
+
+            if (easterEggClickCount >= 3) {
+                easterEggClickCount = 0;
+                openEasterEgg();
+            } else {
+                easterEggTimeout = setTimeout(() => {
+                    easterEggClickCount = 0;
+                }, 800);
+            }
+            return;
+        }
+
+        // 2. أزرار الإغلاق
         if (e.target.id === 'close-easter-egg' || e.target.id === 'close-gallery-btn') {
             closeFunctions();
+            return;
         }
-    });
 
-// --- [4] الانتقال من صفحة النصب التذكاري إلى الألبوم السري ---
-    const proceedBtn = document.getElementById('proceed-to-gallery-btn');
-    if (proceedBtn) {
-        proceedBtn.addEventListener('click', () => {
+        // 3. الانتقال للألبوم وتفعيل سحر الصور الأصلي
+        const proceedBtn = e.target.closest('#proceed-to-gallery-btn');
+        if (proceedBtn) {
             const textContent = document.getElementById('easter-egg-content');
             const gallery = document.getElementById('easter-egg-gallery');
 
@@ -1083,20 +1083,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (scrollContainer) scrollContainer.scrollTop = 0;
 
                     gallery.classList.remove('hidden');
+
+                    // الكود الأصلي الخاص بك لتحريك الصور
+                    document.querySelectorAll('.polaroid').forEach((p, index) => {
+                        p.style.animationDelay = `${index * 0.4}s`;
+                        p.addEventListener('animationend', () => {
+                            p.style.animation = 'none';
+                            p.style.opacity = '1';
+                            p.style.transform = 'rotate(var(--rot))';
+                        }, { once: true });
+                    });
+
                     setTimeout(() => gallery.classList.remove('opacity-0', 'translate-y-10'), 50);
                 }
             }, 800);
-        });
-    }
-
-// --- [5] سحر الظهور المتتابع للصور في الألبوم ---
-    document.querySelectorAll('.polaroid').forEach((p, index) => {
-        p.style.animationDelay = `${index * 0.4}s`;
-        p.addEventListener('animationend', () => {
-            p.style.animation = 'none';
-            p.style.opacity = '1';
-            p.style.transform = 'rotate(var(--rot))';
-        });
+            return;
+        }
     });
 
 // ==========================================
