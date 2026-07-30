@@ -525,28 +525,33 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     let lastHeartbeatId = null;
+    let systemWatcherTimer; // متغير للتحكم في الحلقة الذكية
 
     const fetchSystemState = async () => {
         try {
+            // 1. تحديث المزاج
             const moods = await api.fetchMoods();
             ui.updateMoodDisplay(moods, moodsList);
 
+            // 2. تحديث المحكمة (بدون طلب إضافي للسيرفر!)
             const penalties = await api.fetchPenalties();
             if (!initialLoad && penalties.length > lastPenaltyCount) {
                 const newestPenalty = penalties[0];
                 const displayPunished = newestPenalty.punished === 'Mohammad' ? '7amodee' : (newestPenalty.punished === 'Zainab' ? 'ZoZo' : newestPenalty.punished);
                 ui.showToast('⚖️ Digital Court', `New verdict issued for ${displayPunished}!`, '⚖️');
-                fetchPenaltiesFromServer();
+                ui.renderPenalties(penalties); // تمرير البيانات مباشرة للواجهة لتوفير الموارد
             }
             lastPenaltyCount = penalties.length;
 
+            // 3. تحديث الذكريات (بدون طلب إضافي!)
             const commits = await api.fetchCommits();
             if (!initialLoad && commits.length > lastCommitCount) {
                 ui.showToast('📸 New Memory', `A new moment was added to the Vault!`, '✨');
-                fetchCommits();
+                ui.renderCommits(commits); // تمرير البيانات مباشرة
             }
             lastCommitCount = commits.length;
 
+            // 4. تحديث النبضات
             const latestHb = await api.fetchLatestHeartbeat();
             if (latestHb && !initialLoad && latestHb.id > lastHeartbeatId) {
                 const displaySender = latestHb.sender === 'Mohammad' ? '7amodee' : (latestHb.sender === 'Zainab' ? 'ZoZo' : latestHb.sender);
@@ -560,13 +565,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error("System Watcher error:", error);
-            document.getElementById('mohammad-mood-text').innerText = "Connecting...";
-            document.getElementById('zainab-mood-text').innerText = "Connecting...";
+            const moText = document.getElementById('mohammad-mood-text');
+            const zaText = document.getElementById('zainab-mood-text');
+            if(moText) moText.innerText = "Connecting...";
+            if(zaText) zaText.innerText = "Connecting...";
+        } finally {
+            // 🔥 السحر هنا: نطلب من النظام الانتظار 25 ثانية *بعد انتهاء* الدورة الحالية قبل بدء دورة جديدة
+            systemWatcherTimer = setTimeout(fetchSystemState, 25000);
         }
     };
 
+    // تشغيل النظام الذكي للمراقبة للمرة الأولى
     fetchSystemState();
-    setInterval(fetchSystemState, 10000);
 
     // --- 🥘 INDEPENDENT MANSAF LOGIC ---
     const mansafCountEl = document.getElementById('mansaf-count');
