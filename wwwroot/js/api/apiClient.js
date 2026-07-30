@@ -321,7 +321,15 @@ export const generatePrompt = async () => {
 
 export const cancelPrompt = async () => {
     const response = await fetch(`${API_BASE_URL}/api/prompts/current`, { method: 'DELETE' });
-    return response.json();
+
+    // إذا كانت الاستجابة 204 (بدون محتوى) أو كان هناك خطأ، لا تحاول تحليل JSON
+    if (response.status === 204 || !response.ok) {
+        return null;
+    }
+
+    // أخذ النص أولاً، ثم تحويله إلى JSON فقط إذا لم يكن فارغاً
+    const text = await response.text();
+    return text ? JSON.parse(text) : null;
 };
 
 export const answerPrompt = async (promptId, user, answer) => {
