@@ -1,29 +1,41 @@
 const API_BASE_URL = "https://zainabvault-v2-0-0.onrender.com";
 
 // ==========================================
+// 🔥 THE UNIVERSAL SHIELD (الدرع الشامل لحماية البيانات)
+// ==========================================
+// هذه الدالة ستعالج أي استجابة من السيرفر بأمان مطلق. 
+// إذا كان هناك 404، 204، أو نص غير صالح، ستمرره بصمت دون تحطيم الواجهة.
+const safeJson = async (response) => {
+    if (!response.ok || response.status === 204 || response.status === 404) {
+        return null;
+    }
+    try {
+        const text = await response.text();
+        return text ? JSON.parse(text) : null;
+    } catch (error) {
+        console.warn("API parsing ignored non-JSON response.");
+        return null;
+    }
+};
+
+// ==========================================
 // SYSTEM MAINTENANCE & AUTHENTICATION
 // ==========================================
 
 export const checkMaintenanceStatus = async () => {
     try {
-        const response = await fetch('https://zainabvault-v2-0-0.onrender.com/api/system/maintenance');
-        if (response.ok) {
-            const data = await response.json();
-            return data.isMaintenance;
-        }
+        const response = await fetch(`${API_BASE_URL}/api/system/maintenance`);
+        const data = await safeJson(response);
+        return data ? data.isMaintenance : false;
     } catch (e) {
-        console.error("Failed to fetch maintenance status", e);
+        return false;
     }
-    return false;
 };
 
 export const toggleMaintenanceMode = async () => {
-    const response = await fetch('https://zainabvault-v2-0-0.onrender.com/api/system/maintenance/toggle', { method: 'POST' });
-    if (response.ok) {
-        const data = await response.json();
-        return data.isMaintenance;
-    }
-    throw new Error("Failed to toggle maintenance mode");
+    const response = await fetch(`${API_BASE_URL}/api/system/maintenance/toggle`, { method: 'POST' });
+    const data = await safeJson(response);
+    return data ? data.isMaintenance : false;
 };
 
 export const login = async (key) => {
@@ -32,7 +44,7 @@ export const login = async (key) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key: key })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -41,7 +53,7 @@ export const login = async (key) => {
 
 export const fetchLinks = async () => {
     const response = await fetch(`${API_BASE_URL}/api/links`);
-    return response.json();
+    return safeJson(response);
 };
 
 export const addLink = async (title, url, unlockDate) => {
@@ -50,12 +62,12 @@ export const addLink = async (title, url, unlockDate) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, url, unlockDate })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const deleteLink = async (id) => {
     const response = await fetch(`${API_BASE_URL}/api/links/${id}`, { method: 'DELETE' });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -64,7 +76,7 @@ export const deleteLink = async (id) => {
 
 export const fetchCommits = async () => {
     const response = await fetch(`${API_BASE_URL}/api/commits`);
-    return response.json();
+    return safeJson(response);
 };
 
 export const addCommit = async (commitData) => {
@@ -73,12 +85,12 @@ export const addCommit = async (commitData) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(commitData)
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const deleteCommit = async (id) => {
     const response = await fetch(`${API_BASE_URL}/api/commits/${id}`, { method: 'DELETE' });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -87,7 +99,7 @@ export const deleteCommit = async (id) => {
 
 export const fetchEvents = async () => {
     const response = await fetch(`${API_BASE_URL}/api/events`);
-    return response.json();
+    return safeJson(response);
 };
 
 export const addEvent = async (title, date, type) => {
@@ -96,12 +108,12 @@ export const addEvent = async (title, date, type) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, date, type })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const deleteEvent = async (id) => {
     const response = await fetch(`${API_BASE_URL}/api/events/${id}`, { method: 'DELETE' });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -110,7 +122,7 @@ export const deleteEvent = async (id) => {
 
 export const fetchPenalties = async () => {
     const response = await fetch(`${API_BASE_URL}/api/penalties`);
-    return response.json();
+    return safeJson(response);
 };
 
 export const addPenalty = async (penaltyData) => {
@@ -119,7 +131,7 @@ export const addPenalty = async (penaltyData) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(penaltyData)
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const togglePenalty = async (id, isCompleted) => {
@@ -128,12 +140,12 @@ export const togglePenalty = async (id, isCompleted) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isCompleted })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const deletePenalty = async (id) => {
     const response = await fetch(`${API_BASE_URL}/api/penalties/${id}`, { method: 'DELETE' });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -150,7 +162,7 @@ export const fetchMoods = async () => {
         },
         cache: 'no-store'
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const updateMood = async (user, status) => {
@@ -164,7 +176,7 @@ export const updateMood = async (user, status) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(moodData)
     });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -176,10 +188,7 @@ export const fetchLatestHeartbeat = async () => {
         headers: { 'Cache-Control': 'no-cache' },
         cache: 'no-store'
     });
-    if (response.ok) {
-        return response.json();
-    }
-    return null;
+    return safeJson(response);
 };
 
 export const sendHeartbeat = async (sender) => {
@@ -188,7 +197,7 @@ export const sendHeartbeat = async (sender) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sender: sender })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -197,10 +206,7 @@ export const sendHeartbeat = async (sender) => {
 
 export const fetchMansafCount = async () => {
     const response = await fetch(`${API_BASE_URL}/api/mansaf`);
-    if (response.ok) {
-        return response.json();
-    }
-    throw new Error("Failed to fetch mansaf count");
+    return safeJson(response);
 };
 
 export const updateMansafCount = async (change) => {
@@ -209,7 +215,7 @@ export const updateMansafCount = async (change) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ change: change })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -218,7 +224,7 @@ export const updateMansafCount = async (change) => {
 
 export const fetchBucketList = async () => {
     const response = await fetch(`${API_BASE_URL}/api/bucketlist`);
-    return response.json();
+    return safeJson(response);
 };
 
 export const addBucketItem = async (title) => {
@@ -227,17 +233,17 @@ export const addBucketItem = async (title) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, isCompleted: false })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const toggleBucketItem = async (id) => {
     const response = await fetch(`${API_BASE_URL}/api/bucketlist/${id}`, { method: 'PUT' });
-    return response.json();
+    return safeJson(response);
 };
 
 export const deleteBucketItem = async (id) => {
     const response = await fetch(`${API_BASE_URL}/api/bucketlist/${id}`, { method: 'DELETE' });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -246,10 +252,7 @@ export const deleteBucketItem = async (id) => {
 
 export const fetchVisitData = async () => {
     const response = await fetch(`${API_BASE_URL}/api/visit/all`);
-    if (response.ok) {
-        return response.json();
-    }
-    throw new Error("Failed to fetch visit data");
+    return safeJson(response);
 };
 
 export const saveVisitDates = async (startDate, endDate) => {
@@ -258,7 +261,7 @@ export const saveVisitDates = async (startDate, endDate) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ startDate, endDate })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const addVisitTask = async (title, visitDatesId) => {
@@ -267,7 +270,7 @@ export const addVisitTask = async (title, visitDatesId) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, isCompleted: false, visitDatesId })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const toggleVisitTask = async (id, localTime) => {
@@ -276,17 +279,17 @@ export const toggleVisitTask = async (id, localTime) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ localTime })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const deleteVisitTask = async (id) => {
     const response = await fetch(`${API_BASE_URL}/api/visit/tasks/${id}`, { method: 'DELETE' });
-    return response.json();
+    return safeJson(response);
 };
 
 export const deleteWholeTrip = async (id) => {
     const response = await fetch(`${API_BASE_URL}/api/visit/dates/${id}`, { method: 'DELETE' });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -299,7 +302,7 @@ export const sendSOS = async (user, lat, lng) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user, lat, lng })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -308,28 +311,17 @@ export const sendSOS = async (user, lat, lng) => {
 
 export const fetchCurrentPrompt = async () => {
     const response = await fetch(`${API_BASE_URL}/api/prompts/current`);
-    if (response.status === 204 || !response.ok) {
-        return null;
-    }
-    return response.json();
+    return safeJson(response);
 };
 
 export const generatePrompt = async () => {
     const response = await fetch(`${API_BASE_URL}/api/prompts/generate`, { method: 'POST' });
-    return response.json();
+    return safeJson(response);
 };
 
 export const cancelPrompt = async () => {
     const response = await fetch(`${API_BASE_URL}/api/prompts/current`, { method: 'DELETE' });
-
-    // إذا كانت الاستجابة 204 (بدون محتوى) أو كان هناك خطأ، لا تحاول تحليل JSON
-    if (response.status === 204 || !response.ok) {
-        return null;
-    }
-
-    // أخذ النص أولاً، ثم تحويله إلى JSON فقط إذا لم يكن فارغاً
-    const text = await response.text();
-    return text ? JSON.parse(text) : null;
+    return safeJson(response);
 };
 
 export const answerPrompt = async (promptId, user, answer) => {
@@ -338,12 +330,12 @@ export const answerPrompt = async (promptId, user, answer) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user, answer })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const fetchPromptHistory = async () => {
     const response = await fetch(`${API_BASE_URL}/api/prompts/history`);
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -352,7 +344,7 @@ export const fetchPromptHistory = async () => {
 
 export const fetchMedia = async () => {
     const response = await fetch(`${API_BASE_URL}/api/media`);
-    return response.json();
+    return safeJson(response);
 };
 
 export const addMedia = async (title, addedBy, status) => {
@@ -361,19 +353,19 @@ export const addMedia = async (title, addedBy, status) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, addedBy, status })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const toggleMediaStatus = async (id, newStatus) => {
     const response = await fetch(`${API_BASE_URL}/api/media/${id}/status?newStatus=${newStatus}`, {
         method: 'PUT'
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const deleteMedia = async (id) => {
     const response = await fetch(`${API_BASE_URL}/api/media/${id}`, { method: 'DELETE' });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -382,7 +374,7 @@ export const deleteMedia = async (id) => {
 
 export const fetchGoals = async () => {
     const response = await fetch(`${API_BASE_URL}/api/goals`);
-    return response.json();
+    return safeJson(response);
 };
 
 export const addGoal = async (title) => {
@@ -391,17 +383,17 @@ export const addGoal = async (title) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, isCompleted: false })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 export const toggleGoal = async (id) => {
     const response = await fetch(`${API_BASE_URL}/api/goals/${id}`, { method: 'PUT' });
-    return response.json();
+    return safeJson(response);
 };
 
 export const deleteGoal = async (id) => {
     const response = await fetch(`${API_BASE_URL}/api/goals/${id}`, { method: 'DELETE' });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -409,20 +401,17 @@ export const deleteGoal = async (id) => {
 // ==========================================
 
 export const fetchDiaryContent = async (owner) => {
-    const response = await fetch(`https://zainabvault-v2-0-0.onrender.com/api/diary/${owner}`);
-    if (response.ok) {
-        return response.json();
-    }
-    throw new Error("Failed to fetch diary content");
+    const response = await fetch(`${API_BASE_URL}/api/diary/${owner}`);
+    return safeJson(response);
 };
 
 export const saveDiaryContent = async (owner, content, isManual = false) => {
-    const response = await fetch(`https://zainabvault-v2-0-0.onrender.com/api/diary?isManual=${isManual}`, {
+    const response = await fetch(`${API_BASE_URL}/api/diary?isManual=${isManual}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ owner, content })
     });
-    return response.json();
+    return safeJson(response);
 };
 
 // ==========================================
@@ -432,11 +421,12 @@ export const saveDiaryContent = async (owner, content, isManual = false) => {
 export const uploadToCloudinary = async (file) => {
     const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dhr6waydw/auto/upload';
     const CLOUDINARY_UPLOAD_PRESET = 'i7dhiwzb';
-    
+
     const fd = new FormData();
     fd.append('file', file);
     fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    
+
     const response = await fetch(CLOUDINARY_URL, { method: 'POST', body: fd });
-    return response.json();
+    // Cloudinary دائماً يعيد JSON صالح، لكن نستخدم الدرع للضمان
+    return safeJson(response);
 };
