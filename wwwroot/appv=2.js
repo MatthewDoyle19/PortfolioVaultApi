@@ -1,12 +1,14 @@
 import * as api from './js/api/apiClient.js';
 import * as ui from './js/ui/uiManager.js';
 import { initSecretCinematic } from './js/secretCinematic.js';
-import { initLoveSurprise} from "./js/LoveSurprise";
+import { initLoveSurprise} from "./js/LoveSurprise.js";
+import { initV2EasterEgg } from "./js/v2EasterEgg.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     // تفعيل التجربة السينمائية المستقلة
     initSecretCinematic();
     initLoveSurprise();
+    initV2EasterEgg();
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1026,113 +1028,113 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 ========================================== */
 
-// ==========================================
-// 🚀 V2.0.0 EASTER EGG & SECRET DOOR (ORIGINAL MAGIC EDITION)
-// ==========================================
-
-    const openEasterEgg = () => {
-        const overlay = document.getElementById('easter-egg-overlay');
-        const audio = document.getElementById('easter-egg-audio');
-        const textContent = document.getElementById('easter-egg-content');
-        const gallery = document.getElementById('easter-egg-gallery');
-
-        if (overlay) {
-            if (textContent) textContent.classList.remove('hidden', 'opacity-0', 'scale-95');
-            if (gallery) gallery.classList.add('hidden', 'opacity-0', 'translate-y-10');
-
-            overlay.classList.remove('hidden');
-            if (audio) {
-                audio.volume = 0.5;
-                audio.play().catch(e => console.log("Audio play blocked", e));
-            }
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-            }, 50);
-        }
-    };
-
-    const closeFunctions = () => {
-        const overlay = document.getElementById('easter-egg-overlay');
-        const audio = document.getElementById('easter-egg-audio');
-
-        if (overlay) overlay.classList.add('opacity-0');
-        if (audio) {
-            let vol = audio.volume;
-            let fadeOut = setInterval(() => {
-                if (vol > 0.05) {
-                    vol -= 0.05;
-                    audio.volume = vol;
-                } else {
-                    clearInterval(fadeOut);
-                    audio.pause();
-                    audio.currentTime = 0;
-                }
-            }, 100);
-        }
-        setTimeout(() => { if (overlay) overlay.classList.add('hidden'); }, 1000);
-    };
-
-// --- Event Delegation الشامل (لضمان عمل الزر دائماً) ---
-    let easterEggClickCount = 0;
-    let easterEggTimeout;
-
-    document.addEventListener('click', (e) => {
-
-        // 1. فتح الباب السري عبر النقر 3 مرات على رقم الإصدار
-        const trigger = e.target.closest('#version-trigger');
-        if (trigger) {
-            easterEggClickCount++;
-            clearTimeout(easterEggTimeout);
-
-            if (easterEggClickCount >= 3) {
-                easterEggClickCount = 0;
-                openEasterEgg();
-            } else {
-                easterEggTimeout = setTimeout(() => {
-                    easterEggClickCount = 0;
-                }, 800);
-            }
-            return;
-        }
-
-        // 2. أزرار الإغلاق
-        if (e.target.id === 'close-easter-egg' || e.target.id === 'close-gallery-btn') {
-            closeFunctions();
-            return;
-        }
-
-        // 3. الانتقال للألبوم وتفعيل سحر الصور الأصلي
-        const proceedBtn = e.target.closest('#proceed-to-gallery-btn');
-        if (proceedBtn) {
-            const textContent = document.getElementById('easter-egg-content');
-            const gallery = document.getElementById('easter-egg-gallery');
-
-            if (textContent) textContent.classList.add('opacity-0', 'scale-95');
-
-            setTimeout(() => {
-                if (textContent) textContent.classList.add('hidden');
-                if (gallery) {
-                    const scrollContainer = gallery.closest('.overflow-y-auto');
-                    if (scrollContainer) scrollContainer.scrollTop = 0;
-
-                    gallery.classList.remove('hidden');
-
-                    // الكود الأصلي الخاص بك لتحريك الصور
-                    document.querySelectorAll('.polaroid').forEach((p, index) => {
-                        p.style.animationDelay = `${index * 0.4}s`;
-                        p.addEventListener('animationend', () => {
-                            p.style.animation = 'none';
-                            p.style.opacity = '1';
-                            p.style.transform = 'rotate(var(--rot))';
-                        }, { once: true });
-                    });
-
-                    setTimeout(() => gallery.classList.remove('opacity-0', 'translate-y-10'), 50);
-                }
-            }, 800);
-            return;
-        }
-    });
+// // ==========================================
+// // 🚀 V2.0.0 EASTER EGG & SECRET DOOR (ORIGINAL MAGIC EDITION)
+// // ==========================================
+//
+//     const openEasterEgg = () => {
+//         const overlay = document.getElementById('easter-egg-overlay');
+//         const audio = document.getElementById('easter-egg-audio');
+//         const textContent = document.getElementById('easter-egg-content');
+//         const gallery = document.getElementById('easter-egg-gallery');
+//
+//         if (overlay) {
+//             if (textContent) textContent.classList.remove('hidden', 'opacity-0', 'scale-95');
+//             if (gallery) gallery.classList.add('hidden', 'opacity-0', 'translate-y-10');
+//
+//             overlay.classList.remove('hidden');
+//             if (audio) {
+//                 audio.volume = 0.5;
+//                 audio.play().catch(e => console.log("Audio play blocked", e));
+//             }
+//             setTimeout(() => {
+//                 overlay.classList.remove('opacity-0');
+//             }, 50);
+//         }
+//     };
+//
+//     const closeFunctions = () => {
+//         const overlay = document.getElementById('easter-egg-overlay');
+//         const audio = document.getElementById('easter-egg-audio');
+//
+//         if (overlay) overlay.classList.add('opacity-0');
+//         if (audio) {
+//             let vol = audio.volume;
+//             let fadeOut = setInterval(() => {
+//                 if (vol > 0.05) {
+//                     vol -= 0.05;
+//                     audio.volume = vol;
+//                 } else {
+//                     clearInterval(fadeOut);
+//                     audio.pause();
+//                     audio.currentTime = 0;
+//                 }
+//             }, 100);
+//         }
+//         setTimeout(() => { if (overlay) overlay.classList.add('hidden'); }, 1000);
+//     };
+//
+// // --- Event Delegation الشامل (لضمان عمل الزر دائماً) ---
+//     let easterEggClickCount = 0;
+//     let easterEggTimeout;
+//
+//     document.addEventListener('click', (e) => {
+//
+//         // 1. فتح الباب السري عبر النقر 3 مرات على رقم الإصدار
+//         const trigger = e.target.closest('#version-trigger');
+//         if (trigger) {
+//             easterEggClickCount++;
+//             clearTimeout(easterEggTimeout);
+//
+//             if (easterEggClickCount >= 3) {
+//                 easterEggClickCount = 0;
+//                 openEasterEgg();
+//             } else {
+//                 easterEggTimeout = setTimeout(() => {
+//                     easterEggClickCount = 0;
+//                 }, 800);
+//             }
+//             return;
+//         }
+//
+//         // 2. أزرار الإغلاق
+//         if (e.target.id === 'close-easter-egg' || e.target.id === 'close-gallery-btn') {
+//             closeFunctions();
+//             return;
+//         }
+//
+//         // 3. الانتقال للألبوم وتفعيل سحر الصور الأصلي
+//         const proceedBtn = e.target.closest('#proceed-to-gallery-btn');
+//         if (proceedBtn) {
+//             const textContent = document.getElementById('easter-egg-content');
+//             const gallery = document.getElementById('easter-egg-gallery');
+//
+//             if (textContent) textContent.classList.add('opacity-0', 'scale-95');
+//
+//             setTimeout(() => {
+//                 if (textContent) textContent.classList.add('hidden');
+//                 if (gallery) {
+//                     const scrollContainer = gallery.closest('.overflow-y-auto');
+//                     if (scrollContainer) scrollContainer.scrollTop = 0;
+//
+//                     gallery.classList.remove('hidden');
+//
+//                     // الكود الأصلي الخاص بك لتحريك الصور
+//                     document.querySelectorAll('.polaroid').forEach((p, index) => {
+//                         p.style.animationDelay = `${index * 0.4}s`;
+//                         p.addEventListener('animationend', () => {
+//                             p.style.animation = 'none';
+//                             p.style.opacity = '1';
+//                             p.style.transform = 'rotate(var(--rot))';
+//                         }, { once: true });
+//                     });
+//
+//                     setTimeout(() => gallery.classList.remove('opacity-0', 'translate-y-10'), 50);
+//                 }
+//             }, 800);
+//             return;
+//         }
+//     });
 
 // ==========================================
 // 🌀 THE QUANTUM TELEPORTER (JORDAN ↔ PALESTINE ROUTE)
