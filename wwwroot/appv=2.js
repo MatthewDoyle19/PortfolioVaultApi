@@ -3,14 +3,14 @@ import * as ui from './js/ui/uiManager.js';
 import { initSecretCinematic } from './js/secretCinematic.js';
 import { initLoveSurprise} from "./js/LoveSurprise.js";
 import { initV2EasterEgg } from "./js/v2EasterEgg.js";
-import { initQuantumTeleporter } from './js/quantumTeleporter.js';
+// import { initQuantumTeleporter } from './js/quantumTeleporter.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // تفعيل التجربة السينمائية المستقلة
     initSecretCinematic();
     initLoveSurprise();
     initV2EasterEgg();
-    initQuantumTeleporter();
+    // initQuantumTeleporter();
 });
 
 document.addEventListener('DOMContentLoaded', () => {
