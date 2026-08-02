@@ -1,9 +1,42 @@
 // ==========================================
-// 🌀 THE QUANTUM TELEPORTER (Independent Module)
+// 🌀 THE QUANTUM TELEPORTER (Fully Independent Component)
 // ==========================================
 
 export const initQuantumTeleporter = () => {
-    // 1. الحقن التلقائي للـ HTML الخاص بنافذة السفر إذا لم يكن موجوداً
+    // 1. حقن واجهة المستخدم (UI Card) داخل الحاوية المخصصة
+    const uiContainer = document.getElementById('quantum-portal-container');
+
+    if (uiContainer && !document.getElementById('teleport-btn')) {
+        uiContainer.innerHTML = `
+        <div class="bg-black/40 border border-white/5 rounded-3xl p-5 backdrop-blur-md shadow-lg w-full max-w-sm mx-auto mt-6 flex flex-col gap-4">
+            <div class="flex items-center justify-center mb-2">
+                <h3 class="text-white/80 font-bold tracking-[0.2em] text-xs uppercase flex items-center gap-2 drop-shadow-md">
+                    <span class="text-pink-400 animate-pulse">🌀</span> Quantum Portal
+                </h3>
+            </div>
+            <div class="flex gap-3">
+                <div class="relative w-1/2">
+                    <select id="teleport-who" class="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 text-white text-sm outline-none focus:border-pink-500/50 transition-colors appearance-none text-center cursor-pointer">
+                        <option value="Mohammad" class="bg-gray-900 text-white">7amodee 👨🏻‍💻</option>
+                        <option value="Zainab" class="bg-gray-900 text-white">ZoZo 👸🏻</option>
+                    </select>
+                </div>
+                <div class="relative w-1/2">
+                    <select id="teleport-where" class="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 text-white text-sm outline-none focus:border-emerald-500/50 transition-colors appearance-none text-center cursor-pointer">
+                        <option value="KafrKanna" class="bg-gray-900 text-white">Palestine 🇵🇸</option>
+                        <option value="Jordan" class="bg-gray-900 text-white">Jordan 🇯🇴</option>
+                    </select>
+                </div>
+            </div>
+            <button id="teleport-btn" class="w-full relative group overflow-hidden rounded-xl bg-gradient-to-r from-pink-500/10 to-purple-500/10 hover:from-pink-500/30 hover:to-purple-500/30 border border-white/10 p-3 transition-all duration-300 flex items-center justify-center gap-2">
+                <span class="text-sm font-bold text-white tracking-widest z-10">Initiate Flight</span>
+                <span class="text-lg z-10 group-hover:translate-x-1 transition-transform">✈️</span>
+            </button>
+        </div>
+        `;
+    }
+
+    // 2. حقن الشاشة السوداء (Overlay) في نهاية الـ body
     if (!document.getElementById('teleport-overlay')) {
         const teleporterHtml = `
         <div id="teleport-overlay" class="fixed inset-0 z-[9999] hidden flex-col items-center justify-center bg-black/95 backdrop-blur-3xl transition-opacity duration-1000 opacity-0 pointer-events-none overflow-hidden" style="height: 100dvh;">
@@ -51,7 +84,7 @@ export const initQuantumTeleporter = () => {
         document.body.insertAdjacentHTML('beforeend', teleporterHtml);
     }
 
-    // 2. ربط العناصر بالأحداث
+    // 3. ربط العناصر بالأحداث
     const teleportBtn = document.getElementById('teleport-btn');
     const teleportWho = document.getElementById('teleport-who');
     const teleportWhere = document.getElementById('teleport-where');
@@ -62,18 +95,15 @@ export const initQuantumTeleporter = () => {
     const passportStamp = document.getElementById('passport-stamp');
     const stampLocation = document.getElementById('stamp-location');
     const stampNote = document.getElementById('stamp-note');
-
     const routeStartFlag = document.getElementById('route-start-flag');
     const routeStartText = document.getElementById('route-start-text');
     const routeEndFlag = document.getElementById('route-end-flag');
     const routeEndText = document.getElementById('route-end-text');
     const gradStart = document.getElementById('grad-start');
     const gradEnd = document.getElementById('grad-end');
-
     const warpAudio = document.getElementById('warp-audio');
     const stampAudio = document.getElementById('stamp-audio');
 
-    // الإلغاء إذا كان الزر غير موجود في الصفحة الحالية
     if (!teleportBtn) return;
 
     teleportBtn.addEventListener('click', async () => {
@@ -84,7 +114,6 @@ export const initQuantumTeleporter = () => {
         const originalBtnText = teleportBtn.innerHTML;
         teleportBtn.innerHTML = '<span class="text-sm font-bold text-white tracking-widest">Routing Flight... ✈️</span>';
 
-        // إعداد الواجهة الديناميكية للمسار
         if (where === 'KafrKanna') {
             if(routeStartFlag) routeStartFlag.innerText = '🇯🇴';
             if(routeStartText) routeStartText.innerText = 'Jordan';
@@ -101,7 +130,6 @@ export const initQuantumTeleporter = () => {
             if(gradEnd) gradEnd.setAttribute('stop-color', '#34d399');
         }
 
-        // تحضير الصوت المخفي لفك قفل المتصفح
         if (stampAudio) {
             stampAudio.volume = 0;
             stampAudio.play().then(() => {
@@ -109,19 +137,16 @@ export const initQuantumTeleporter = () => {
             }).catch(e => {});
         }
 
-        // إظهار واجهة السفر (معالجة مشكلة الـ hidden)
         teleportOverlay.classList.remove('hidden');
         requestAnimationFrame(() => {
             teleportOverlay.classList.remove('opacity-0');
             teleportOverlay.classList.add('pointer-events-auto');
         });
 
-        // تشغيل صوت الرحلة
         if (warpAudio) {
             warpAudio.currentTime = 0; warpAudio.volume = 0.5; warpAudio.play().catch(e => {});
         }
 
-        // إرسال الطلب للـ API الخاص بك
         try {
             await fetch(`/api/teleport`, {
                 method: 'POST',
@@ -132,7 +157,6 @@ export const initQuantumTeleporter = () => {
             console.error("Teleport Error:", e);
         }
 
-        // رسم الخط المتوهج
         setTimeout(() => {
             if(flightPath) flightPath.classList.remove('opacity-0');
             if(flightLine) flightLine.classList.add('animate-draw-line');
@@ -141,14 +165,12 @@ export const initQuantumTeleporter = () => {
 
         await new Promise(resolve => setTimeout(resolve, 3000));
 
-        // إخفاء المسار
         if(flightPath) flightPath.classList.add('opacity-0');
         setTimeout(() => {
             if(flightLine) flightLine.classList.remove('animate-draw-line');
             if(flightSpark) flightSpark.classList.remove('animate-spark-fly');
         }, 700);
 
-        // تجهيز بيانات الختم
         if(stampLocation) {
             stampLocation.innerText = where === 'Jordan' ? 'JORDAN 🇯🇴' : 'KAFR KANNA 🇵🇸';
             let themeColor = where === 'Jordan' ? 'text-emerald-400' : 'text-pink-400';
@@ -167,7 +189,6 @@ export const initQuantumTeleporter = () => {
             }
         }
 
-        // إظهار الختم 
         setTimeout(() => {
             if (passportStamp) {
                 passportStamp.classList.remove('hidden');
@@ -183,7 +204,6 @@ export const initQuantumTeleporter = () => {
 
         await new Promise(resolve => setTimeout(resolve, 3500));
 
-        // الإغلاق والعودة
         if (passportStamp) {
             passportStamp.classList.remove('opacity-100', 'translate-y-0');
             passportStamp.classList.add('opacity-0', 'translate-y-8');
