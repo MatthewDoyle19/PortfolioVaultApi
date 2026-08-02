@@ -23,8 +23,8 @@ public static class DeepTalkEndpoints
             await db.SaveChangesAsync();
 
             // إرسال إشعار فوري لكم على تيليجرام
-            string addedByName = talk.AddedBy == "Mohammad" ? "7amodee" : "ZoZo";
-            await telegram.SendNotificationAsync($"☕ New Deep Talk topic added by {addedByName}:\n{talk.Title}");
+           
+            await telegram.SendNotificationAsync($"☕ New Deep Talk topic:\n{talk.Title}");
 
             return Results.Created($"/api/deeptalks/{talk.Id}", talk);
         });

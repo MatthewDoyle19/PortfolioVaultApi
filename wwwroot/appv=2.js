@@ -1447,256 +1447,265 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    // --- 🎭 THE SECRET CINEMATIC TRIGGER ---
+//     // --- 🎭 THE SECRET CINEMATIC TRIGGER ---
+//
+//     const secretTrigger = document.getElementById('secret-trigger');
+//     const secretExperience = document.getElementById('secret-experience');
+//     const closeSecretBtn = document.getElementById('close-secret');
+//     const secretVoice = document.getElementById('secret-voice');
+//     const secretBgm = document.getElementById('secret-bgm');
+//     const photos = document.querySelectorAll('.secret-photo');
+//
+// // استخدام أسماء فريدة لتجنب التضارب مع الأكواد القديمة
+//     let cinematicClickCount = 0;
+//     let cinematicClickTimeout;
+//     let cinematicPhotoInterval;
+//     let cinematicPhotoIndex = 0;
+//
+//     if (secretTrigger) {
+//         secretTrigger.addEventListener('click', () => {
+//             cinematicClickCount++;
+//
+//             clearTimeout(cinematicClickTimeout);
+//             cinematicClickTimeout = setTimeout(() => { cinematicClickCount = 0; }, 1500);
+//
+//             if (cinematicClickCount === 3) {
+//                 cinematicClickCount = 0;
+//                 startSecretExperience();
+//             }
+//         });
+//     }
+//
+//     const subtitlesSequence = [
+//         { text: "زوزو...", time: 750 },
+//         { text: "أنا ما صممت هذا المكان بس عشان أحفظ ذكرياتنا...", time: 1500 },
+//         { text: "أنا صممته عشان يكون مراية، تشوفي فيها نفسك بعيوني.", time: 5500 },
+//         { text: "في كل مرة بشوف فيها ملامحك...", time: 10500 },
+//         { text: "بتأكد إنك أجمل وأصدق شي صار بحياتي.", time: 13700 }, // بكرناها بـ 300 ملي ثانية
+//         { text: "أنا بحب نسختك الأصلية... بكل تفاصيلها الطبيعية...", time: 18200 },
+//         { text: "وما بدي إشي يتغير.", time: 22500 },
+//         { text: "إنتِ المعيار اللي بقيس فيه كل شي حلو.", time: 25200 },
+//         { text: "خليكي دائماً واثقة إنك بعيوني...", time: 28500 },
+//         { text: "أجمل بنت شافتها عيني، وأغلى شي بملكه.", time: 30900 },
+//         { text: "و... بحبك ❤️", time: 34100 } // اللحظة الحاسمة المضبوطة
+//     ];
+//
+//     let subtitleTimeouts = [];
+//
+//     function startSecretExperience() {
+//         // 1. إظهار الشاشة وبدء الغبار النجمي
+//         secretExperience.classList.remove('pointer-events-none');
+//         secretExperience.classList.replace('opacity-0', 'opacity-100');
+//         startStardust(); // تشغيل السحر البصري
+//
+//         // 2. تشغيل الصوتيات
+//         if(secretBgm) {
+//             secretBgm.volume = 0.04;
+//             secretBgm.play().catch(e => console.log("BGM play blocked", e));
+//         }
+//         setTimeout(() => {
+//             if(secretVoice) {
+//                 // إجبار المتصفح على رفع مستوى صوتك إلى 100% (الحد الأقصى)
+//                 secretVoice.volume = 1.0;
+//                 secretVoice.play().catch(e => console.log("Voice play blocked", e));
+//             }
+//         }, 1000);
+//
+//         // 3. عرض الصور مع نظام الأورورا (Aura Ambilight) المحصن
+//         const auraPhotos = document.querySelectorAll('.aura-photo');
+//         cinematicPhotoIndex = 0;
+//
+//         if(photos.length > 0) {
+//             // إيقاظ الصورة الأولى
+//             photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
+//             photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
+//
+//             // الحماية الجذربة: التأكد من وجود وهج مطابق للصورة الحالية بالذات
+//             if(auraPhotos[cinematicPhotoIndex]) {
+//                 auraPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
+//                 auraPhotos[cinematicPhotoIndex].classList.add('opacity-40');
+//             }
+//
+//             cinematicPhotoInterval = setInterval(() => {
+//                 // إخفاء الصورة الحالية
+//                 photos[cinematicPhotoIndex].classList.remove('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
+//                 photos[cinematicPhotoIndex].classList.add('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
+//
+//                 // إخفاء الوهج الحالي (إن وجد)
+//                 if(auraPhotos[cinematicPhotoIndex]) {
+//                     auraPhotos[cinematicPhotoIndex].classList.remove('opacity-40');
+//                     auraPhotos[cinematicPhotoIndex].classList.add('opacity-0');
+//                 }
+//
+//                 // الانتقال الدائري المستمر
+//                 let nextIndex = (cinematicPhotoIndex + 1) % photos.length;
+//
+//                 setTimeout(() => {
+//                     cinematicPhotoIndex = nextIndex;
+//
+//                     // إظهار الصورة التالية
+//                     photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
+//                     photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
+//
+//                     // إظهار وهجها (إن وجد)
+//                     if(auraPhotos[cinematicPhotoIndex]) {
+//                         auraPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
+//                         auraPhotos[cinematicPhotoIndex].classList.add('opacity-40');
+//                     }
+//                 }, 100);
+//
+//             }, 5500);
+//         }
+//
+//         // 4. تشغيل الترجمة السينمائية (The Whispering Blur) + ❤️ النبض البصري
+//         const subtitleEl = document.getElementById('cinematic-subtitle');
+//         subtitlesSequence.forEach((item, index) => {
+//             const timeout = setTimeout(() => {
+//                 // تبخير النص القديم
+//                 subtitleEl.classList.replace('opacity-100', 'opacity-0');
+//                 subtitleEl.classList.replace('blur-0', 'blur-md');
+//                 subtitleEl.classList.replace('translate-y-0', 'translate-y-2');
+//
+//                 setTimeout(() => {
+//                     // التحقق: إذا كانت هذه الجملة الأخيرة، اجعل القلب ينبض!
+//                     if (index === subtitlesSequence.length - 1) {
+//                         subtitleEl.innerHTML = 'و... بحبك <span class="animate-heartbeat text-red-500 drop-shadow-md">❤️</span>';
+//                     } else {
+//                         subtitleEl.innerText = item.text;
+//                     }
+//
+//                     // سحب النص الجديد للتركيز
+//                     subtitleEl.classList.replace('opacity-0', 'opacity-100');
+//                     subtitleEl.classList.replace('blur-md', 'blur-0');
+//                     subtitleEl.classList.replace('translate-y-2', 'translate-y-0');
+//                 }, 1000);
+//
+//             }, item.time);
+//             subtitleTimeouts.push(timeout);
+//         });
+//
+//         // 5. إظهار زر الإغلاق بذكاء وحماية
+//         setTimeout(() => {
+//             if(closeSecretBtn) {
+//                 closeSecretBtn.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+//                 closeSecretBtn.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+//             }
+//         }, 39000); // يظهر بعد انتهاء التسجيل الصوتي
+//     }
+//
+// // إنهاء التجربة (منطق التنظيف الجذري والصارم)
+//     if (closeSecretBtn) {
+//         closeSecretBtn.addEventListener('click', () => {
+//             // 1. إخفاء الشاشة الرئيسية
+//             secretExperience.classList.remove('opacity-100');
+//             secretExperience.classList.add('opacity-0');
+//             setTimeout(() => {
+//                 secretExperience.classList.add('pointer-events-none');
+//             }, 1000);
+//
+//             // 2. إيقاف وتصفير الصوتيات
+//             if(secretVoice) {
+//                 secretVoice.pause();
+//                 secretVoice.currentTime = 0;
+//             }
+//             if(secretBgm) {
+//                 secretBgm.pause();
+//                 secretBgm.currentTime = 0;
+//             }
+//
+//             // 3. التنظيف الشامل للصور الرئيسية (الذي كان مفقوداً)
+//             clearInterval(cinematicPhotoInterval);
+//             photos.forEach(p => {
+//                 p.classList.remove('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
+//                 p.classList.add('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
+//             });
+//
+//             // تطفئة وهج الأورورا عند الخروج
+//             const auraPhotosToClean = document.querySelectorAll('.aura-photo');
+//             auraPhotosToClean.forEach(bg => {
+//                 bg.classList.remove('opacity-40');
+//                 bg.classList.add('opacity-0');
+//             });
+//
+//             // 4. إخفاء الزر السري وتعطيل الضغط عليه تماماً
+//             closeSecretBtn.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+//             closeSecretBtn.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+//
+//             // 5. إيقاف الغبار النجمي وتصفير الترجمة
+//             stopStardust();
+//             subtitleTimeouts.forEach(t => clearTimeout(t));
+//
+//             const subtitleEl = document.getElementById('cinematic-subtitle');
+//             if (subtitleEl) {
+//                 subtitleEl.innerText = "";
+//                 subtitleEl.classList.remove('opacity-100', 'blur-0', 'translate-y-0');
+//                 subtitleEl.classList.add('opacity-0', 'blur-md', 'translate-y-2');
+//             }
+//         });
+//     }
+//
+//     // --- 🌟 STARDUST PARTICLE SYSTEM (Enhanced) ---
+//     let animationFrameId;
+//
+//     function startStardust() {
+//         const canvas = document.getElementById('stardust-canvas');
+//         const ctx = canvas.getContext('2d');
+//         canvas.width = window.innerWidth;
+//         canvas.height = window.innerHeight;
+//
+//         const particlesArray = [];
+//         const numberOfParticles = 150; // تمت المضاعفة لكثافة أعلى
+//
+//         class Particle {
+//             constructor() {
+//                 this.x = Math.random() * canvas.width;
+//                 this.y = Math.random() * canvas.height;
+//                 this.size = Math.random() * 2.5; // حجم أكبر قليلاً للتفاوت
+//                 this.speedX = Math.random() * 0.5 - 0.25;
+//                 this.speedY = Math.random() * 0.5 - 0.25;
+//                 this.opacity = Math.random() * 0.6 + 0.2; // لمعان أقوى
+//             }
+//             update() {
+//                 this.x += this.speedX;
+//                 this.y += this.speedY;
+//                 if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
+//                 if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
+//             }
+//             draw() {
+//                 ctx.fillStyle = `rgba(255, 215, 0, ${this.opacity})`;
+//                 ctx.beginPath();
+//                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+//                 ctx.fill();
+//             }
+//         }
+//
+//         for (let i = 0; i < numberOfParticles; i++) {
+//             particlesArray.push(new Particle());
+//         }
+//
+//         function animate() {
+//             ctx.clearRect(0, 0, canvas.width, canvas.height);
+//             for (let i = 0; i < particlesArray.length; i++) {
+//                 particlesArray[i].update();
+//                 particlesArray[i].draw();
+//             }
+//             animationFrameId = requestAnimationFrame(animate);
+//         }
+//         animate();
+//     }
+//
+//     function stopStardust() {
+//         cancelAnimationFrame(animationFrameId);
+//     }
+    
+    // The Secret Cinematic feature import
 
-    const secretTrigger = document.getElementById('secret-trigger');
-    const secretExperience = document.getElementById('secret-experience');
-    const closeSecretBtn = document.getElementById('close-secret');
-    const secretVoice = document.getElementById('secret-voice');
-    const secretBgm = document.getElementById('secret-bgm');
-    const photos = document.querySelectorAll('.secret-photo');
+    import { initSecretCinematic } from './secretCinematic.js';
 
-// استخدام أسماء فريدة لتجنب التضارب مع الأكواد القديمة
-    let cinematicClickCount = 0;
-    let cinematicClickTimeout;
-    let cinematicPhotoInterval;
-    let cinematicPhotoIndex = 0;
-
-    if (secretTrigger) {
-        secretTrigger.addEventListener('click', () => {
-            cinematicClickCount++;
-
-            clearTimeout(cinematicClickTimeout);
-            cinematicClickTimeout = setTimeout(() => { cinematicClickCount = 0; }, 1500);
-
-            if (cinematicClickCount === 3) {
-                cinematicClickCount = 0;
-                startSecretExperience();
-            }
-        });
-    }
-
-    const subtitlesSequence = [
-        { text: "زوزو...", time: 750 },
-        { text: "أنا ما صممت هذا المكان بس عشان أحفظ ذكرياتنا...", time: 1500 },
-        { text: "أنا صممته عشان يكون مراية، تشوفي فيها نفسك بعيوني.", time: 5500 },
-        { text: "في كل مرة بشوف فيها ملامحك...", time: 10500 },
-        { text: "بتأكد إنك أجمل وأصدق شي صار بحياتي.", time: 13700 }, // بكرناها بـ 300 ملي ثانية
-        { text: "أنا بحب نسختك الأصلية... بكل تفاصيلها الطبيعية...", time: 18200 },
-        { text: "وما بدي إشي يتغير.", time: 22500 },
-        { text: "إنتِ المعيار اللي بقيس فيه كل شي حلو.", time: 25200 },
-        { text: "خليكي دائماً واثقة إنك بعيوني...", time: 28500 },
-        { text: "أجمل بنت شافتها عيني، وأغلى شي بملكه.", time: 30900 },
-        { text: "و... بحبك ❤️", time: 34100 } // اللحظة الحاسمة المضبوطة
-    ];
-
-    let subtitleTimeouts = [];
-
-    function startSecretExperience() {
-        // 1. إظهار الشاشة وبدء الغبار النجمي
-        secretExperience.classList.remove('pointer-events-none');
-        secretExperience.classList.replace('opacity-0', 'opacity-100');
-        startStardust(); // تشغيل السحر البصري
-
-        // 2. تشغيل الصوتيات
-        if(secretBgm) {
-            secretBgm.volume = 0.04;
-            secretBgm.play().catch(e => console.log("BGM play blocked", e));
-        }
-        setTimeout(() => {
-            if(secretVoice) {
-                // إجبار المتصفح على رفع مستوى صوتك إلى 100% (الحد الأقصى)
-                secretVoice.volume = 1.0;
-                secretVoice.play().catch(e => console.log("Voice play blocked", e));
-            }
-        }, 1000);
-
-        // 3. عرض الصور مع نظام الأورورا (Aura Ambilight) المحصن
-        const auraPhotos = document.querySelectorAll('.aura-photo');
-        cinematicPhotoIndex = 0;
-
-        if(photos.length > 0) {
-            // إيقاظ الصورة الأولى
-            photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
-            photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
-
-            // الحماية الجذربة: التأكد من وجود وهج مطابق للصورة الحالية بالذات
-            if(auraPhotos[cinematicPhotoIndex]) {
-                auraPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
-                auraPhotos[cinematicPhotoIndex].classList.add('opacity-40');
-            }
-
-            cinematicPhotoInterval = setInterval(() => {
-                // إخفاء الصورة الحالية
-                photos[cinematicPhotoIndex].classList.remove('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
-                photos[cinematicPhotoIndex].classList.add('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
-
-                // إخفاء الوهج الحالي (إن وجد)
-                if(auraPhotos[cinematicPhotoIndex]) {
-                    auraPhotos[cinematicPhotoIndex].classList.remove('opacity-40');
-                    auraPhotos[cinematicPhotoIndex].classList.add('opacity-0');
-                }
-
-                // الانتقال الدائري المستمر
-                let nextIndex = (cinematicPhotoIndex + 1) % photos.length;
-
-                setTimeout(() => {
-                    cinematicPhotoIndex = nextIndex;
-
-                    // إظهار الصورة التالية
-                    photos[cinematicPhotoIndex].classList.remove('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
-                    photos[cinematicPhotoIndex].classList.add('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
-
-                    // إظهار وهجها (إن وجد)
-                    if(auraPhotos[cinematicPhotoIndex]) {
-                        auraPhotos[cinematicPhotoIndex].classList.remove('opacity-0');
-                        auraPhotos[cinematicPhotoIndex].classList.add('opacity-40');
-                    }
-                }, 100);
-
-            }, 5500);
-        }
-
-        // 4. تشغيل الترجمة السينمائية (The Whispering Blur) + ❤️ النبض البصري
-        const subtitleEl = document.getElementById('cinematic-subtitle');
-        subtitlesSequence.forEach((item, index) => {
-            const timeout = setTimeout(() => {
-                // تبخير النص القديم
-                subtitleEl.classList.replace('opacity-100', 'opacity-0');
-                subtitleEl.classList.replace('blur-0', 'blur-md');
-                subtitleEl.classList.replace('translate-y-0', 'translate-y-2');
-
-                setTimeout(() => {
-                    // التحقق: إذا كانت هذه الجملة الأخيرة، اجعل القلب ينبض!
-                    if (index === subtitlesSequence.length - 1) {
-                        subtitleEl.innerHTML = 'و... بحبك <span class="animate-heartbeat text-red-500 drop-shadow-md">❤️</span>';
-                    } else {
-                        subtitleEl.innerText = item.text;
-                    }
-
-                    // سحب النص الجديد للتركيز
-                    subtitleEl.classList.replace('opacity-0', 'opacity-100');
-                    subtitleEl.classList.replace('blur-md', 'blur-0');
-                    subtitleEl.classList.replace('translate-y-2', 'translate-y-0');
-                }, 1000);
-
-            }, item.time);
-            subtitleTimeouts.push(timeout);
-        });
-
-        // 5. إظهار زر الإغلاق بذكاء وحماية
-        setTimeout(() => {
-            if(closeSecretBtn) {
-                closeSecretBtn.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
-                closeSecretBtn.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
-            }
-        }, 39000); // يظهر بعد انتهاء التسجيل الصوتي
-    }
-
-// إنهاء التجربة (منطق التنظيف الجذري والصارم)
-    if (closeSecretBtn) {
-        closeSecretBtn.addEventListener('click', () => {
-            // 1. إخفاء الشاشة الرئيسية
-            secretExperience.classList.remove('opacity-100');
-            secretExperience.classList.add('opacity-0');
-            setTimeout(() => {
-                secretExperience.classList.add('pointer-events-none');
-            }, 1000);
-
-            // 2. إيقاف وتصفير الصوتيات
-            if(secretVoice) {
-                secretVoice.pause();
-                secretVoice.currentTime = 0;
-            }
-            if(secretBgm) {
-                secretBgm.pause();
-                secretBgm.currentTime = 0;
-            }
-
-            // 3. التنظيف الشامل للصور الرئيسية (الذي كان مفقوداً)
-            clearInterval(cinematicPhotoInterval);
-            photos.forEach(p => {
-                p.classList.remove('opacity-100', 'blur-0', 'scale-105', 'brightness-110');
-                p.classList.add('opacity-0', 'blur-xl', 'scale-95', 'brightness-50');
-            });
-
-            // تطفئة وهج الأورورا عند الخروج
-            const auraPhotosToClean = document.querySelectorAll('.aura-photo');
-            auraPhotosToClean.forEach(bg => {
-                bg.classList.remove('opacity-40');
-                bg.classList.add('opacity-0');
-            });
-
-            // 4. إخفاء الزر السري وتعطيل الضغط عليه تماماً
-            closeSecretBtn.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
-            closeSecretBtn.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
-
-            // 5. إيقاف الغبار النجمي وتصفير الترجمة
-            stopStardust();
-            subtitleTimeouts.forEach(t => clearTimeout(t));
-
-            const subtitleEl = document.getElementById('cinematic-subtitle');
-            if (subtitleEl) {
-                subtitleEl.innerText = "";
-                subtitleEl.classList.remove('opacity-100', 'blur-0', 'translate-y-0');
-                subtitleEl.classList.add('opacity-0', 'blur-md', 'translate-y-2');
-            }
-        });
-    }
-
-    // --- 🌟 STARDUST PARTICLE SYSTEM (Enhanced) ---
-    let animationFrameId;
-
-    function startStardust() {
-        const canvas = document.getElementById('stardust-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const particlesArray = [];
-        const numberOfParticles = 150; // تمت المضاعفة لكثافة أعلى
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2.5; // حجم أكبر قليلاً للتفاوت
-                this.speedX = Math.random() * 0.5 - 0.25;
-                this.speedY = Math.random() * 0.5 - 0.25;
-                this.opacity = Math.random() * 0.6 + 0.2; // لمعان أقوى
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
-                if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
-            }
-            draw() {
-                ctx.fillStyle = `rgba(255, 215, 0, ${this.opacity})`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        for (let i = 0; i < numberOfParticles; i++) {
-            particlesArray.push(new Particle());
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-                particlesArray[i].draw();
-            }
-            animationFrameId = requestAnimationFrame(animate);
-        }
-        animate();
-    }
-
-    function stopStardust() {
-        cancelAnimationFrame(animationFrameId);
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+        // تفعيل التجربة السينمائية المستقلة
+        initSecretCinematic();
+    });
 
     // ==========================================
     // ☕ DEEP TALKS LOGIC
