@@ -1,6 +1,6 @@
 {
-  "name": "The Vault",
-  "short_name": "Vault",
+  "name": "Z & M ❤️",
+  "short_name": "Z & M",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#050505",
@@ -8,9 +8,10 @@
   "description": "Zainab's & Mohammad's Private Digital Vault",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "app-icon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }

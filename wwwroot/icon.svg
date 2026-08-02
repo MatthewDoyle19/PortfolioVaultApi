@@ -1,24 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-    <rect width="512" height="512" fill="#050505" />
-
     <defs>
-        <linearGradient id="neon" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="vault-grad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#f472b6" />
-            <stop offset="50%" stop-color="#d946ef" />
-            <stop offset="100%" stop-color="#8b5cf6" />
+            <stop offset="100%" stop-color="#a855f7" />
         </linearGradient>
 
-        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="30" result="blur" />
+        <filter id="vault-glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="20" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
         </filter>
     </defs>
 
-    <circle cx="256" cy="256" r="130" fill="#a855f7" opacity="0.3" filter="blur(50px)" />
-    <circle cx="256" cy="256" r="80" fill="#f472b6" opacity="0.3" filter="blur(30px)" />
-
-    <g filter="url(#glow)">
-        <path d="M256 60 C 256 200 200 256 60 256 C 200 256 256 312 256 452 C 256 312 312 256 452 256 C 312 256 256 200 256 60 Z" fill="url(#neon)" />
-        <path d="M256 160 C 256 230 230 256 160 256 C 230 256 256 282 256 352 C 256 282 282 256 352 256 C 282 256 256 230 256 160 Z" fill="#ffffff" opacity="0.9"/>
+    <!-- قفل الخزنة المضيء بدون خلفية -->
+    <g filter="url(#vault-glow)" fill="none" stroke="url(#vault-grad)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
+        <!-- قوس القفل -->
+        <path d="M176 210 V140 A80 80 0 0 1 336 140 V210" />
+        <!-- جسم الخزنة/القفل -->
+        <rect x="128" y="210" width="256" height="210" rx="40" fill="#050505" opacity="0.8" />
+        <!-- ثقب القفل/القلب -->
+        <circle cx="256" cy="295" r="22" fill="url(#vault-grad)" stroke="none" />
+        <path d="M256 310 L256 350" stroke-width="20" />
     </g>
 </svg>
