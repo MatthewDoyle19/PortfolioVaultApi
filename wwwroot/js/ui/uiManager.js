@@ -78,7 +78,7 @@ export const triggerTawjihiEasterEgg = () => {
         p.style.animationDelay = `${Math.random() * 3}s`;
         confettiContainer.appendChild(p);
     }
-    
+
     // Audio
     const audio = document.getElementById('tawjihi-audio');
     if (audio) {
@@ -95,7 +95,7 @@ export const triggerTawjihiEasterEgg = () => {
         card.classList.add('scale-100');
     }, 50);
 
-    // Close button
+    // Close button & Dashboard Transition
     const closeBtn = document.getElementById('close-tawjihi-btn');
     if (closeBtn) {
         closeBtn.onclick = () => {
@@ -121,6 +121,25 @@ export const triggerTawjihiEasterEgg = () => {
                 overlay.classList.add('hidden');
                 closeBtn.innerHTML = 'Start The Journey ✨';
                 closeBtn.disabled = false;
+
+                // 🚀 الانتقال الحقيقي للـ Vault وفتح الواجهة الرئيسية
+                const loginScreen = document.getElementById('login-screen');
+                const dashboard = document.getElementById('dashboard');
+
+                if (loginScreen) loginScreen.classList.add('hidden');
+                if (dashboard) {
+                    dashboard.classList.remove('hidden');
+                    dashboard.classList.add('fade-in');
+                }
+
+                // إظهار أزرار التنقل الأساسية إذا كانت مخفية
+                if(document.getElementById('bottom-nav')) document.getElementById('bottom-nav').classList.remove('hidden');
+                if(document.getElementById('sos-btn')) document.getElementById('sos-btn').classList.remove('hidden');
+                if(document.getElementById('diary-btn')) document.getElementById('diary-btn').classList.remove('hidden');
+                if(document.getElementById('deep-talks-btn')) document.getElementById('deep-talks-btn').classList.remove('hidden');
+
+                window.scrollTo(0, 0);
+
             }, 700);
         };
     }
