@@ -1,5 +1,5 @@
 // ==========================================
-// 🌀 QUANTUM TELEPORTER MODULE (Independent)
+// 🌀 THE QUANTUM TELEPORTER (Independent Module)
 // ==========================================
 
 export const initQuantumTeleporter = () => {
@@ -36,23 +36,22 @@ export const initQuantumTeleporter = () => {
                 </svg>
             </div>
 
-            <div id="passport-stamp" class="hidden absolute flex-col items-center p-8 rounded-[2rem] bg-black/60 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] backdrop-blur-2xl transform translate-y-8 opacity-0 transition-all duration-1000 ease-out z-20 boarding-pass mx-4">
+            <div id="passport-stamp" class="hidden absolute flex-col items-center p-8 rounded-[2rem] bg-black/60 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] backdrop-blur-2xl transform translate-y-8 opacity-0 transition-all duration-1000 ease-out z-20 mx-4">
                 <h3 class="text-[10px] text-slate-400 tracking-[0.4em] uppercase mb-4 flex items-center gap-2">
                     <span class="text-emerald-400 animate-pulse">●</span> Secured Arrival
                 </h3>
                 <h2 id="stamp-location" class="text-4xl font-black tracking-tight text-white mb-2 drop-shadow-xl">KAFR KANNA</h2>
                 <div class="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent my-4"></div>
-                <p id="stamp-note" class="text-xs font-medium text-slate-300 tracking-wider text-center leading-loose">Traveler: 7amodee<br><span class="text-[10px] text-slate-500 uppercase mt-1 block">To: ZoZo</span></p>
+                <p id="stamp-note" class="text-xs font-medium text-slate-300 tracking-wider text-center leading-loose"></p>
             </div>
 
-            <!-- أصوات الترحيل -->
             <audio id="warp-audio" src="https://res.cloudinary.com/dhr6waydw/video/upload/v1784790052/avm5wuqlsotpg7uovass.m4a" preload="auto"></audio>
             <audio id="stamp-audio" src="https://res.cloudinary.com/dhr6waydw/video/upload/v1784367056/sh42px6jewdrrtctacwf.mp3" preload="auto"></audio>
         </div>`;
         document.body.insertAdjacentHTML('beforeend', teleporterHtml);
     }
 
-    // 2. تفعيل منطق الطيران والربط بالعناصر
+    // 2. ربط العناصر بالأحداث
     const teleportBtn = document.getElementById('teleport-btn');
     const teleportWho = document.getElementById('teleport-who');
     const teleportWhere = document.getElementById('teleport-where');
@@ -74,95 +73,130 @@ export const initQuantumTeleporter = () => {
     const warpAudio = document.getElementById('warp-audio');
     const stampAudio = document.getElementById('stamp-audio');
 
-    if (teleportBtn) {
-        teleportBtn.addEventListener('click', async () => {
-            const who = teleportWho ? teleportWho.value : 'Mohammad';
-            const where = teleportWhere ? teleportWhere.value : 'KafrKanna';
+    // الإلغاء إذا كان الزر غير موجود في الصفحة الحالية
+    if (!teleportBtn) return;
 
-            teleportBtn.disabled = true;
-            teleportBtn.innerHTML = '<span class="text-sm font-bold text-white tracking-widest">Routing Flight... ✈️</span>';
+    teleportBtn.addEventListener('click', async () => {
+        const who = teleportWho ? teleportWho.value : 'Mohammad';
+        const where = teleportWhere ? teleportWhere.value : 'KafrKanna';
 
-            // إعداد مسار الرحلة الديناميكي
-            if (where === 'KafrKanna') {
-                if(routeStartFlag) routeStartFlag.innerText = '🇯🇴';
-                if(routeStartText) routeStartText.innerText = 'Jordan';
-                if(routeEndFlag) routeEndFlag.innerText = '🇵🇸';
-                if(routeEndText) routeEndText.innerText = 'Palestine';
-                if(gradStart) gradStart.setAttribute('stop-color', '#34d399');
-                if(gradEnd) gradEnd.setAttribute('stop-color', '#f472b6');
-            } else {
-                if(routeStartFlag) routeStartFlag.innerText = '🇵🇸';
-                if(routeStartText) routeStartText.innerText = 'Palestine';
-                if(routeEndFlag) routeEndFlag.innerText = '🇯🇴';
-                if(routeEndText) routeEndText.innerText = 'Jordan';
-                if(gradStart) gradStart.setAttribute('stop-color', '#f472b6');
-                if(gradEnd) gradEnd.setAttribute('stop-color', '#34d399');
-            }
+        teleportBtn.disabled = true;
+        const originalBtnText = teleportBtn.innerHTML;
+        teleportBtn.innerHTML = '<span class="text-sm font-bold text-white tracking-widest">Routing Flight... ✈️</span>';
 
-            if (stampAudio) {
-                stampAudio.volume = 0;
-                stampAudio.play().then(() => { stampAudio.pause(); stampAudio.currentTime = 0; stampAudio.volume = 1; }).catch(e => {});
-            }
+        // إعداد الواجهة الديناميكية للمسار
+        if (where === 'KafrKanna') {
+            if(routeStartFlag) routeStartFlag.innerText = '🇯🇴';
+            if(routeStartText) routeStartText.innerText = 'Jordan';
+            if(routeEndFlag) routeEndFlag.innerText = '🇵🇸';
+            if(routeEndText) routeEndText.innerText = 'Palestine';
+            if(gradStart) gradStart.setAttribute('stop-color', '#34d399');
+            if(gradEnd) gradEnd.setAttribute('stop-color', '#f472b6');
+        } else {
+            if(routeStartFlag) routeStartFlag.innerText = '🇵🇸';
+            if(routeStartText) routeStartText.innerText = 'Palestine';
+            if(routeEndFlag) routeEndFlag.innerText = '🇯🇴';
+            if(routeEndText) routeEndText.innerText = 'Jordan';
+            if(gradStart) gradStart.setAttribute('stop-color', '#f472b6');
+            if(gradEnd) gradEnd.setAttribute('stop-color', '#34d399');
+        }
 
-            teleportOverlay.classList.remove('hidden');
-            setTimeout(() => teleportOverlay.classList.remove('opacity-0'), 50);
+        // تحضير الصوت المخفي لفك قفل المتصفح
+        if (stampAudio) {
+            stampAudio.volume = 0;
+            stampAudio.play().then(() => {
+                stampAudio.pause(); stampAudio.currentTime = 0; stampAudio.volume = 1;
+            }).catch(e => {});
+        }
 
-            try {
-                await fetch(`/api/teleport`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user: who, destination: where })
-                });
-            } catch (e) { console.error(e); }
-
-            if (warpAudio) { warpAudio.currentTime = 0; warpAudio.volume = 0.5; warpAudio.play().catch(e => {}); }
-
-            setTimeout(() => {
-                if(flightPath) flightPath.classList.add('animate-map-reveal');
-                if(flightLine) flightLine.classList.add('animate-draw-line');
-                if(flightSpark) flightSpark.classList.add('animate-spark-fly');
-            }, 800);
-
-            await new Promise(resolve => setTimeout(resolve, 3000));
-
-            if(flightPath) flightPath.classList.remove('animate-map-reveal');
-            setTimeout(() => {
-                if(flightLine) flightLine.classList.remove('animate-draw-line');
-                if(flightSpark) flightSpark.classList.remove('animate-spark-fly');
-            }, 700);
-
-            if(stampLocation) {
-                stampLocation.innerText = where === 'Jordan' ? 'JORDAN 🇯🇴' : 'KAFR KANNA 🇵🇸';
-                let themeColor = where === 'Jordan' ? 'text-emerald-400' : 'text-pink-400';
-                stampLocation.className = `text-4xl font-extrabold tracking-tight mb-2 drop-shadow-md ${themeColor}`;
-            }
-
-            if (stampNote) {
-                if (who === 'Mohammad' && where === 'KafrKanna') {
-                    stampNote.innerHTML = 'Traveler: <span class="text-white font-bold">7amodee 👨🏻‍💻</span><br><span class="text-[10px] text-slate-500 uppercase mt-1 block">To: ZoZo 👸🏻</span>';
-                } else if (who === 'Zainab' && where === 'Jordan') {
-                    stampNote.innerHTML = 'Traveler: <span class="text-white font-bold">ZoZo 👸🏻</span><br><span class="text-[10px] text-slate-500 uppercase mt-1 block">To: 7amodee 👨🏻‍💻</span>';
-                } else if (who === 'Mohammad' && where === 'Jordan') {
-                    stampNote.innerHTML = 'Returning Base: <span class="text-white font-bold">7amodee 👨🏻‍💻</span>';
-                } else if (who === 'Zainab' && where === 'KafrKanna') {
-                    stampNote.innerHTML = 'Returning Base: <span class="text-white font-bold">ZoZo 👸🏻</span>';
-                }
-            }
-
-            setTimeout(() => {
-                if(passportStamp) passportStamp.classList.add('stamp-elegant');
-                if (stampAudio) { stampAudio.currentTime = 0; stampAudio.volume = 0.6; stampAudio.play().catch(e => {}); }
-            }, 500);
-
-            await new Promise(resolve => setTimeout(resolve, 3500));
-
-            teleportOverlay.classList.add('opacity-0');
-            setTimeout(() => {
-                teleportOverlay.classList.add('hidden');
-                if(passportStamp) passportStamp.classList.remove('stamp-elegant');
-                teleportBtn.disabled = false;
-                teleportBtn.innerHTML = '<span class="text-sm font-bold text-white tracking-wide">Initiate Flight</span><span class="text-lg">✈️</span>';
-            }, 1000);
+        // إظهار واجهة السفر (معالجة مشكلة الـ hidden)
+        teleportOverlay.classList.remove('hidden');
+        requestAnimationFrame(() => {
+            teleportOverlay.classList.remove('opacity-0');
+            teleportOverlay.classList.add('pointer-events-auto');
         });
-    }
+
+        // تشغيل صوت الرحلة
+        if (warpAudio) {
+            warpAudio.currentTime = 0; warpAudio.volume = 0.5; warpAudio.play().catch(e => {});
+        }
+
+        // إرسال الطلب للـ API الخاص بك
+        try {
+            await fetch(`/api/teleport`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user: who, destination: where })
+            });
+        } catch (e) {
+            console.error("Teleport Error:", e);
+        }
+
+        // رسم الخط المتوهج
+        setTimeout(() => {
+            if(flightPath) flightPath.classList.remove('opacity-0');
+            if(flightLine) flightLine.classList.add('animate-draw-line');
+            if(flightSpark) flightSpark.classList.add('animate-spark-fly');
+        }, 800);
+
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        // إخفاء المسار
+        if(flightPath) flightPath.classList.add('opacity-0');
+        setTimeout(() => {
+            if(flightLine) flightLine.classList.remove('animate-draw-line');
+            if(flightSpark) flightSpark.classList.remove('animate-spark-fly');
+        }, 700);
+
+        // تجهيز بيانات الختم
+        if(stampLocation) {
+            stampLocation.innerText = where === 'Jordan' ? 'JORDAN 🇯🇴' : 'KAFR KANNA 🇵🇸';
+            let themeColor = where === 'Jordan' ? 'text-emerald-400' : 'text-pink-400';
+            stampLocation.className = `text-4xl font-extrabold tracking-tight mb-2 drop-shadow-md ${themeColor}`;
+        }
+
+        if (stampNote) {
+            if (who === 'Mohammad' && where === 'KafrKanna') {
+                stampNote.innerHTML = 'Traveler: <span class="text-white font-bold">7amodee 👨🏻‍💻</span><br><span class="text-[10px] text-slate-500 uppercase mt-1 block">To: ZoZo 👸🏻</span>';
+            } else if (who === 'Zainab' && where === 'Jordan') {
+                stampNote.innerHTML = 'Traveler: <span class="text-white font-bold">ZoZo 👸🏻</span><br><span class="text-[10px] text-slate-500 uppercase mt-1 block">To: 7amodee 👨🏻‍💻</span>';
+            } else if (who === 'Mohammad' && where === 'Jordan') {
+                stampNote.innerHTML = 'Returning Base: <span class="text-white font-bold">7amodee 👨🏻‍💻</span>';
+            } else if (who === 'Zainab' && where === 'KafrKanna') {
+                stampNote.innerHTML = 'Returning Base: <span class="text-white font-bold">ZoZo 👸🏻</span>';
+            }
+        }
+
+        // إظهار الختم 
+        setTimeout(() => {
+            if (passportStamp) {
+                passportStamp.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    passportStamp.classList.remove('opacity-0', 'translate-y-8');
+                    passportStamp.classList.add('opacity-100', 'translate-y-0');
+                });
+            }
+            if (stampAudio) {
+                stampAudio.currentTime = 0; stampAudio.volume = 0.6; stampAudio.play().catch(e => {});
+            }
+        }, 500);
+
+        await new Promise(resolve => setTimeout(resolve, 3500));
+
+        // الإغلاق والعودة
+        if (passportStamp) {
+            passportStamp.classList.remove('opacity-100', 'translate-y-0');
+            passportStamp.classList.add('opacity-0', 'translate-y-8');
+        }
+
+        teleportOverlay.classList.add('opacity-0');
+        teleportOverlay.classList.remove('pointer-events-auto');
+
+        setTimeout(() => {
+            teleportOverlay.classList.add('hidden');
+            if (passportStamp) passportStamp.classList.add('hidden');
+            teleportBtn.disabled = false;
+            teleportBtn.innerHTML = originalBtnText;
+        }, 1000);
+    });
 };
