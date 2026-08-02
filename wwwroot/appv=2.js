@@ -1,5 +1,11 @@
 import * as api from './js/api/apiClient.js';
 import * as ui from './js/ui/uiManager.js';
+import { initSecretCinematic } from './js/secretCinematic.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+    // تفعيل التجربة السينمائية المستقلة
+    initSecretCinematic();
+});
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -493,7 +499,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Angry': { icon: '🤬', text: 'Mad AF / Angry'},
         'Working': {icon: '😓', text: 'At Work / Busy' },
         'Gym': { icon: '🏋️‍♂️', text: 'At the Gym / Beast Mode' },
-        'Tired': { icon: '🔋', text: 'Out of Energy / Tired' },
+        'Tired': { icon: '🔋', text: 'Out of Energy' },
         'MissYou': { icon: '🥺', text: 'Missing You' },
         'Bored': { icon: '🥱', text: 'Bored / Need You' },
         'Excited': { icon: '🤩', text: 'Excited / Good News' },
@@ -1699,13 +1705,6 @@ document.addEventListener('DOMContentLoaded', () => {
 //     }
     
     // The Secret Cinematic feature import
-
-    import { initSecretCinematic } from './secretCinematic.js';
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // تفعيل التجربة السينمائية المستقلة
-        initSecretCinematic();
-    });
 
     // ==========================================
     // ☕ DEEP TALKS LOGIC
