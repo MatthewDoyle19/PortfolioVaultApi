@@ -440,11 +440,11 @@ export const fetchDeepTalks = async () => {
     return safeJson(response);
 };
 
-export const addDeepTalk = async (title, addedBy) => {
+export const addDeepTalk = async (title) => {
     const response = await fetch(`${API_BASE_URL}/api/deeptalks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, addedBy, isDiscussed: false })
+        body: JSON.stringify({ title, isDiscussed: false })
     });
     return safeJson(response);
 };

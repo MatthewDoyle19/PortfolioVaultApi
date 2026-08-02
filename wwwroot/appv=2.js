@@ -1725,10 +1725,8 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
             submitBtn.innerHTML = '...';
 
-            const currentUser = localStorage.getItem('vault_user') || 'Unknown';
-
             try {
-                await api.addDeepTalk(title, currentUser);
+                await api.addDeepTalk(title);
                 talkInput.value = '';
                 fetchDeepTalksData();
             } catch (error) {

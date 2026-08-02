@@ -941,7 +941,6 @@ export const renderDeepTalks = (talks) => {
                    class="mt-1 w-4 h-4 rounded border-gray-600 text-pink-500 focus:ring-pink-500/50 bg-black/50 cursor-pointer">
             <div class="flex-1">
                 <p class="text-sm ${talk.isDiscussed ? 'text-slate-500 line-through' : 'text-slate-200'}">${talk.title}</p>
-                <p class="text-[10px] text-pink-400 mt-1">Added by ${talk.addedBy === 'Mohammad' ? '7amodee 👨🏻‍💻' : 'ZoZo 👸🏻'}</p>
             </div>
             <!-- زر الحذف يظهر فقط عند التمرير -->
             <button onclick="window.deleteDeepTalk(${talk.id})" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-500 transition-opacity p-1">
