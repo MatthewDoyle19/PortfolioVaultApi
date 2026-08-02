@@ -929,7 +929,7 @@ export const renderDeepTalks = (talks) => {
     if (!container) return;
 
     if (!talks || talks.length === 0) {
-        container.innerHTML = `<p class="text-center text-slate-500 text-sm mt-10">No deep talks yet. Brew some coffee and add a topic! ☕</p>`;
+        container.innerHTML = `<p class="text-center text-slate-500 text-sm mt-10">No deep talks yet.</p>`;
         return;
     }
 

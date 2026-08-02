@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(document.getElementById('bottom-nav')) document.getElementById('bottom-nav').classList.remove('hidden');
                 if(document.getElementById('sos-btn')) document.getElementById('sos-btn').classList.remove('hidden');
                 if(document.getElementById('diary-btn')) document.getElementById('diary-btn').classList.remove('hidden');
+                if(document.getElementById('deep-talks-btn')) document.getElementById('deep-talks-btn').classList.remove('hidden');
                 window.scrollTo(0, 0);
             }, 500);
             return;
@@ -1437,6 +1438,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(document.getElementById('bottom-nav')) document.getElementById('bottom-nav').classList.remove('hidden');
             if(document.getElementById('sos-btn')) document.getElementById('sos-btn').classList.remove('hidden');
             if(document.getElementById('diary-btn')) document.getElementById('diary-btn').classList.remove('hidden');
+            if(document.getElementById('deep-talks-btn')) document.getElementById('deep-talks-btn').classList.remove('hidden');
 
             window.scrollTo(0, 0);
         } else if (overrideKey !== null) {
@@ -1768,7 +1770,11 @@ document.addEventListener('DOMContentLoaded', () => {
             sidebar.classList.remove('translate-x-full');
         }, 10);
 
-        // جلب أحدث البيانات في اللحظة التي تفتح فيها اللوحة!
+        // إخفاء الأزرار العائمة حتى لا تتداخل مع اللوحة المنزلقة
+        document.getElementById('sos-btn')?.classList.add('hidden');
+        document.getElementById('diary-btn')?.classList.add('hidden');
+        document.getElementById('deep-talks-btn')?.classList.add('hidden');
+
         fetchDeepTalksData();
     };
 
@@ -1779,6 +1785,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         overlay.classList.add('opacity-0');
         sidebar.classList.add('translate-x-full');
+
+        // إظهار الأزرار العائمة مرة أخرى عند إغلاق اللوحة
+        document.getElementById('sos-btn')?.classList.remove('hidden');
+        document.getElementById('diary-btn')?.classList.remove('hidden');
+        document.getElementById('deep-talks-btn')?.classList.remove('hidden');
+
         setTimeout(() => { overlay.classList.add('hidden'); }, 300);
     };
 
