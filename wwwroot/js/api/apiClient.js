@@ -430,3 +430,35 @@ export const uploadToCloudinary = async (file) => {
     // Cloudinary دائماً يعيد JSON صالح، لكن نستخدم الدرع للضمان
     return safeJson(response);
 };
+
+// ==========================================
+// ☕ DEEP TALKS API
+// ==========================================
+
+export const fetchDeepTalks = async () => {
+    const response = await fetch(`${API_BASE_URL}/api/deeptalks`);
+    return safeJson(response);
+};
+
+export const addDeepTalk = async (title, addedBy) => {
+    const response = await fetch(`${API_BASE_URL}/api/deeptalks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, addedBy, isDiscussed: false })
+    });
+    return safeJson(response);
+};
+
+export const toggleDeepTalk = async (id, isDiscussed) => {
+    const response = await fetch(`${API_BASE_URL}/api/deeptalks/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isDiscussed })
+    });
+    return safeJson(response);
+};
+
+export const deleteDeepTalk = async (id) => {
+    const response = await fetch(`${API_BASE_URL}/api/deeptalks/${id}`, { method: 'DELETE' });
+    return safeJson(response);
+};

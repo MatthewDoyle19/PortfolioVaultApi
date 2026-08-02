@@ -604,6 +604,13 @@
     </div>
 </button>
 
+<!-- Deep Talks Button -->
+<button id="deep-talks-btn" onclick="window.openDeepTalks()" class="w-12 h-12 bg-pink-600/80 hover:bg-pink-500 backdrop-blur-md rounded-full shadow-[0_0_15px_rgba(219,39,119,0.4)] flex items-center justify-center text-xl transition-all hover:scale-110 active:scale-95 border border-white/20 relative group mb-3">
+    ☕
+    <!-- Tooltip (النص الذي يظهر عند تمرير الماوس) -->
+    <span class="absolute right-14 bg-black/80 text-white text-xs font-medium px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Deep Talks</span>
+</button>
+
 
 <!-- =========================================================================
                              SPECIAL OVERLAYS & EVENT SCREENS
@@ -1033,6 +1040,50 @@
 
     <audio id="secret-voice" src="https://res.cloudinary.com/dhr6waydw/video/upload/v1784790052/avm5wuqlsotpg7uovass.m4a" preload="auto"></audio>
     <audio id="secret-bgm" src="https://res.cloudinary.com/dhr6waydw/video/upload/v1784367056/sh42px6jewdrrtctacwf.mp3" loop preload="auto"></audio>
+</div>
+
+<!-- ========================================== -->
+<!-- ☕ DEEP TALKS SIDEBAR MODULE -->
+<!-- ========================================== -->
+
+<!-- 1. The Overlay (الخلفية الزجاجية الداكنة) -->
+<div id="deep-talks-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300" onclick="window.closeDeepTalks()"></div>
+
+<!-- 2. The Sidebar (اللوحة المنزلقة) -->
+<div id="deep-talks-sidebar" class="fixed top-0 right-0 h-full w-full md:w-[400px] bg-slate-900/95 backdrop-blur-2xl border-l border-white/10 z-[70] transform translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
+
+    <!-- Header (الترويسة) -->
+    <div class="flex items-center justify-between p-6 border-b border-white/10 bg-black/20">
+        <h2 class="text-xl font-bold text-white flex items-center gap-3">
+            <span class="bg-pink-500/20 p-2 rounded-lg">☕</span>
+            Deep Talks
+        </h2>
+        <button onclick="window.closeDeepTalks()" class="text-slate-400 hover:text-pink-400 transition-colors p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+    </div>
+
+    <!-- Content List (قائمة المواضيع المؤقتة للتجربة) -->
+    <div id="deep-talks-list" class="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
+        <!-- عنصر تجريبي لترى كيف سيبدو الشكل -->
+        <div class="bg-black/30 border border-white/5 p-4 rounded-xl flex items-start gap-3 group hover:border-pink-500/30 transition-all">
+            <input type="checkbox" class="mt-1 w-4 h-4 rounded border-gray-600 text-pink-500 focus:ring-pink-500/50 bg-black/50 cursor-pointer">
+            <div class="flex-1">
+                <p class="text-sm text-slate-200">نقاش حول خططنا للسفر بعد التخرج ✈️</p>
+                <p class="text-[10px] text-pink-400 mt-1">Added by 7amodee</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Area (منطقة الإضافة) -->
+    <div class="p-5 border-t border-white/10 bg-black/40 backdrop-blur-md">
+        <form id="add-talk-form" class="flex gap-2">
+            <input type="text" id="talk-input" placeholder="Type a topic for our next coffee..." class="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 transition-colors shadow-inner" autocomplete="off">
+            <button type="button" class="bg-pink-600 hover:bg-pink-500 text-white px-5 py-3 rounded-xl text-sm font-bold transition-all active:scale-95 shadow-[0_0_10px_rgba(219,39,119,0.3)]">
+                Add
+            </button>
+        </form>
+    </div>
 </div>
 
 </body>

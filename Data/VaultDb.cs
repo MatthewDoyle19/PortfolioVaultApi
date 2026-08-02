@@ -23,4 +23,5 @@ public class VaultDb : DbContext
     public DbSet<Goal> Goals { get; set; }
     public DbSet<DiaryEntry> DiaryEntries { get; set; }
     public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
+    public DbSet<DeepTalk> DeepTalks { get; set; }
 }

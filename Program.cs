@@ -39,6 +39,7 @@ app.MapMansafEndpoints();
 app.MapGoalEndpoints();
 app.MapDiaryEndpoints();
 app.MapSystemEndpoints();
+app.MapDeepTalkEndpoints();
 
 using (var scope = app.Services.CreateScope())
 {

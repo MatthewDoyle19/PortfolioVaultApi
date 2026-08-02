@@ -919,3 +919,34 @@ export const compressImage = (file, maxWidth = 1080, quality = 0.8) => {
         reader.onerror = (error) => reject(error);
     });
 };
+
+// ==========================================
+// ☕ DEEP TALKS UI RENDERER
+// ==========================================
+
+export const renderDeepTalks = (talks) => {
+    const container = document.getElementById('deep-talks-list');
+    if (!container) return;
+
+    if (!talks || talks.length === 0) {
+        container.innerHTML = `<p class="text-center text-slate-500 text-sm mt-10">No deep talks yet. Brew some coffee and add a topic! ☕</p>`;
+        return;
+    }
+
+    container.innerHTML = talks.map(talk => `
+        <div class="bg-black/30 border border-white/5 p-4 rounded-xl flex items-start gap-3 group hover:border-pink-500/30 transition-all ${talk.isDiscussed ? 'opacity-50' : ''}">
+            <input type="checkbox" 
+                   onchange="window.toggleDeepTalk(${talk.id}, this.checked)" 
+                   ${talk.isDiscussed ? 'checked' : ''}
+                   class="mt-1 w-4 h-4 rounded border-gray-600 text-pink-500 focus:ring-pink-500/50 bg-black/50 cursor-pointer">
+            <div class="flex-1">
+                <p class="text-sm ${talk.isDiscussed ? 'text-slate-500 line-through' : 'text-slate-200'}">${talk.title}</p>
+                <p class="text-[10px] text-pink-400 mt-1">Added by ${talk.addedBy === 'Mohammad' ? '7amodee 👨🏻‍💻' : 'ZoZo 👸🏻'}</p>
+            </div>
+            <!-- زر الحذف يظهر فقط عند التمرير -->
+            <button onclick="window.deleteDeepTalk(${talk.id})" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-500 transition-opacity p-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+        </div>
+    `).join('');
+};

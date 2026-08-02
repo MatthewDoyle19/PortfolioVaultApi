@@ -1695,6 +1695,92 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelAnimationFrame(animationFrameId);
     }
 
+    // ==========================================
+    // ☕ DEEP TALKS LOGIC
+    // ==========================================
+    const addTalkForm = document.getElementById('add-talk-form');
+    const talkInput = document.getElementById('talk-input');
+
+    // دالة لجلب البيانات وتحديث الشاشة
+    const fetchDeepTalksData = async () => {
+        try {
+            const talks = await api.fetchDeepTalks();
+            ui.renderDeepTalks(talks);
+        } catch (error) {
+            console.error("Failed to fetch deep talks", error);
+        }
+    };
+
+    // 1. إضافة موضوع جديد
+    if (addTalkForm) {
+        addTalkForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = talkInput.value.trim();
+            if (!title) return;
+
+            const submitBtn = addTalkForm.querySelector('button');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '...';
+
+            const currentUser = localStorage.getItem('vault_user') || 'Unknown';
+
+            try {
+                await api.addDeepTalk(title, currentUser);
+                talkInput.value = '';
+                fetchDeepTalksData();
+            } catch (error) {
+                console.error("Save failed", error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Add';
+            }
+        });
+    }
+
+    // 2. تحديث الحالة (تم النقاش / لم يتم)
+    window.toggleDeepTalk = async (id, isDiscussed) => {
+        try {
+            await api.toggleDeepTalk(id, isDiscussed);
+            fetchDeepTalksData();
+        } catch (error) { console.error("Update failed", error); }
+    };
+
+    // 3. حذف الموضوع
+    window.deleteDeepTalk = async (id) => {
+        if(confirm('Delete this topic?')) {
+            try {
+                await api.deleteDeepTalk(id);
+                fetchDeepTalksData();
+            } catch (error) { console.error("Delete failed", error); }
+        }
+    };
+
+    // 4. دوال فتح وإغلاق اللوحة الجانبية
+    window.openDeepTalks = () => {
+        const overlay = document.getElementById('deep-talks-overlay');
+        const sidebar = document.getElementById('deep-talks-sidebar');
+        if(!overlay || !sidebar) return;
+
+        overlay.classList.remove('hidden');
+        setTimeout(() => {
+            overlay.classList.remove('opacity-0');
+            sidebar.classList.remove('translate-x-full');
+        }, 10);
+
+        // جلب أحدث البيانات في اللحظة التي تفتح فيها اللوحة!
+        fetchDeepTalksData();
+    };
+
+    window.closeDeepTalks = () => {
+        const overlay = document.getElementById('deep-talks-overlay');
+        const sidebar = document.getElementById('deep-talks-sidebar');
+        if(!overlay || !sidebar) return;
+
+        overlay.classList.add('opacity-0');
+        sidebar.classList.add('translate-x-full');
+        setTimeout(() => { overlay.classList.add('hidden'); }, 300);
+    };
+
     // --- 📱 Bottom Navigation Logic (5 Tabs) ---
     window.switchTab = (tabName) => {
         ui.switchTab(tabName);
