@@ -9,8 +9,8 @@ public static class CommitEndpoints
 {
     public static void MapCommitEndpoints(this WebApplication app)
     {
-        // app.MapGet("/api/commits", async (VaultDb db) =>
-        //     await db.Commits.OrderByDescending(c => c.Date).ToListAsync());
+        app.MapGet("/api/commits", async (VaultDb db) =>
+            await db.Commits.OrderByDescending(c => c.Date).ToListAsync());
 
         app.MapPost("/api/commits", async (Commit commit, VaultDb db, TelegramService telegram) =>
         {
