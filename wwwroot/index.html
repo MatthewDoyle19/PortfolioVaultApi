@@ -702,17 +702,31 @@
         </button>
     </div>
 
-    <!-- Content List (قائمة المواضيع المؤقتة للتجربة) -->
+    <!-- Content List -->
     <div id="deep-talks-list" class="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
+        <!-- سيتم حقن المحادثات هنا عبر الـ JavaScript باستخدام تصميم الـ Hover الجديد -->
     </div>
 
-    <!-- Input Area (منطقة الإضافة) -->
+    <!-- Input Area (منطقة الإضافة بالتصميم الحديث) -->
     <div class="p-5 border-t border-white/10 bg-black/40 backdrop-blur-md">
-        <form id="add-talk-form" class="flex gap-2">
-            <input type="text" id="talk-input" placeholder="Type a topic to talk about when we sit..." class="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 transition-colors shadow-inner" autocomplete="off">
-            <button type="submit" class="bg-pink-600 hover:bg-pink-500 text-white px-5 py-3 rounded-xl text-sm font-bold transition-all active:scale-95 shadow-[0_0_10px_rgba(219,39,119,0.3)]">
-                Add
-            </button>
+        <form id="add-talk-form" class="relative flex items-center w-full">
+            <!-- أيقونة تعبيرية داخل المربع -->
+            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                <span class="text-pink-400/70 text-lg">💭</span>
+            </div>
+
+            <!-- مربع النص -->
+            <input type="text" id="talk-input" placeholder="Type a topic to talk about..." class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-28 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-pink-500/50 focus:bg-white/10 transition-all backdrop-blur-md shadow-inner" autocomplete="off" required>
+
+            <!-- زر الإضافة المدمج ككبسولة -->
+            <div class="absolute inset-y-1.5 right-1.5 flex items-center">
+                <button type="submit" class="h-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white px-5 rounded-xl text-sm font-bold transition-all active:scale-95 shadow-[0_0_15px_rgba(219,39,119,0.3)] flex items-center gap-2">
+                    <span>Add</span>
+                    <svg class="w-4 h-4 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                </button>
+            </div>
         </form>
     </div>
 </div>
