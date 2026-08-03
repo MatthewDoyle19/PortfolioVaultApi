@@ -948,23 +948,53 @@ export const renderDeepTalks = (talks) => {
     if (!container) return;
 
     if (!talks || talks.length === 0) {
-        container.innerHTML = `<p class="text-center text-slate-500 text-sm mt-10">No deep talks yet.</p>`;
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center mt-12 opacity-50">
+                <span class="text-4xl mb-3">🪹</span>
+                <p class="text-center text-slate-400 text-sm tracking-widest uppercase font-bold">No deep talks yet.</p>
+            </div>`;
         return;
     }
 
     container.innerHTML = talks.map(talk => `
-        <div class="bg-black/30 border border-white/5 p-4 rounded-xl flex items-start gap-3 group hover:border-pink-500/30 transition-all ${talk.isDiscussed ? 'opacity-50' : ''}">
-            <input type="checkbox" 
-                   onchange="window.toggleDeepTalk(${talk.id}, this.checked)" 
-                   ${talk.isDiscussed ? 'checked' : ''}
-                   class="mt-1 w-4 h-4 rounded border-gray-600 text-pink-500 focus:ring-pink-500/50 bg-black/50 cursor-pointer">
-            <div class="flex-1">
-                <p class="text-sm ${talk.isDiscussed ? 'text-slate-500 line-through' : 'text-slate-200'}">${talk.title}</p>
+        <div class="group flex items-center justify-between p-4 mb-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-pink-500/30 transition-all duration-300 backdrop-blur-sm shadow-sm hover:shadow-[0_0_15px_rgba(219,39,119,0.15)] relative ${talk.isDiscussed ? 'opacity-60 bg-black/40' : ''}">
+            
+            <div class="flex items-center gap-4 flex-1">
+                <!-- Checkbox الاحترافي المربوط بدالتك -->
+                <label class="relative flex items-center justify-center w-6 h-6 rounded-md border border-white/20 bg-black/20 group-hover:border-pink-400 cursor-pointer transition-colors z-10">
+                    <input type="checkbox" 
+                           class="absolute w-full h-full opacity-0 cursor-pointer peer" 
+                           onchange="window.toggleDeepTalk(${talk.id}, this.checked)" 
+                           ${talk.isDiscussed ? 'checked' : ''} />
+                    <!-- علامة الصح -->
+                    <svg class="w-4 h-4 text-pink-400 opacity-0 peer-checked:opacity-100 transition-opacity drop-shadow-[0_0_5px_rgba(219,39,119,0.8)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </label>
+                
+                <!-- نص المحادثة -->
+                <span class="text-sm font-medium tracking-wide transition-colors ${talk.isDiscussed ? 'text-slate-500 line-through' : 'text-slate-300 group-hover:text-white'}">
+                    ${talk.title}
+                </span>
             </div>
-            <!-- زر الحذف يظهر فقط عند التمرير -->
-            <button onclick="window.deleteDeepTalk(${talk.id})" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-500 transition-opacity p-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            </button>
+            
+            <!-- القسم الأيمن: الحالة + زر الحذف -->
+            <div class="flex items-center gap-3 z-10">
+                <span class="text-[9px] text-slate-500 uppercase tracking-widest font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 hidden sm:flex">
+                    <span class="w-1.5 h-1.5 rounded-full ${talk.isDiscussed ? 'bg-slate-500' : 'bg-pink-500 animate-pulse'}"></span>
+                    ${talk.isDiscussed ? 'Discussed' : 'Pending'}
+                </span>
+                
+                <!-- زر الحذف الخاص بك -->
+                <button onclick="window.deleteDeepTalk(${talk.id})" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-500 transition-all p-1.5 rounded-lg hover:bg-rose-500/10">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- تأثير التوهج الخلفي للبطاقة بأكملها -->
+            <div class="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100 ${talk.isDiscussed ? 'hidden' : 'bg-gradient-to-r from-pink-500/5 to-purple-500/5'}"></div>
         </div>
     `).join('');
 };
