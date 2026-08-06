@@ -38,20 +38,13 @@ export const showToast = (title, message, icon = '🔔') => {
 export const initUptimeCounter = () => {
     const uptimeDisplay = document.getElementById('uptime-counter');
     if (!uptimeDisplay) return;
-    
-    const startDate = new Date('2026-03-25T00:00:00');
 
-    const updateUptime = () => {
-        const now = new Date();
-        const diff = now - startDate;
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((diff / 1000 / 60) % 60);
-        uptimeDisplay.textContent = `${days} Days, ${hours} Hrs, ${minutes} Min`;
-    };
-    
-    updateUptime();
-    setInterval(updateUptime, 60000);
+    // تم إيقاف الزمن برمجياً وتثبيت الرقم النهائي
+    uptimeDisplay.textContent = "134 Days, 15 Hrs, 15 Min";
+
+    // إضافة تأثير بصري يدل على توقف العداد (اختياري، يعتمد على مكتبة Tailwind لديك)
+    uptimeDisplay.classList.add('opacity-50', 'text-slate-500');
+    uptimeDisplay.classList.remove('text-white', 'animate-pulse');
 };
 
 // ==========================================
