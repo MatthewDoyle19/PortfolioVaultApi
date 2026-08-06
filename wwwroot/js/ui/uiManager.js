@@ -39,14 +39,19 @@ export const initUptimeCounter = () => {
     const uptimeDisplay = document.getElementById('uptime-counter');
     if (!uptimeDisplay) return;
 
-    // عرض الزمن النهائي مشطوباً، مع العبارة القاطعة تحته
-    uptimeDisplay.innerHTML = `
-        <span class="block opacity-40 line-through text-sm mb-1">134 Days, 15 Hrs, 15 Min</span>
-        <span class="block text-slate-400 font-bold tracking-widest uppercase text-xs">It's freezeed.</span>
-    `;
+    const startDate = new Date('2026-03-25T00:00:00');
 
-    // إزالة تأثير النبض (Pulse) وأي ألوان توحي بالحياة
-    uptimeDisplay.classList.remove('animate-pulse', 'text-white');
+    const updateUptime = () => {
+        const now = new Date();
+        const diff = now - startDate;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / 1000 / 60) % 60);
+        uptimeDisplay.textContent = `${days} Days, ${hours} Hrs, ${minutes} Min`;
+    };
+
+    updateUptime();
+    setInterval(updateUptime, 60000);
 };
 
 // ==========================================
