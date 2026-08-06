@@ -39,12 +39,14 @@ export const initUptimeCounter = () => {
     const uptimeDisplay = document.getElementById('uptime-counter');
     if (!uptimeDisplay) return;
 
-    // تم إيقاف الزمن برمجياً وتثبيت الرقم النهائي
-    uptimeDisplay.textContent = "134 Days, 15 Hrs, 15 Min";
+    // عرض الزمن النهائي مشطوباً، مع العبارة القاطعة تحته
+    uptimeDisplay.innerHTML = `
+        <span class="block opacity-40 line-through text-sm mb-1">134 Days, 15 Hrs, 15 Min</span>
+        <span class="block text-slate-400 font-bold tracking-widest uppercase text-xs">It's freezeed.</span>
+    `;
 
-    // إضافة تأثير بصري يدل على توقف العداد (اختياري، يعتمد على مكتبة Tailwind لديك)
-    uptimeDisplay.classList.add('opacity-50', 'text-slate-500');
-    uptimeDisplay.classList.remove('text-white', 'animate-pulse');
+    // إزالة تأثير النبض (Pulse) وأي ألوان توحي بالحياة
+    uptimeDisplay.classList.remove('animate-pulse', 'text-white');
 };
 
 // ==========================================
