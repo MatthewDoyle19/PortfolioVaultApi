@@ -195,10 +195,22 @@ export const renderLinks = (links) => {
         card.className = 'flex items-center justify-between bg-dark p-3 rounded-xl border border-slate-700 hover:border-accent hover:bg-slate-800 transition-all group relative overflow-hidden';
 
         let isLocked = false;
+        let showUnlockedBadge = false;
+
         if (link.unlockDate) {
-            const unlockDateObj = new Date(link.unlockDate.replace('Z', ''));
-            if (unlockDateObj > new Date()) {
+            // FIX: Removed .replace('Z', '') so it correctly parses the UTC time
+            const unlockDateObj = new Date(link.unlockDate);
+            const now = new Date();
+
+            if (unlockDateObj > now) {
+                // The unlock date is still in the future
                 isLocked = true;
+            } else {
+                // The item is unlocked. Calculate if it has been less than 24 hours.
+                const hoursPassed = (now - unlockDateObj) / (1000 * 60 * 60);
+                if (hoursPassed <= 24) {
+                    showUnlockedBadge = true;
+                }
             }
         }
 
@@ -217,6 +229,7 @@ export const renderLinks = (links) => {
                 </button>
             `;
             linkGrid.appendChild(card);
+            // The startCountdown function will handle the timer element
             startCountdown(link.unlockDate, timerId);
         } else {
             card.innerHTML = `
@@ -226,7 +239,7 @@ export const renderLinks = (links) => {
                     </div>
                     <div class="flex flex-col">
                         <span class="text-sm font-medium text-slate-300 group-hover:text-white truncate pr-2">${link.title}</span>
-                        ${link.unlockDate ? `<span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wide">Unlocked ✨</span>` : ''}
+                        ${showUnlockedBadge ? `<span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wide">Unlocked ✨</span>` : ''}
                     </div>
                 </a>
                 <button onclick="window.deleteLink(${link.id})" class="text-slate-500 hover:text-red-400 p-2 transition-colors z-10 relative">

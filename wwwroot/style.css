@@ -17,28 +17,73 @@
 /* ============================================
    CUSTOM ANIMATIONS
    ============================================ */
-.fade-in { animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.fade-out { animation: fadeOut 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.fade-in {
+    animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.fade-out {
+    animation: fadeOut 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(25px) scale(0.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+        opacity: 0;
+        transform: translateY(25px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
+
 @keyframes fadeOut {
-    from { opacity: 1; transform: translateY(0) scale(1); }
-    to { opacity: 0; transform: translateY(-15px) scale(0.95); pointer-events: none; }
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.95);
+        pointer-events: none;
+    }
 }
-.hidden-start { opacity: 0; display: none; }
+
+.hidden-start {
+    opacity: 0;
+    display: none;
+}
 
 /* Blob Animation */
 @keyframes blob {
-    0% { transform: translate(0px, 0px) scale(1); opacity: 0.5; }
-    33% { transform: translate(40px, -60px) scale(1.1); opacity: 0.8; }
-    66% { transform: translate(-30px, 30px) scale(0.9); opacity: 0.4; }
-    100% { transform: translate(0px, 0px) scale(1); opacity: 0.5; }
+    0% {
+        transform: translate(0px, 0px) scale(1);
+        opacity: 0.5;
+    }
+    33% {
+        transform: translate(40px, -60px) scale(1.1);
+        opacity: 0.8;
+    }
+    66% {
+        transform: translate(-30px, 30px) scale(0.9);
+        opacity: 0.4;
+    }
+    100% {
+        transform: translate(0px, 0px) scale(1);
+        opacity: 0.5;
+    }
 }
-.animate-blob { animation: blob 14s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
-.animation-delay-2000 { animation-delay: 2s; }
-.animation-delay-4000 { animation-delay: 4s; }
+
+.animate-blob {
+    animation: blob 14s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animation-delay-2000 {
+    animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+    animation-delay: 4s;
+}
 
 /* ============================================
    RESET & GLOBAL BASE STYLES
@@ -48,6 +93,7 @@
 .pt-safe {
     padding-top: calc(1rem + env(safe-area-inset-top)) !important;
 }
+
 .pb-safe {
     padding-bottom: calc(1rem + env(safe-area-inset-bottom)) !important;
 }
@@ -59,13 +105,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
     transition: opacity 0.3s ease;
 }
+
 input[type="date"]:focus::-webkit-calendar-picker-indicator {
     opacity: 0.8;
 }
 
 /* Invisible, Elegant Scrollbar for a Native App Feel */
-::-webkit-scrollbar { width: 0px; background: transparent; }
-html { scroll-behavior: smooth; }
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+html {
+    scroll-behavior: smooth;
+}
 
 /* 📱 منع الـ Navigator من تغطية المحتوى السفلي */
 body {
@@ -82,10 +135,9 @@ body {
     backdrop-filter: blur(35px);
     -webkit-backdrop-filter: blur(35px);
     border: 1px solid rgba(255, 255, 255, 0.04);
-    box-shadow:
-            0 30px 60px -15px rgba(0, 0, 0, 0.9),
-            inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
-            inset 0 0 20px rgba(255, 255, 255, 0.02);
+    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 20px rgba(255, 255, 255, 0.02);
 }
 
 /* Premium Card Grid */
@@ -110,9 +162,8 @@ body {
     padding: 1.5rem;
     border-radius: 2.25rem;
     border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow:
-            0 20px 40px -5px rgba(0, 0, 0, 0.7),
-            inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.7),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
     transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
     position: relative;
     overflow: hidden;
@@ -121,10 +172,9 @@ body {
 .polaroid-card:hover {
     transform: translateY(-4px) scale(1.01);
     border-color: rgba(244, 114, 182, 0.2);
-    box-shadow:
-            0 25px 50px -10px rgba(0, 0, 0, 0.8),
-            0 0 20px rgba(244, 114, 182, 0.1),
-            inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(244, 114, 182, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
 }
 
 .polaroid-card:active {
@@ -180,13 +230,13 @@ audio:hover {
 #tawjihi-overlay {
     background-color: #050505 !important;
     position: fixed !important; /* 🛠️ هذا كان مفقوداً */
-    top: 0 !important;          /* 🛠️ هذا كان مفقوداً */
-    left: 0 !important;         /* 🛠️ هذا كان مفقوداً */
-    width: 100vw !important;    /* 🛠️ هذا كان مفقوداً */
-    height: 100vh !important;   /* 🛠️ هذا كان مفقوداً */
-    z-index: 99999 !important;  /* 🛠️ هذا كان مفقوداً */
-    align-items: center;        /* 🛠️ هذا كان مفقوداً لضمان التوسيط */
-    justify-content: center;    /* 🛠️ هذا كان مفقوداً لضمان التوسيط */
+    top: 0 !important; /* 🛠️ هذا كان مفقوداً */
+    left: 0 !important; /* 🛠️ هذا كان مفقوداً */
+    width: 100vw !important; /* 🛠️ هذا كان مفقوداً */
+    height: 100vh !important; /* 🛠️ هذا كان مفقوداً */
+    z-index: 99999 !important; /* 🛠️ هذا كان مفقوداً */
+    align-items: center; /* 🛠️ هذا كان مفقوداً لضمان التوسيط */
+    justify-content: center; /* 🛠️ هذا كان مفقوداً لضمان التوسيط */
 
     display: none !important;
     pointer-events: none !important;
@@ -210,13 +260,19 @@ audio:hover {
     z-index: 10000;
     pointer-events: none;
     font-size: 2rem;
-    filter: drop-shadow(0 0 5px rgba(255,255,255,0.8));
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
     animation: falling 4s linear infinite;
 }
 
 @keyframes falling {
-    0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    0% {
+        transform: translateY(-10vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+    }
 }
 
 /* 4. الحاوية */
@@ -233,17 +289,34 @@ audio:hover {
 /* --- Additional Animations --- */
 
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes heartbeat {
-    0%, 100% { transform: scale(1); }
-    14% { transform: scale(1.3); }
-    28% { transform: scale(1); }
-    42% { transform: scale(1.3); }
-    70% { transform: scale(1); }
+    0%, 100% {
+        transform: scale(1);
+    }
+    14% {
+        transform: scale(1.3);
+    }
+    28% {
+        transform: scale(1);
+    }
+    42% {
+        transform: scale(1.3);
+    }
+    70% {
+        transform: scale(1);
+    }
 }
+
 .animate-heartbeat {
     display: inline-block;
     animation: heartbeat 1.2s ease-in-out infinite;
@@ -261,21 +334,35 @@ audio:hover {
 }
 
 @keyframes cinematicReveal {
-    0% { opacity: 0; transform: translateY(35px); filter: blur(8px); }
-    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+    0% {
+        opacity: 0;
+        transform: translateY(35px);
+        filter: blur(8px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
 }
 
 /* 2. الخلفية اللؤلؤية الحية (تتحرك ببطء) */
 .living-bg {
-    background: linear-gradient(-45deg, rgba(255,255,255,0.95), rgba(253,242,248,0.95), rgba(238,242,255,0.95), rgba(236,253,245,0.95));
+    background: linear-gradient(-45deg, rgba(255, 255, 255, 0.95), rgba(253, 242, 248, 0.95), rgba(238, 242, 255, 0.95), rgba(236, 253, 245, 0.95));
     background-size: 400% 400%;
     animation: breathBg 15s ease infinite;
 }
 
 @keyframes breathBg {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* 3. البطاقة التي تتنفس (وهج يتغير بنعومة) */
@@ -284,8 +371,15 @@ audio:hover {
 }
 
 @keyframes cardBreath {
-    0% { box-shadow: 0 15px 50px rgba(244,114,182,0.1); border-color: rgba(252,211,228,0.5); }
-    100% { box-shadow: 0 25px 70px rgba(244,114,182,0.3); border-color: rgba(244,114,182,0.6); transform: translateY(-3px); }
+    0% {
+        box-shadow: 0 15px 50px rgba(244, 114, 182, 0.1);
+        border-color: rgba(252, 211, 228, 0.5);
+    }
+    100% {
+        box-shadow: 0 25px 70px rgba(244, 114, 182, 0.3);
+        border-color: rgba(244, 114, 182, 0.6);
+        transform: translateY(-3px);
+    }
 }
 
 /* 4. سحر الجزيئات الطافية (قلوب ونجوم) */
@@ -299,10 +393,20 @@ audio:hover {
 }
 
 @keyframes floatUp {
-    0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 0; }
-    10% { opacity: 0.95; }
-    90% { opacity: 0.95; }
-    100% { transform: translateY(-120vh) scale(1.2) rotate(360deg); opacity: 0; }
+    0% {
+        transform: translateY(0) scale(0.8) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.95;
+    }
+    90% {
+        opacity: 0.95;
+    }
+    100% {
+        transform: translateY(-120vh) scale(1.2) rotate(360deg);
+        opacity: 0;
+    }
 }
 
 /* 5. ألبوم البولارอยด์ (الإصدار السينمائي المتتابع) */
@@ -327,15 +431,34 @@ audio:hover {
 }
 
 /* 🎯 استخدام المتغيرات (--rot) لحفظ الزوايا العشوائية أثناء الأنيميشن */
-.polaroid:nth-child(odd) { --rot: -3deg; }
-.polaroid:nth-child(even) { --rot: 3deg; }
-.polaroid:nth-child(3n) { --rot: -4deg; }
-.polaroid:nth-child(4n) { --rot: 2deg; }
+.polaroid:nth-child(odd) {
+    --rot: -3deg;
+}
+
+.polaroid:nth-child(even) {
+    --rot: 3deg;
+}
+
+.polaroid:nth-child(3n) {
+    --rot: -4deg;
+}
+
+.polaroid:nth-child(4n) {
+    --rot: 2deg;
+}
 
 /* حركة الظهور: تبدأ من الأسفل صغيرة ومموهة، ثم تكبر وتوضح */
 @keyframes polaroidReveal {
-    0% { opacity: 0; filter: blur(10px); transform: rotate(var(--rot)) scale(0.5) translateY(50px); }
-    100% { opacity: 1; filter: blur(0); transform: rotate(var(--rot)) scale(1) translateY(0); }
+    0% {
+        opacity: 0;
+        filter: blur(10px);
+        transform: rotate(var(--rot)) scale(0.5) translateY(50px);
+    }
+    100% {
+        opacity: 1;
+        filter: blur(0);
+        transform: rotate(var(--rot)) scale(1) translateY(0);
+    }
 }
 
 /* ============================================
