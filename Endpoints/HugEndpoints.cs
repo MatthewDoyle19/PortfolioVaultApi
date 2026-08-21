@@ -30,7 +30,13 @@ public static class HugEndpoints
                 counter = new HugCounter { Count = 0 };
                 db.HugCounters.Add(counter);
             }
-            
+
+            // 🛡️ طبقة الحماية الصارمة: منع النزول تحت الصفر
+            if (req.Change < 0 && counter.Count <= 0)
+            {
+                return Results.Ok(counter); // تجاهل الطلب بصمت وإرجاع العداد كما هو
+            }
+    
             counter.Count += req.Change;
 
             var jordanZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Amman");
@@ -43,7 +49,7 @@ public static class HugEndpoints
             string actionWord = req.Change > 0 ? "sent a virtual hug 🫂" : "removed a hug 💔";
             await telegram.SendNotificationAsync($"🫂 Hugs Update!\n\nZoZo {actionWord}.\nTotal Hugs Pending: {counter.Count} ❤️");
 
-            return Results.Ok(counter);;
+            return Results.Ok(counter);
         });
     }
 }
