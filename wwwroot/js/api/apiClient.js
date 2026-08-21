@@ -219,6 +219,24 @@ export const updateMansafCount = async (change) => {
 };
 
 // ==========================================
+// HUG COUNTER
+// ==========================================
+
+export const fetchHugCount = async () => {
+    const response = await fetch(`${API_BASE_URL}/api/hugs`);
+    return safeJson(response);
+};
+
+export const updateHugCount = async (change) => {
+    const response = await fetch(`${API_BASE_URL}/api/hugs/action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ change: change })
+    });
+    return safeJson(response);
+};
+
+// ==========================================
 // BUCKET LIST
 // ==========================================
 

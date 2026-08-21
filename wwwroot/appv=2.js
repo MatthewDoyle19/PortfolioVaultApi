@@ -628,6 +628,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchMansafCount();
 
+    // --- 🫂 INDEPENDENT HUG LOGIC ---
+    const hugCountEl = document.getElementById('hug-count');
+    const addHugBtn = document.getElementById('add-hug-btn');
+    const minusHugBtn = document.getElementById('minus-hug-btn');
+
+    const fetchHugCount = async () => {
+        try {
+            const data = await api.fetchHugCount();
+            if (hugCountEl) hugCountEl.innerText = data.count;
+        } catch (e) { console.error("Error loading Hug count", e); }
+    };
+
+    const handleHugAction = async (change) => {
+        if (!hugCountEl) return;
+        const currentCount = parseInt(hugCountEl.innerText) || 0;
+
+        if (change === -1 && currentCount <= 0) return;
+
+        hugCountEl.innerText = currentCount + change;
+
+        // استخدام لون يتناسب مع العناق (rose-400 بدلاً من الأخضر الخاص بالمنسف)
+        hugCountEl.classList.add('text-rose-400', 'scale-125');
+        setTimeout(() => hugCountEl.classList.remove('text-rose-400', 'scale-125'), 300);
+
+        try {
+            await api.updateHugCount(change);
+        } catch (error) {
+            console.error("Failed to sync Hugs", error);
+            alert("Server Error: Could not save the Hug count! Check the console.");
+            hugCountEl.innerText = currentCount;
+        }
+    };
+
+    if (addHugBtn) addHugBtn.addEventListener('click', () => handleHugAction(1));
+    if (minusHugBtn) minusHugBtn.addEventListener('click', () => handleHugAction(-1));
+
+    fetchHugCount();
+
     // --- 🗺️ THE BUCKET LIST ---
     const addBucketForm = document.getElementById('add-bucket-form');
 
