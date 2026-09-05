@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/bateman/ZainabVaultApi/ZainabVaultApi.csproj": {}
+    "/Users/bateman/TheVaultApi/ZainabVaultApi.csproj": {}
   },
   "projects": {
-    "/Users/bateman/ZainabVaultApi/ZainabVaultApi.csproj": {
+    "/Users/bateman/TheVaultApi/ZainabVaultApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/bateman/ZainabVaultApi/ZainabVaultApi.csproj",
+        "projectUniqueName": "/Users/bateman/TheVaultApi/ZainabVaultApi.csproj",
         "projectName": "ZainabVaultApi",
-        "projectPath": "/Users/bateman/ZainabVaultApi/ZainabVaultApi.csproj",
+        "projectPath": "/Users/bateman/TheVaultApi/ZainabVaultApi.csproj",
         "packagesPath": "/Users/bateman/.nuget/packages/",
-        "outputPath": "/Users/bateman/ZainabVaultApi/obj/",
+        "outputPath": "/Users/bateman/TheVaultApi/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/bateman/.nuget/NuGet/NuGet.Config"
