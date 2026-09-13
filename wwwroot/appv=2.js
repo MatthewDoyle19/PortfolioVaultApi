@@ -263,8 +263,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // --- Audio Upload Logic ---
-            if (typeof window.audioBlob !== 'undefined' && window.audioBlob) {
-                const data = await api.uploadToCloudinary(window.audioBlob);
+            if (audioBlob) {
+                const data = await api.uploadToCloudinary(audioBlob);
                 finalAudioUrl = data.secure_url;
             }
 
@@ -291,13 +291,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 date: finalDate,
                 message: document.getElementById('commit-message').value,
                 imageUrl: finalImageUrl,
-                audioUrl: finalAudioUrl,
+                audioUrl: finalAudioUrl, // الآن ستحتوي على رابط Cloudinary الحقيقي
                 unlockDate: finalUnlockDate
             });
 
             // --- Reset UI ---
             e.target.reset();
-            if (typeof window.audioBlob !== 'undefined') window.audioBlob = null;
+
+            // 🛠️ الإصلاح: إعادة تصفير المتغير مباشرة
+            audioBlob = null;
 
             const recordBtn = document.getElementById('record-btn');
             if (recordBtn) recordBtn.innerHTML = '🎤 Record';
