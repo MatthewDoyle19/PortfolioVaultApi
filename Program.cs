@@ -9,9 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// إعداد قاعدة البيانات باستخدام الاسم الجديد
+var dbPath = Path.Combine(AppContext.BaseDirectory, "vault.db");
 builder.Services.AddDbContext<VaultDb>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=vault.db"));
+    options.UseSqlite($"Data Source={dbPath}"));
 
 builder.Services.AddSingleton<TelegramService>();
 
@@ -26,7 +26,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCors("AllowAll");
 
