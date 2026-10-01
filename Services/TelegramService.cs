@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace ZainabVaultApi.Services;
+namespace PortfolioVaultApi.Services;
 
 public class TelegramService
 {
@@ -8,8 +8,9 @@ public class TelegramService
 
     public async Task SendNotificationAsync(string message)
     {
-        string botToken = "8899922136:AAEU5IWwZLw_LsdoWwkXywTd0FfVrSgPzSw";
-        string chatId = "-5233134027";
+        // تم وضع بيانات وهمية للـ Portfolio
+        string botToken = "YOUR_BOT_TOKEN_HERE";
+        string chatId = "YOUR_CHAT_ID_HERE";
 
         string url = $"https://api.telegram.org/bot{botToken}/sendMessage";
 

@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class SystemEndpoints
 {
@@ -29,7 +29,7 @@ public static class SystemEndpoints
             }
             await db.SaveChangesAsync();
 
-            string statusText = setting.IsMaintenance ? "🔴 ENABLED (Surprise Mode Active)" : "🟢 DISABLED (Public)";
+            string statusText = setting.IsMaintenance ? "🔴 ENABLED (Restricted Access)" : "🟢 DISABLED (Public Access)";
             await telegram.SendNotificationAsync($"⚙️ System Update: Maintenance Mode is now {statusText}");
 
             return Results.Ok(setting);

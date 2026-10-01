@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class EventEndpoints
 {
@@ -17,7 +17,7 @@ public static class EventEndpoints
             db.Events.Add(ev);
             await db.SaveChangesAsync();
 
-            await telegram.SendNotificationAsync($"📅 New Event Added to the Calendar!\n\n📌 Title: {ev.Title}\n🗓️ Date: {ev.Date}");
+            await telegram.SendNotificationAsync($"📅 New Event Added to the System Calendar!\n\n📌 Title: {ev.Title}\n🗓️ Date: {ev.Date}");
 
             return Results.Created($"/api/events/{ev.Id}", ev);
         });
@@ -30,7 +30,7 @@ public static class EventEndpoints
             db.Events.Remove(ev);
             await db.SaveChangesAsync();
 
-            await telegram.SendNotificationAsync($"🗑️ An event was removed from the Calendar!\n\n📌 Title: {ev.Title}");
+            await telegram.SendNotificationAsync($"🗑️ An event was removed from the System Calendar!\n\n📌 Title: {ev.Title}");
 
             return Results.Ok();
         });

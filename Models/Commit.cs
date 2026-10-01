@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
-
-namespace ZainabVaultApi.Models;
+namespace PortfolioVaultApi.Models;
 
 public class Commit
 {

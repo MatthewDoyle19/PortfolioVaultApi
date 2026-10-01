@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace ZainabVaultApi.Models;
-
+namespace PortfolioVaultApi.Models;
 public class SosRequest
 {
     [JsonPropertyName("user")] public string User { get; set; } = string.Empty;

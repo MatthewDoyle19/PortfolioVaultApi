@@ -1,4 +1,4 @@
-namespace ZainabVaultApi.Models;
+namespace PortfolioVaultApi.Models;
 
 public class MediaItem
 {

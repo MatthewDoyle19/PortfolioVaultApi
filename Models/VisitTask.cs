@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace ZainabVaultApi.Models;
-
+namespace PortfolioVaultApi.Models;
 public class VisitTask
 {
     [JsonPropertyName("id")] public int Id { get; set; }

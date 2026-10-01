@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class VisitEndpoints
 {
@@ -29,7 +29,7 @@ public static class VisitEndpoints
         {
             db.VisitDates.Add(dates);
             await db.SaveChangesAsync();
-            await telegram.SendNotificationAsync($"✈️ New Trip Planned: From {dates.StartDate} to {dates.EndDate}! 🤍");
+            await telegram.SendNotificationAsync($"📅 New Schedule Planned: From {dates.StartDate} to {dates.EndDate}");
             return Results.Ok(dates);
         });
 
@@ -37,7 +37,7 @@ public static class VisitEndpoints
         {
             db.VisitTasks.Add(task);
             await db.SaveChangesAsync();
-            await telegram.SendNotificationAsync($"📌 New task added for this trip: {task.Title}");
+            await telegram.SendNotificationAsync($"📌 New task added to the schedule: {task.Title}");
             return Results.Created($"/api/visit/tasks/{task.Id}", task);
         });
 
@@ -52,7 +52,7 @@ public static class VisitEndpoints
             await db.SaveChangesAsync();
 
             string status = task.IsCompleted ? $"✅ Done at {task.CompletedAt}" : "❌ Reverted";
-            await telegram.SendNotificationAsync($"📌 Visit Update:\nPlan: {task.Title}\nStatus: {status}");
+            await telegram.SendNotificationAsync($"📌 Schedule Update:\nTask: {task.Title}\nStatus: {status}");
 
             return Results.Ok(task);
         });
@@ -74,7 +74,7 @@ public static class VisitEndpoints
             db.VisitDates.Remove(trip);
             await db.SaveChangesAsync();
 
-            await telegram.SendNotificationAsync($"🗑️ An entire trip container ({trip.StartDate} to {trip.EndDate}) was deleted from the Vault!");
+            await telegram.SendNotificationAsync($"🗑️️ A schedule block ({trip.StartDate} to {trip.EndDate}) was deleted from the system.");
 
             return Results.Ok();
         });

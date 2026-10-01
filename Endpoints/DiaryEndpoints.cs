@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class DiaryEndpoints
 {
@@ -12,7 +12,6 @@ public static class DiaryEndpoints
         app.MapGet("/api/diary/{owner}", async (string owner, VaultDb db) =>
         {
             var entry = await db.DiaryEntries.FirstOrDefaultAsync(d => d.Owner == owner);
-
             return Results.Ok(entry ?? new DiaryEntry { Owner = owner, Content = "" });
         });
 
@@ -39,8 +38,8 @@ public static class DiaryEndpoints
 
             if (isManual)
             {
-                string displayUser = request.Owner == "Mohammad" ? "7amodee 👨🏻‍💻" : (request.Owner == "Zainab" ? "ZoZo 👸🏻" : request.Owner);
-                await telegram.SendNotificationAsync($"📖 The Secret Diary:\n\n{displayUser} just securely saved new thoughts in their private notebook! 🤫");
+                string displayUser = request.Owner == "User1" ? "Admin 👨🏻‍💻" : (request.Owner == "User2" ? "Member 👩🏻‍💻" : request.Owner);
+                await telegram.SendNotificationAsync($"📖 The Secret Diary:\n\n{displayUser} just securely saved new thoughts!");
             }
 
             return Results.Ok(new { success = true });

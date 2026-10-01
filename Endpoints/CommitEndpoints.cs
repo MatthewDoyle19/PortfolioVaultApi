@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class CommitEndpoints
 {

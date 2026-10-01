@@ -1,11 +1,11 @@
 {
-  "name": "Z & M ❤️",
-  "short_name": "Z & M",
+  "name": "The Digital Vault",
+  "short_name": "Vault",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#050505",
   "theme_color": "#050505",
-  "description": "Zainab's & Mohammad's Private Digital Vault",
+  "description": "A Secure Digital Workspace & Portfolio Template",
   "icons": [
     {
       "src": "app-icon.png",

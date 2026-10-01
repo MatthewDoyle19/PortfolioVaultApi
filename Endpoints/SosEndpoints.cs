@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class SosEndpoints
 {
@@ -30,10 +30,10 @@ public static class SosEndpoints
                 ? $"\n📍 Live Location: https://www.google.com/maps?q={req.Lat},{req.Lng}"
                 : "\n📍 Location: (Location services were denied/disabled by device)";
 
-            string displayUser = req.User == "Mohammad" ? "7amodee" : (req.User == "Zainab" ? "ZoZo" : req.User);
-            string target = req.User == "Mohammad" ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻";
+            string displayUser = req.User == "User1" ? "Admin" : (req.User == "User2" ? "Member" : req.User);
+            string target = req.User == "User1" ? "Member" : "Admin";
 
-            await telegram.SendNotificationAsync($"🚨 EMERGENCY SOS TRIGGERED 🚨\n\n{displayUser} has pressed the panic button and needs {target} ASAP!{mapLink}");
+            await telegram.SendNotificationAsync($"🚨 SYSTEM ALERT 🚨\n\n{displayUser} triggered a system ping to {target}!{mapLink}");
 
             return Results.Ok();
         });

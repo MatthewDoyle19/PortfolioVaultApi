@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class BucketListEndpoints
 {
@@ -17,7 +17,7 @@ public static class BucketListEndpoints
             db.BucketListItems.Add(item);
             await db.SaveChangesAsync();
 
-            await telegram.SendNotificationAsync($"🗺️ A new goal/place was added to the Bucket List!\nGoal: {item.Title}");
+            await telegram.SendNotificationAsync($"📋 A new objective was added to the Goals List!\nObjective: {item.Title}");
 
             return Results.Created($"/api/bucketlist/{item.Id}", item);
         });
@@ -30,8 +30,8 @@ public static class BucketListEndpoints
             item.IsCompleted = !item.IsCompleted;
             await db.SaveChangesAsync();
 
-            string status = item.IsCompleted ? "✅ Completed!" : "❌ Reverted";
-            await telegram.SendNotificationAsync($"🗺️ Bucket List Update:\nGoal: {item.Title}\nStatus: {status}");
+            string status = item.IsCompleted ? "✅ Completed" : "🔄 Reverted";
+            await telegram.SendNotificationAsync($"📋 Goals Update:\nObjective: {item.Title}\nStatus: {status}");
 
             return Results.Ok(item);
         });

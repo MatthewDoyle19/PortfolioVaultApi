@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class LinkEndpoints
 {
@@ -22,7 +22,7 @@ public static class LinkEndpoints
             db.Links.Add(link);
             await db.SaveChangesAsync();
 
-            await telegram.SendNotificationAsync($"🔗 A new link has been saved!\nTitle: {link.Title}");
+            await telegram.SendNotificationAsync($"🔗 A new resource link has been saved!\nTitle: {link.Title}");
 
             return Results.Created($"/api/links/{link.Id}", link);
         });
@@ -34,7 +34,7 @@ public static class LinkEndpoints
             db.Links.Remove(link);
             await db.SaveChangesAsync();
 
-            await telegram.SendNotificationAsync($"🗑️ A link was deleted from the Vault!\nTitle: {link.Title}");
+            await telegram.SendNotificationAsync($"🗑️ A resource link was deleted from the system!\nTitle: {link.Title}");
 
             return Results.Ok();
         });

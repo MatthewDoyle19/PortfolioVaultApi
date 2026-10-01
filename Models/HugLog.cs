@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-namespace ZainabVaultApi.Models;
+namespace PortfolioVaultApi.Models;
 public class HugLog {
     
     [JsonPropertyName("id")] public int Id { get; set; }

@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class GoalEndpoints
 {
@@ -21,7 +21,7 @@ public static class GoalEndpoints
             db.Goals.Add(newGoal);
             await db.SaveChangesAsync();
 
-            await telegram.SendNotificationAsync($"🎯 New Core Goal Set!\n\nGoal: {newGoal.Title}\nTime: {jordanTime:hh:mm tt}\n\nLet's make it happen! 💪");
+            await telegram.SendNotificationAsync($"🎯 New System Goal Set!\n\nGoal: {newGoal.Title}\nTime: {jordanTime:hh:mm tt}");
 
             return Results.Created($"/api/goals/{newGoal.Id}", newGoal);
         });
@@ -48,7 +48,7 @@ public static class GoalEndpoints
             db.Goals.Remove(goal);
             await db.SaveChangesAsync();
 
-            await telegram.SendNotificationAsync($"🗑️ A Core Goal was deleted:\n\nGoal: {goal.Title}");
+            await telegram.SendNotificationAsync($"🗑️ A System Goal was deleted:\n\nGoal: {goal.Title}");
 
             return Results.Ok();
         });

@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class HeartbeatEndpoints
 {
@@ -17,9 +17,9 @@ public static class HeartbeatEndpoints
             db.Heartbeats.Add(hb);
             await db.SaveChangesAsync();
 
-            string displaySender = hb.Sender == "Mohammad" ? "7amodee" : (hb.Sender == "Zainab" ? "ZoZo" : hb.Sender);
-            string target = hb.Sender == "Mohammad" ? "ZoZo 👸🏻" : "7amodee 👨🏻‍💻";
-            await telegram.SendNotificationAsync($"✨ {displaySender} is thinking of you right now and Love {target} 😘");
+            string displaySender = hb.Sender == "User1" ? "Admin" : (hb.Sender == "User2" ? "Member" : hb.Sender);
+            string target = hb.Sender == "User1" ? "Member" : "Admin";
+            await telegram.SendNotificationAsync($"✨ {displaySender} sent a signal to {target}");
 
             return Results.Ok(hb);
         });

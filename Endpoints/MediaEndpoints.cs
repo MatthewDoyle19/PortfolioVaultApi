@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class MediaEndpoints
 {
@@ -19,8 +19,8 @@ public static class MediaEndpoints
             db.MediaItems.Add(item);
             await db.SaveChangesAsync();
 
-            string displayUser = item.AddedBy == "Mohammad" ? "7amodee 👨🏻‍💻" : (item.AddedBy == "Zainab" ? "ZoZo 👸🏻" : item.AddedBy);
-            await telegram.SendNotificationAsync($"✨ A new movie was added to the Watchlist!\n\n🎬 Title: {item.Title}\n👤 Added by: {displayUser}");
+            string displayUser = item.AddedBy == "User1" ? "Admin 👨🏻‍💻" : (item.AddedBy == "User2" ? "Member 👩🏻‍💻" : item.AddedBy);
+            await telegram.SendNotificationAsync($"✨ A new item was added to the Watchlist!\n\n🎬 Title: {item.Title}\n👤 Added by: {displayUser}");
 
             return Results.Created($"/api/media/{item.Id}", item);
         });
@@ -33,8 +33,8 @@ public static class MediaEndpoints
             item.Status = newStatus;
             await db.SaveChangesAsync();
 
-            string statusText = newStatus == "watched" ? "✅ Watched" : "⏳ Backlog (Reverted)";
-            await telegram.SendNotificationAsync($"🍿 Watchlist Update!\n\n🎬 Movie: {item.Title}\n📌 Status: {statusText}");
+            string statusText = newStatus == "watched" ? "✅ Completed" : "⏳ Backlog";
+            await telegram.SendNotificationAsync($"🍿 Watchlist Update!\n\n🎬 Item: {item.Title}\n📌 Status: {statusText}");
 
             return Results.Ok(item);
         });
@@ -46,8 +46,7 @@ public static class MediaEndpoints
             {
                 db.MediaItems.Remove(item);
                 await db.SaveChangesAsync();
-
-                await telegram.SendNotificationAsync($"🗑️ A movie was deleted from the Watchlist!\n\n🎬 Title: {item.Title}");
+                await telegram.SendNotificationAsync($"🗑️ An item was deleted from the Watchlist!\n\n🎬 Title: {item.Title}");
             }
             return Results.Ok();
         });

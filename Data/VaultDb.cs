@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Models;
+using PortfolioVaultApi.Models;
 
-namespace ZainabVaultApi.Data;
+namespace PortfolioVaultApi.Data;
 
 public class VaultDb : DbContext
 {

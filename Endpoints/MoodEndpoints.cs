@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class MoodEndpoints
 {
@@ -25,8 +25,8 @@ public static class MoodEndpoints
             }
             await db.SaveChangesAsync();
 
-            string alertEmoji = newMood.Status == "SOS" ? "🚨 EMERGENCY!" : "📡 Mood Update:";
-            string displayUser = newMood.User == "Mohammad" ? "7amodee" : (newMood.User == "Zainab" ? "ZoZo" : newMood.User);
+            string alertEmoji = newMood.Status == "SOS" ? "🚨 EMERGENCY!" : "📡 Status Update:";
+            string displayUser = newMood.User == "User1" ? "Admin" : (newMood.User == "User2" ? "Member" : newMood.User);
 
             await telegram.SendNotificationAsync($"{alertEmoji}\n{displayUser} updated their status to ({newMood.Status})\nat {newMood.UpdatedAt}");
 

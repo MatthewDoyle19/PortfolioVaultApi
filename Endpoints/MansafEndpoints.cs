@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class MansafEndpoints
 {
@@ -47,13 +47,13 @@ public static class MansafEndpoints
                 await db.SaveChangesAsync();
 
                 string actionWord = req.Change > 0 ? "added 🟢" : "removed 🔴";
-                await telegram.SendNotificationAsync($"🥘 Mansaf Update!\n\n1 portion was {actionWord}.\nTotal Mansaf Count: {counter.Count} 🤤");
+                await telegram.SendNotificationAsync($"📊 Activity Tracker Update!\n\n1 metric point was {actionWord}.\nTotal Score: {counter.Count}");
 
                 return Results.Ok(counter);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[CRITICAL MANSAF DB ERROR] {ex.Message}");
+                Console.WriteLine($"[CRITICAL DB ERROR] {ex.Message}");
                 if (ex.InnerException != null) Console.WriteLine($"[INNER] {ex.InnerException.Message}");
                 return Results.Problem(ex.Message);
             }

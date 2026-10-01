@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ZainabVaultApi.Data;
-using ZainabVaultApi.Models;
-using ZainabVaultApi.Services;
+using PortfolioVaultApi.Data;
+using PortfolioVaultApi.Models;
+using PortfolioVaultApi.Services;
 
-namespace ZainabVaultApi.Endpoints;
+namespace PortfolioVaultApi.Endpoints;
 
 public static class HugEndpoints
 {
@@ -21,7 +21,6 @@ public static class HugEndpoints
             return Results.Ok(counter);
         });
 
-        // سنستخدم نفس نموذج MansafActionRequest لأنه يحتوي فقط على Change
         app.MapPost("/api/hugs/action", async (MansafActionRequest req, VaultDb db, TelegramService telegram) =>
         {
             var counter = await db.HugCounters.FirstOrDefaultAsync();
@@ -31,10 +30,9 @@ public static class HugEndpoints
                 db.HugCounters.Add(counter);
             }
 
-            // 🛡️ طبقة الحماية الصارمة: منع النزول تحت الصفر
             if (req.Change < 0 && counter.Count <= 0)
             {
-                return Results.Ok(counter); // تجاهل الطلب بصمت وإرجاع العداد كما هو
+                return Results.Ok(counter); 
             }
     
             counter.Count += req.Change;
@@ -46,8 +44,8 @@ public static class HugEndpoints
             db.HugLogs.Add(new HugLog { Change = req.Change, Timestamp = dbFriendlyTime });
             await db.SaveChangesAsync();
 
-            string actionWord = req.Change > 0 ? "sent a virtual hug 🫂" : "removed a hug 💔";
-            await telegram.SendNotificationAsync($"🫂 Hugs Update!\n\nZoZo {actionWord}.\nTotal Hugs Pending: {counter.Count} ❤️");
+            string actionWord = req.Change > 0 ? "added a point 🟢" : "removed a point 🔴";
+            await telegram.SendNotificationAsync($"📊 Points Update!\n\nUser {actionWord}.\nTotal Pending: {counter.Count}");
 
             return Results.Ok(counter);
         });
