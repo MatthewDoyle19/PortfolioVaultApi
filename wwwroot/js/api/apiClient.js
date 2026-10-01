@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://zainabvault-v2-0-0.onrender.com";
+const API_BASE_URL = window.location.origin;
 
 // ==========================================
 // 🔥 THE UNIVERSAL SHIELD (الدرع الشامل لحماية البيانات)

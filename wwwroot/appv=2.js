@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Standard Login (Validates via API for Zozo/Guests)
+        // Standard Login (Validates via API for Member/Guests)
         try {
             const result = await api.login(key);
 
@@ -404,10 +404,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (punished === 'Both') {
             pool = penaltyVault.Shared;
-            displayTarget = "7amodee & ZoZo (together)";
+            displayTarget = "Admin & Member (together)";
         } else {
             pool = penaltyVault[punished];
-            displayTarget = punished === 'Mohammad' ? '7amodee' : (punished === 'Zainab' ? 'ZoZo' : punished);
+            displayTarget = punished === 'Admin' ? 'Admin' : (punished === 'Member' ? 'Member' : punished);
         }
 
         const randomPenalty = pool[Math.floor(Math.random() * pool.length)];
@@ -519,7 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.openMoodSelector = async (user) => {
         const moodKeys = Object.keys(moodsList).join('\n');
-        const displayName = user === 'Mohammad' ? '7amodee' : (user === 'Zainab' ? 'ZoZo' : user);
+        const displayName = user === 'Admin' ? 'Admin' : (user === 'Member' ? 'Member' : user);
         const rawInput = prompt(`Update ${displayName}'s mood:\nType one of these options:\n\n${moodKeys}`);
 
         if (!rawInput) return;
@@ -553,7 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const penalties = await api.fetchPenalties();
             if (!initialLoad && penalties.length > lastPenaltyCount) {
                 const newestPenalty = penalties[0];
-                const displayPunished = newestPenalty.punished === 'Mohammad' ? '7amodee' : (newestPenalty.punished === 'Zainab' ? 'ZoZo' : newestPenalty.punished);
+                const displayPunished = newestPenalty.punished === 'Admin' ? 'Admin' : (newestPenalty.punished === 'Member' ? 'Member' : newestPenalty.punished);
                 ui.showToast('⚖️ Digital Court', `New verdict issued for ${displayPunished}!`, '⚖️');
                 ui.renderPenalties(penalties); // تمرير البيانات مباشرة للواجهة لتوفير الموارد
             }
@@ -570,7 +570,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 4. تحديث النبضات
             const latestHb = await api.fetchLatestHeartbeat();
             if (latestHb && !initialLoad && latestHb.id > lastHeartbeatId) {
-                const displaySender = latestHb.sender === 'Mohammad' ? '7amodee' : (latestHb.sender === 'Zainab' ? 'ZoZo' : latestHb.sender);
+                const displaySender = latestHb.sender === 'Admin' ? 'Admin' : (latestHb.sender === 'Member' ? 'Member' : latestHb.sender);
                 ui.showToast('✨ Incoming Spark!', `${displaySender} is thinking of you right now...`, '❤️');
             }
             if (latestHb) {
@@ -581,8 +581,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error("System Watcher error:", error);
-            const moText = document.getElementById('mohammad-mood-text');
-            const zaText = document.getElementById('zainab-mood-text');
+            const moText = document.getElementById('Admin-mood-text');
+            const zaText = document.getElementById('Member-mood-text');
             if(moText) moText.innerText = "Connecting...";
             if(zaText) zaText.innerText = "Connecting...";
         } finally {
@@ -719,7 +719,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const savedHb = await api.sendHeartbeat(sender);
             lastHeartbeatId = savedHb.id;
 
-            const targetName = sender === 'Mohammad' ? 'ZoZo 👸🏻' : '7amodee 👨🏻‍💻';
+            const targetName = sender === 'Admin' ? 'Member 👸🏻' : 'Admin 👨🏻‍💻';
             ui.showToast('Sent! ✨', `Your spark is flying to ${targetName}!`, '🕊️');
 
             fetchSystemState();
@@ -813,22 +813,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 🚨 SOS & GEOLOCATION LOGIC ---
     window.triggerSOS = async () => {
-        const rawWho = prompt("🚨 EMERGENCY PROTOCOL 🚨\nWho is sending this SOS? (Type: 7amodee or ZoZo)");
+        const rawWho = prompt("🚨 EMERGENCY PROTOCOL 🚨\nWho is sending this SOS? (Type: Admin or Member)");
         if (!rawWho) return;
 
         const cleanWho = rawWho.trim().toLowerCase();
         let standardUser = "";
 
-        if (cleanWho === '7amodee' || cleanWho === 'mohammad') {
-            standardUser = 'Mohammad';
-        } else if (cleanWho === 'zozo' || cleanWho === 'zainab') {
-            standardUser = 'Zainab';
+        if (cleanWho === 'Admin' || cleanWho === 'Admin') {
+            standardUser = 'Admin';
+        } else if (cleanWho === 'Member' || cleanWho === 'Member') {
+            standardUser = 'Member';
         } else {
             alert("Invalid name. SOS Aborted.");
             return;
         }
 
-        const targetName = standardUser === 'Mohammad' ? 'ZoZo 👸🏻' : '7amodee 👨🏻‍💻';
+        const targetName = standardUser === 'Admin' ? 'Member 👸🏻' : 'Admin 👨🏻‍💻';
         if (!confirm(`⚠️ Send high-priority SOS alert to ${targetName} with your LIVE GPS location?`)) return;
 
         ui.showToast('Processing...', 'Acquiring GPS coordinates 🛰️', '⏳');
@@ -981,7 +981,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.switchUser(username);
     };
 
-    const currentUser = localStorage.getItem('vault_user') || 'Mohammad';
+    const currentUser = localStorage.getItem('vault_user') || 'Admin';
     window.switchUser(currentUser);
 
     const addMediaForm = document.getElementById('add-media-form');
@@ -1063,8 +1063,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // 📖 THE VAULT SECRET DIARY MODULE (COMPLETE)
 // ==========================================
 
-    const MOHAMMAD_DIARY_PWD = "m1";
-    const ZOZO_DIARY_PWD = "9863";
+    const Admin_DIARY_PWD = "m1";
+    const Member_DIARY_PWD = "9863";
 
     let currentDiaryOwner = null;
     let diaryAutoSaveTimer;
@@ -1096,11 +1096,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const input = document.getElementById('diary-password-input').value;
         const errorMsg = document.getElementById('diary-error-msg');
 
-        if (input === MOHAMMAD_DIARY_PWD) {
-            currentDiaryOwner = "Mohammad";
+        if (input === Admin_DIARY_PWD) {
+            currentDiaryOwner = "Admin";
             window.launchDiaryMode();
-        } else if (input === ZOZO_DIARY_PWD) {
-            currentDiaryOwner = "Zainab";
+        } else if (input === Member_DIARY_PWD) {
+            currentDiaryOwner = "Member";
             window.launchDiaryMode();
         } else {
             errorMsg.classList.remove('opacity-0');
@@ -1216,7 +1216,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             window.scrollTo(0, 0);
         } else if (overrideKey !== null) {
-            // If they type the wrong thing (or Zozo clicks it by accident)
+            // If they type the wrong thing (or Member clicks it by accident)
             alert("Access Denied.");
         }
     };

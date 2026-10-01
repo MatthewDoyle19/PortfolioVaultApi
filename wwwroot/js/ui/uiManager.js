@@ -403,8 +403,8 @@ export const renderPenalties = (penalties) => {
     if (!ledgerTimeline) return;
 
     ledgerTimeline.innerHTML = penalties.map(p => {
-        const displayPunisher = p.punisher === 'Mohammad' ? '7amodee' : (p.punisher === 'Zainab' ? 'ZoZo' : p.punisher);
-        const displayPunished = p.punished === 'Mohammad' ? '7amodee' : (p.punished === 'Zainab' ? 'ZoZo' : p.punished);
+        const displayPunisher = p.punisher === 'Admin' ? 'Admin' : (p.punisher === 'Member' ? 'Member' : p.punisher);
+        const displayPunished = p.punished === 'Admin' ? 'Admin' : (p.punished === 'Member' ? 'Member' : p.punished);
         const isDone = p.isCompleted;
         const textStyleClasses = isDone ? 'line-through text-slate-500 opacity-70' : 'text-slate-200';
         const isArabic = /[\u0600-\u06FF]/.test(p.penaltyText);
@@ -545,7 +545,7 @@ export const renderWatchlist = (mediaItems) => {
                 <div class="flex flex-col">
                     <span class="text-sm font-bold ${textStyle} leading-tight transition-all duration-300">${item.title}</span>
                     <span class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold mt-1">
-                        Added by <span class="${item.addedBy === 'Mohammad' ? 'text-blue-400' : (item.addedBy === 'Zainab' ? 'text-pink-400' : 'text-slate-400')}">${item.addedBy === 'Mohammad' ? '7amodee' : (item.addedBy === 'Zainab' ? 'ZoZo' : item.addedBy)}</span>
+                        Added by <span class="${item.addedBy === 'Admin' ? 'text-blue-400' : (item.addedBy === 'Member' ? 'text-pink-400' : 'text-slate-400')}">${item.addedBy === 'Admin' ? 'Admin' : (item.addedBy === 'Member' ? 'Member' : item.addedBy)}</span>
                     </span>
                 </div>
             </div>
@@ -710,8 +710,8 @@ export const renderPrompt = (prompt) => {
     const promptContainer = document.getElementById('blind-prompt-container');
     if (!promptContainer) return;
 
-    const moAns = prompt.mohammadAnswer;
-    const zaAns = prompt.zainabAnswer;
+    const moAns = prompt.AdminAnswer;
+    const zaAns = prompt.MemberAnswer;
     const isUnlocked = moAns && zaAns;
 
     let html = `
@@ -725,11 +725,11 @@ export const renderPrompt = (prompt) => {
         html += `
             <div class="flex flex-col gap-4 mb-6 relative z-10">
                 <div class="bg-black/30 p-4 rounded-2xl border border-emerald-500/30 border-l-4 border-l-emerald-500 text-left fade-in">
-                    <span class="text-[10px] text-emerald-400 font-bold uppercase block mb-1">7amodee 👨🏻‍💻</span>
+                    <span class="text-[10px] text-emerald-400 font-bold uppercase block mb-1">Admin 👨🏻‍💻</span>
                     <p class="text-slate-200 text-sm font-medium">"${moAns}"</p>
                 </div>
                 <div class="bg-black/30 p-4 rounded-2xl border border-pink-500/30 border-l-4 border-l-pink-500 text-left fade-in" style="animation-delay: 0.2s">
-                    <span class="text-[10px] text-pink-400 font-bold uppercase block mb-1">ZoZo 👸🏻</span>
+                    <span class="text-[10px] text-pink-400 font-bold uppercase block mb-1">Member 👸🏻</span>
                     <p class="text-slate-200 text-sm font-medium">"${zaAns}"</p>
                 </div>
             </div>
@@ -739,12 +739,12 @@ export const renderPrompt = (prompt) => {
         html += `<div class="flex justify-center gap-6 mb-6">`;
 
         html += moAns
-            ? `<div class="flex flex-col items-center"><div class="bg-emerald-500/20 text-emerald-400 p-3 rounded-xl border border-emerald-500/30 mb-2">✅</div><span class="text-[10px] text-slate-400 uppercase">7amodee Locked</span></div>`
-            : `<div class="flex flex-col items-center"><div class="bg-black/40 text-slate-500 p-3 rounded-xl border border-white/5 mb-2 animate-pulse">⏳</div><span class="text-[10px] text-slate-400 uppercase">Waiting 7amodee</span></div>`;
+            ? `<div class="flex flex-col items-center"><div class="bg-emerald-500/20 text-emerald-400 p-3 rounded-xl border border-emerald-500/30 mb-2">✅</div><span class="text-[10px] text-slate-400 uppercase">Admin Locked</span></div>`
+            : `<div class="flex flex-col items-center"><div class="bg-black/40 text-slate-500 p-3 rounded-xl border border-white/5 mb-2 animate-pulse">⏳</div><span class="text-[10px] text-slate-400 uppercase">Waiting Admin</span></div>`;
 
         html += zaAns
-            ? `<div class="flex flex-col items-center"><div class="bg-pink-500/20 text-pink-400 p-3 rounded-xl border border-pink-500/30 mb-2">✅</div><span class="text-[10px] text-slate-400 uppercase">ZoZo Locked</span></div>`
-            : `<div class="flex flex-col items-center"><div class="bg-black/40 text-slate-500 p-3 rounded-xl border border-white/5 mb-2 animate-pulse">⏳</div><span class="text-[10px] text-slate-400 uppercase">Waiting ZoZo</span></div>`;
+            ? `<div class="flex flex-col items-center"><div class="bg-pink-500/20 text-pink-400 p-3 rounded-xl border border-pink-500/30 mb-2">✅</div><span class="text-[10px] text-slate-400 uppercase">Member Locked</span></div>`
+            : `<div class="flex flex-col items-center"><div class="bg-black/40 text-slate-500 p-3 rounded-xl border border-white/5 mb-2 animate-pulse">⏳</div><span class="text-[10px] text-slate-400 uppercase">Waiting Member</span></div>`;
 
         html += `</div>`;
 
@@ -754,8 +754,8 @@ export const renderPrompt = (prompt) => {
                     <div class="flex items-center gap-2">
                         <label class="text-xs text-slate-400 font-medium">Answering as:</label>
                         <select id="prompt-user" class="bg-black/60 text-white text-xs px-2 py-1 rounded-lg border border-white/10 focus:outline-none focus:border-pink-500">
-                            <option value="Mohammad">7amodee 👨🏻‍💻</option>
-                            <option value="Zainab">ZoZo 👸🏻</option>
+                            <option value="Admin">Admin 👨🏻‍💻</option>
+                            <option value="Member">Member 👸🏻</option>
                         </select>
                     </div>
                     <textarea id="prompt-answer" rows="2" placeholder="Write your honest answer..." required class="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 shadow-inner resize-none"></textarea>
@@ -795,12 +795,12 @@ export const renderPromptHistory = (history) => {
             <p class="text-sm text-pink-300 font-bold mb-4 leading-relaxed pl-2">"${p.question}"</p>
             <div class="flex flex-col gap-3 pl-2">
                 <div class="bg-black/40 p-3 rounded-2xl border-l-2 border-emerald-500/50">
-                    <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest block mb-1">7amodee 👨🏻‍💻</span>
-                    <p class="text-xs text-slate-300 font-medium">"${p.mohammadAnswer}"</p>
+                    <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest block mb-1">Admin 👨🏻‍💻</span>
+                    <p class="text-xs text-slate-300 font-medium">"${p.AdminAnswer}"</p>
                 </div>
                 <div class="bg-black/40 p-3 rounded-2xl border-l-2 border-pink-500/50">
-                    <span class="text-[9px] text-pink-400 font-bold uppercase tracking-widest block mb-1">ZoZo 👸🏻</span>
-                    <p class="text-xs text-slate-300 font-medium">"${p.zainabAnswer}"</p>
+                    <span class="text-[9px] text-pink-400 font-bold uppercase tracking-widest block mb-1">Member 👸🏻</span>
+                    <p class="text-xs text-slate-300 font-medium">"${p.MemberAnswer}"</p>
                 </div>
             </div>
             <div class="flex justify-end mt-3">
@@ -843,21 +843,21 @@ export const switchTab = (tabName) => {
 export const switchUser = (username) => {
     localStorage.setItem('vault_user', username);
 
-    const btn7amodee = document.getElementById('btn-7amodee');
-    const btnZozo = document.getElementById('btn-zozo');
+    const btnAdmin = document.getElementById('btn-Admin');
+    const btnMember = document.getElementById('btn-Member');
     const submitBtn = document.querySelector('#add-media-form button[type="submit"]');
 
-    if (!btn7amodee || !btnZozo) return;
+    if (!btnAdmin || !btnMember) return;
 
     const inactiveClasses = 'px-6 py-2 text-sm md:text-base rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-slate-300 hover:bg-white/10 hover:text-white scale-95 cursor-pointer';
 
-    if (username === 'Mohammad') {
-        btn7amodee.className = 'px-6 py-2 text-sm md:text-base rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-white bg-gradient-to-r from-blue-600 to-blue-400 border border-blue-400/50 shadow-[0_0_20px_rgba(59,130,246,0.4)] scale-100 z-10 relative';
-        btnZozo.className = inactiveClasses;
+    if (username === 'Admin') {
+        btnAdmin.className = 'px-6 py-2 text-sm md:text-base rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-white bg-gradient-to-r from-blue-600 to-blue-400 border border-blue-400/50 shadow-[0_0_20px_rgba(59,130,246,0.4)] scale-100 z-10 relative';
+        btnMember.className = inactiveClasses;
         if (submitBtn) submitBtn.className = 'bg-blue-500/20 text-blue-300 border border-blue-500/50 font-bold py-3.5 px-6 rounded-xl transition-all hover:bg-blue-500 hover:text-white active:scale-95 shadow-lg';
     } else {
-        btnZozo.className = 'px-6 py-2 text-sm md:text-base rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-white bg-gradient-to-r from-pink-600 to-pink-400 border border-pink-400/50 shadow-[0_0_20px_rgba(244,114,182,0.4)] scale-100 z-10 relative';
-        btn7amodee.className = inactiveClasses;
+        btnMember.className = 'px-6 py-2 text-sm md:text-base rounded-full font-bold transition-all duration-300 flex items-center gap-2 text-white bg-gradient-to-r from-pink-600 to-pink-400 border border-pink-400/50 shadow-[0_0_20px_rgba(244,114,182,0.4)] scale-100 z-10 relative';
+        btnAdmin.className = inactiveClasses;
         if (submitBtn) submitBtn.className = 'bg-pink-500/20 text-pink-300 border border-pink-500/50 font-bold py-3.5 px-6 rounded-xl transition-all hover:bg-pink-500 hover:text-white active:scale-95 shadow-lg';
     }
 };
@@ -867,8 +867,8 @@ export const switchUser = (username) => {
 // ==========================================
 
 export const updateMoodDisplay = (moods, moodsList) => {
-    document.getElementById('mohammad-mood-text').innerText = "Not set yet";
-    document.getElementById('zainab-mood-text').innerText = "Not set yet";
+    document.getElementById('Admin-mood-text').innerText = "Not set yet";
+    document.getElementById('Member-mood-text').innerText = "Not set yet";
 
     let isEmergency = false;
 
