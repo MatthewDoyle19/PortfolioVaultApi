@@ -26,13 +26,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// إعداد مسار الطلبات (HTTP Pipeline)
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCors("AllowAll");
